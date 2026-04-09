@@ -1,0 +1,129 @@
+{
+  "Stages": [
+    {
+      "Id": "deepnorth",
+      "Label": "Deep North",
+      "Order": 7,
+      "BiomeDescription": "Icy final frontier. Only the strongest survive.",
+      "ModRequired": null,
+      "UnlockTrigger": {
+        "Type": "globalKey",
+        "Value": "defeated_fader"
+      },
+      "PriorityMaterials": [ "FrostMetal", "IceShard", "GiantHide", "NiflheimCore" ],
+      "Boss": {
+        "Name": "Njord",
+        "Location": "Glacial Fortress",
+        "GlobalKeyDrop": "defeated_njord",
+        "GlobalUnlock": "Njord's Blessing",
+        "RecommendedGear": "FrostMetal armor, fire weapons, frost resist",
+        "SummonMaterials": [
+          {
+            "ItemId": "FrostTotem",
+            "Label": "Frost Totem",
+            "Amount": 5
+          }
+        ],
+        "KeyDrops": [ "NjordRelic" ]
+      },
+      "Gear": [
+        {
+          "ItemId": "ArmorFrostMetalChest",
+          "Label": "FrostMetal Chestplate",
+          "Type": "Armor",
+          "Station": "YmirForge",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "FrostMetal",
+              "Label": "Frost Metal",
+              "Amount": 15
+            },
+            {
+              "ItemId": "GiantHide",
+              "Label": "Giant Hide",
+              "Amount": 5
+            }
+          ]
+        },
+        {
+          "ItemId": "AxeFrostMetal_TW",
+          "Label": "FrostMetal Axe",
+          "Type": "Weapon",
+          "Station": "YmirForge",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Warfare",
+          "Recipe": [
+            {
+              "ItemId": "FrostMetal",
+              "Label": "Frost Metal",
+              "Amount": 20
+            },
+            {
+              "ItemId": "IceShard",
+              "Label": "Ice Shard",
+              "Amount": 10
+            }
+          ]
+        }
+      ],
+      "Drops": [
+        {
+          "ItemId": "FrostMetalScrap",
+          "Label": "Frost Metal Scrap",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Jotunn",
+              "Biome": "DeepNorth",
+              "Chance": 0.7,
+              "Min": 1,
+              "Max": 2,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        },
+        {
+          "ItemId": "IceShard",
+          "Label": "Ice Shard",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "IceGolem",
+              "Biome": "DeepNorth",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        }
+      ],
+      "Recipes": [
+        {
+          "ItemId": "FrostResistPotion",
+          "Label": "Frost Resist Potion",
+          "Station": "AlchemyTable",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "UnlockNote": "Always known",
+          "Ingredients": [
+            {
+              "ItemId": "IceShard",
+              "Label": "Ice Shard",
+              "Amount": 5
+            },
+            {
+              "ItemId": "FreezeGland",
+              "Label": "Freeze Gland",
+              "Amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "Stages": [
+    {
+      "Id": "ashlands",
+      "Label": "Ashlands",
+      "Order": 6,
+      "BiomeDescription": "Volcanic wastes teeming with Charred and Asksvin.",
+      "ModRequired": null,
+      "UnlockTrigger": {
+        "Type": "globalKey",
+        "Value": "defeated_queen"
+      },
+      "PriorityMaterials": [ "Flametal", "CharredBone", "CeramicPlate", "AsksvinHide", "BellFragment" ],
+      "Boss": {
+        "Name": "Fader",
+        "Location": "Charred Fortress",
+        "GlobalKeyDrop": "defeated_fader",
+        "GlobalUnlock": "Fader Relic, Deep North access",
+        "RecommendedGear": "Flametal armor, ember weapons, fire resist",
+        "SummonMaterials": [
+          {
+            "ItemId": "BellFragment",
+            "Label": "Bell Fragment",
+            "Amount": 3
+          }
+        ],
+        "KeyDrops": [ "FaderRelic" ]
+      },
+      "Gear": [
+        {
+          "ItemId": "ArmorFlametalChest",
+          "Label": "Flametal Breastplate",
+          "Type": "Armor",
+          "Station": "BlackForge",
+          "StationLevel": 3,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Flametal",
+              "Label": "Flametal",
+              "Amount": 15
+            },
+            {
+              "ItemId": "CharredBone",
+              "Label": "Charred Bone",
+              "Amount": 10
+            }
+          ]
+        },
+        {
+          "ItemId": "AxeFlametal_TW",
+          "Label": "Flametal Axe",
+          "Type": "Weapon",
+          "Station": "BlackForge",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Warfare",
+          "Recipe": [
+            {
+              "ItemId": "Flametal",
+              "Label": "Flametal",
+              "Amount": 20
+            },
+            {
+              "ItemId": "CeramicPlate",
+              "Label": "Ceramic Plate",
+              "Amount": 5
+            }
+          ]
+        }
+      ],
+      "Drops": [
+        {
+          "ItemId": "CharredBone",
+          "Label": "Charred Bone",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Charred",
+              "Biome": "Ashlands",
+              "Chance": 0.8,
+              "Min": 1,
+              "Max": 2,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        },
+        {
+          "ItemId": "AsksvinHide",
+          "Label": "Asksvin Hide",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Asksvin",
+              "Biome": "Ashlands",
+              "Chance": 1.0,
+              "Min": 2,
+              "Max": 4,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        }
+      ],
+      "Recipes": [
+        {
+          "ItemId": "FierySvinstew",
+          "Label": "Fiery Svinstew",
+          "Station": "Cauldron",
+          "StationLevel": 6,
+          "ModRequired": null,
+          "UnlockNote": "Always known",
+          "Ingredients": [
+            {
+              "ItemId": "AsksvinTail",
+              "Label": "Asksvin Tail",
+              "Amount": 1
+            },
+            {
+              "ItemId": "Vineberry",
+              "Label": "Vineberry",
+              "Amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

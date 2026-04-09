@@ -1,0 +1,179 @@
+{
+  "Stages": [
+    {
+      "Id": "blackforest",
+      "Label": "Black Forest",
+      "Order": 1,
+      "BiomeDescription": "Dense forest with copper, tin, and burial chambers. Beware of trolls.",
+      "ModRequired": null,
+      "UnlockTrigger": {
+        "Type": "globalKey",
+        "Value": "defeated_eikthyr"
+      },
+      "PriorityMaterials": [ "Copper", "Tin", "Bronze", "SurtlingCore" ],
+      "Boss": {
+        "Name": "The Elder",
+        "Location": "Black Forest altar",
+        "GlobalKeyDrop": "defeated_gdking",
+        "GlobalUnlock": "Swamp Key, Crypt access",
+        "RecommendedGear": "Bronze armor, finewood bow, fire arrows",
+        "SummonMaterials": [
+          {
+            "ItemId": "AncientSeed",
+            "Label": "Ancient Seed",
+            "Amount": 3
+          }
+        ],
+        "KeyDrops": [ "SwampKey" ]
+      },
+      "Gear": [
+        {
+          "ItemId": "ArmorBronzeChest",
+          "Label": "Bronze Plate Cuirass",
+          "Type": "Armor",
+          "Station": "Forge",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Bronze",
+              "Label": "Bronze",
+              "Amount": 5
+            },
+            {
+              "ItemId": "DeerHide",
+              "Label": "Deer Hide",
+              "Amount": 2
+            }
+          ]
+        },
+        {
+          "ItemId": "AxeBronze",
+          "Label": "Bronze Axe",
+          "Type": "Tool",
+          "Station": "Forge",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Wood",
+              "Label": "Wood",
+              "Amount": 4
+            },
+            {
+              "ItemId": "Bronze",
+              "Label": "Bronze",
+              "Amount": 8
+            },
+            {
+              "ItemId": "LeatherScraps",
+              "Label": "Leather Scraps",
+              "Amount": 2
+            }
+          ]
+        },
+        {
+          "ItemId": "PickaxeBronze",
+          "Label": "Bronze Pickaxe",
+          "Type": "Tool",
+          "Station": "Forge",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Wood",
+              "Label": "Wood",
+              "Amount": 3
+            },
+            {
+              "ItemId": "Bronze",
+              "Label": "Bronze",
+              "Amount": 10
+            }
+          ]
+        },
+        {
+          "ItemId": "ArmorTrollLeatherChest",
+          "Label": "Troll Leather Tunic",
+          "Type": "Armor",
+          "Station": "Workbench",
+          "StationLevel": 2,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "TrollHide",
+              "Label": "Troll Hide",
+              "Amount": 5
+            },
+            {
+              "ItemId": "BoneFragments",
+              "Label": "Bone Fragments",
+              "Amount": 15
+            }
+          ]
+        }
+      ],
+      "Drops": [
+        {
+          "ItemId": "SurtlingCore",
+          "Label": "Surtling Core",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Surtling",
+              "Biome": "Black Forest",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        },
+        {
+          "ItemId": "TrollHide",
+          "Label": "Troll Hide",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Troll",
+              "Biome": "Black Forest",
+              "Chance": 1.0,
+              "Min": 2,
+              "Max": 5,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        }
+      ],
+      "Recipes": [
+        {
+          "ItemId": "FireArrow",
+          "Label": "Fire Arrow",
+          "Station": "Workbench",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "UnlockNote": "Always known",
+          "Ingredients": [
+            {
+              "ItemId": "Wood",
+              "Label": "Wood",
+              "Amount": 8
+            },
+            {
+              "ItemId": "Resin",
+              "Label": "Resin",
+              "Amount": 2
+            },
+            {
+              "ItemId": "Feathers",
+              "Label": "Feathers",
+              "Amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

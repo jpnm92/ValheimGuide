@@ -1,0 +1,154 @@
+{
+  "Stages": [
+    {
+      "Id": "mountain",
+      "Label": "Mountain",
+      "Order": 3,
+      "BiomeDescription": "Freezing peaks. Find silver using the Wishbone.",
+      "ModRequired": null,
+      "UnlockTrigger": {
+        "Type": "globalKey",
+        "Value": "defeated_bonemass"
+      },
+      "PriorityMaterials": [ "Silver", "Obsidian", "WolfPelt", "DragonEgg" ],
+      "Boss": {
+        "Name": "Moder",
+        "Location": "Mountain altar",
+        "GlobalKeyDrop": "defeated_dragon",
+        "GlobalUnlock": "Artisan Table, Dragon Tears",
+        "RecommendedGear": "Wolf armor, silver weapons, frost resist",
+        "SummonMaterials": [
+          {
+            "ItemId": "DragonEgg",
+            "Label": "Dragon Egg",
+            "Amount": 3
+          }
+        ],
+        "KeyDrops": [ "DragonTear" ]
+      },
+      "Gear": [
+        {
+          "ItemId": "ArmorWolfChest",
+          "Label": "Wolf Armor Chest",
+          "Type": "Armor",
+          "Station": "Forge",
+          "StationLevel": 3,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Silver",
+              "Label": "Silver",
+              "Amount": 20
+            },
+            {
+              "ItemId": "WolfPelt",
+              "Label": "Wolf Pelt",
+              "Amount": 5
+            },
+            {
+              "ItemId": "Chain",
+              "Label": "Chain",
+              "Amount": 1
+            }
+          ]
+        },
+        {
+          "ItemId": "SwordSilver",
+          "Label": "Silver Sword",
+          "Type": "Weapon",
+          "Station": "Forge",
+          "StationLevel": 3,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Wood",
+              "Label": "Wood",
+              "Amount": 2
+            },
+            {
+              "ItemId": "Silver",
+              "Label": "Silver",
+              "Amount": 40
+            },
+            {
+              "ItemId": "LeatherScraps",
+              "Label": "Leather Scraps",
+              "Amount": 3
+            },
+            {
+              "ItemId": "Iron",
+              "Label": "Iron",
+              "Amount": 5
+            }
+          ]
+        }
+      ],
+      "Drops": [
+        {
+          "ItemId": "WolfPelt",
+          "Label": "Wolf Pelt",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Wolf",
+              "Biome": "Mountain",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 2,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        },
+        {
+          "ItemId": "FreezeGland",
+          "Label": "Freeze Gland",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Drake",
+              "Biome": "Mountain",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 1,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        }
+      ],
+      "Recipes": [
+        {
+          "ItemId": "FrostArrow",
+          "Label": "Frost Arrow",
+          "Station": "Workbench",
+          "StationLevel": 4,
+          "ModRequired": null,
+          "UnlockNote": "Always known",
+          "Ingredients": [
+            {
+              "ItemId": "Wood",
+              "Label": "Wood",
+              "Amount": 8
+            },
+            {
+              "ItemId": "Obsidian",
+              "Label": "Obsidian",
+              "Amount": 4
+            },
+            {
+              "ItemId": "FreezeGland",
+              "Label": "Freeze Gland",
+              "Amount": 1
+            },
+            {
+              "ItemId": "Feathers",
+              "Label": "Feathers",
+              "Amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

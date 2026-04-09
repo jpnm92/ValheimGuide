@@ -1,0 +1,794 @@
+{
+  "Stages": [
+    {
+      "Id": "armory_meadows",
+      "Label": "Armory (Meadows)",
+      "Order": 10,
+      "BiomeDescription": "Enhanced Leather armor.",
+      "ModRequired": "Therzie.Armory",
+      "UnlockTrigger": {
+        "Type": "none",
+        "Value": ""
+      },
+      "PriorityMaterials": [ "LeatherScraps" ],
+      "Gear": [
+        {
+          "ItemId": "HelmetLeather_TW",
+          "Label": "Leather Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorLeatherChest_TW",
+          "Label": "Leather Tunic",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorLeatherLegs_TW",
+          "Label": "Leather Pants",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetRazorback_TW",
+          "Label": "Razorback Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRazorbackChest_TW",
+          "Label": "Razorback Tunic",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRazorbackLegs_TW",
+          "Label": "Razorback Pants",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetHunter_TW",
+          "Label": "Hunter Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterChest_TW",
+          "Label": "Hunter Tunic",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterLegs_TW",
+          "Label": "Hunter Pants",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetRogue_TW",
+          "Label": "Rogue Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueChest_TW",
+          "Label": "Rogue Tunic",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueLegs_TW",
+          "Label": "Rogue Pants",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetVigorous_TW",
+          "Label": "Vigorous Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousChest_TW",
+          "Label": "Vigorous Tunic",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousLegs_TW",
+          "Label": "Vigorous Pants",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetWarrior_TW",
+          "Label": "Warrior Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorWarriorChest_TW",
+          "Label": "Warrior Tunic",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorWarriorLegs_TW",
+          "Label": "Warrior Pants",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetFenrir_TW",
+          "Label": "Fenrir Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorFenrirChest_TW",
+          "Label": "Fenrir Coat",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorFenrirLegs_TW",
+          "Label": "Fenrir Leggings",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetVidar_TW",
+          "Label": "Vidar Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVidarChest_TW",
+          "Label": "Vidar Chest",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVidarLegs_TW",
+          "Label": "Vidar Legs",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetBold_TW",
+          "Label": "Bold Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorBoldChest_TW",
+          "Label": "Bold Chest",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorBoldLegs_TW",
+          "Label": "Bold Legs",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetLegion_TW",
+          "Label": "Legion Helmet",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorLegionChest_TW",
+          "Label": "Legion Chest",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorLegionLegs_TW",
+          "Label": "Legion Legs",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 1,
+          "ModRequired": "Therzie.Armory"
+        }
+      ]
+    },
+    {
+      "Id": "armory_blackforest",
+      "Label": "Armory (Black Forest)",
+      "Order": 11,
+      "BiomeDescription": "Bronze and Troll armor upgrades.",
+      "ModRequired": "Therzie.Armory",
+      "UnlockTrigger": {
+        "Type": "none",
+        "Value": ""
+      },
+      "PriorityMaterials": [ "Bronze", "TrollHide" ],
+      "Gear": [
+        {
+          "ItemId": "HelmetHunterIron_TW",
+          "Label": "Hunter Helmet (Iron)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 2,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterChestIron_TW",
+          "Label": "Hunter Tunic (Iron)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 2,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterLegsIron_TW",
+          "Label": "Hunter Pants (Iron)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 2,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetRogueIron_TW",
+          "Label": "Rogue Helmet (Iron)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 2,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueIronChest_TW",
+          "Label": "Rogue Tunic (Iron)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 2,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueIronLegs_TW",
+          "Label": "Rogue Pants (Iron)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 2,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetVigorousIron_TW",
+          "Label": "Vigorous Helmet (Iron)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 2,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousIronChest_TW",
+          "Label": "Vigorous Tunic (Iron)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 2,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousIronLegs_TW",
+          "Label": "Vigorous Pants (Iron)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 2,
+          "ModRequired": "Therzie.Armory"
+        }
+      ]
+    },
+    {
+      "Id": "armory_mountain",
+      "Label": "Armory (Mountain)",
+      "Order": 12,
+      "BiomeDescription": "Silver armor upgrades.",
+      "ModRequired": "Therzie.Armory",
+      "UnlockTrigger": {
+        "Type": "none",
+        "Value": ""
+      },
+      "PriorityMaterials": [ "Silver", "WolfPelt" ],
+      "Gear": [
+        {
+          "ItemId": "HelmetHunterSilver_TW",
+          "Label": "Hunter Helmet (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterChestSilver_TW",
+          "Label": "Hunter Tunic (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterLegsSilver_TW",
+          "Label": "Hunter Pants (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetRogueSilver_TW",
+          "Label": "Rogue Helmet (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueSilverChest_TW",
+          "Label": "Rogue Tunic (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueSilverLegs_TW",
+          "Label": "Rogue Pants (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetVigorousSilver_TW",
+          "Label": "Vigorous Helmet (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousSilverChest_TW",
+          "Label": "Vigorous Tunic (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousSilverLegs_TW",
+          "Label": "Vigorous Pants (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetWarriorSilver_TW",
+          "Label": "Warrior Helmet (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorWarriorSilverChest_TW",
+          "Label": "Warrior Tunic (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorWarriorSilverLegs_TW",
+          "Label": "Warrior Pants (Silver)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 3,
+          "ModRequired": "Therzie.Armory"
+        }
+      ]
+    },
+    {
+      "Id": "armory_plains",
+      "Label": "Armory (Plains)",
+      "Order": 13,
+      "BiomeDescription": "Black Metal armor upgrades.",
+      "ModRequired": "Therzie.Armory",
+      "UnlockTrigger": {
+        "Type": "none",
+        "Value": ""
+      },
+      "PriorityMaterials": [ "BlackMetal" ],
+      "Gear": [
+        {
+          "ItemId": "HelmetHunterBM_TW",
+          "Label": "Hunter Helmet (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterChestBM_TW",
+          "Label": "Hunter Tunic (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterLegsBM_TW",
+          "Label": "Hunter Pants (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetRogueBM_TW",
+          "Label": "Rogue Helmet (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueBMChest_TW",
+          "Label": "Rogue Tunic (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueBMLegs_TW",
+          "Label": "Rogue Pants (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetVigorousBM_TW",
+          "Label": "Vigorous Helmet (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousBMChest_TW",
+          "Label": "Vigorous Tunic (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousBMLegs_TW",
+          "Label": "Vigorous Pants (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetWarriorBM_TW",
+          "Label": "Warrior Helmet (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorWarriorBMChest_TW",
+          "Label": "Warrior Tunic (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorWarriorBMLegs_TW",
+          "Label": "Warrior Pants (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetFenrirBM_TW",
+          "Label": "Fenrir Helmet (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorFenrirBMChest_TW",
+          "Label": "Fenrir Coat (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorFenrirBMLegs_TW",
+          "Label": "Fenrir Leggings (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetVidarBM_TW",
+          "Label": "Vidar Helmet (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVidarBMChest_TW",
+          "Label": "Vidar Chest (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVidarBMLegs_TW",
+          "Label": "Vidar Legs (Black Metal)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 4,
+          "ModRequired": "Therzie.Armory"
+        }
+      ]
+    },
+    {
+      "Id": "armory_mistlands",
+      "Label": "Armory (Mistlands)",
+      "Order": 14,
+      "BiomeDescription": "Carapace armor upgrades.",
+      "ModRequired": "Therzie.Armory",
+      "UnlockTrigger": {
+        "Type": "none",
+        "Value": ""
+      },
+      "PriorityMaterials": [ "Carapace" ],
+      "Gear": [
+        {
+          "ItemId": "HelmetHunterCarapace_TW",
+          "Label": "Hunter Helmet (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterChestCarapace_TW",
+          "Label": "Hunter Tunic (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorHunterLegsCarapace_TW",
+          "Label": "Hunter Pants (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetRogueCarapace_TW",
+          "Label": "Rogue Helmet (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueCarapaceChest_TW",
+          "Label": "Rogue Tunic (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorRogueCarapaceLegs_TW",
+          "Label": "Rogue Pants (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetVigorousCarapace_TW",
+          "Label": "Vigorous Helmet (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousCarapaceChest_TW",
+          "Label": "Vigorous Tunic (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVigorousCarapaceLegs_TW",
+          "Label": "Vigorous Pants (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetWarriorCarapace_TW",
+          "Label": "Warrior Helmet (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorWarriorCarapaceChest_TW",
+          "Label": "Warrior Tunic (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorWarriorCarapaceLegs_TW",
+          "Label": "Warrior Pants (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetFenrirCarapace_TW",
+          "Label": "Fenrir Helmet (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorFenrirCarapaceChest_TW",
+          "Label": "Fenrir Coat (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorFenrirCarapaceLegs_TW",
+          "Label": "Fenrir Leggings (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetVidarCarapace_TW",
+          "Label": "Vidar Helmet (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVidarCarapaceChest_TW",
+          "Label": "Vidar Chest (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorVidarCarapaceLegs_TW",
+          "Label": "Vidar Legs (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "HelmetBoldCarapace_TW",
+          "Label": "Bold Helmet (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorBoldCarapaceChest_TW",
+          "Label": "Bold Chest (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        },
+        {
+          "ItemId": "ArmorBoldCarapaceLegs_TW",
+          "Label": "Bold Legs (Carapace)",
+          "Type": "Armor",
+          "Station": "Armory",
+          "StationLevel": 5,
+          "ModRequired": "Therzie.Armory"
+        }
+      ]
+    }
+  ]
+}

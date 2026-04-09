@@ -1,0 +1,139 @@
+{
+  "Stages": [
+    {
+      "Id": "plains",
+      "Label": "Plains",
+      "Order": 4,
+      "BiomeDescription": "Golden fields hiding deadly Fulings and towering Lox.",
+      "ModRequired": null,
+      "UnlockTrigger": {
+        "Type": "globalKey",
+        "Value": "defeated_dragon"
+      },
+      "PriorityMaterials": [ "BlackMetalScrap", "Flax", "Barley", "LoxPelt", "Needle" ],
+      "Boss": {
+        "Name": "Yagluth",
+        "Location": "Plains altar",
+        "GlobalKeyDrop": "defeated_goblinking",
+        "GlobalUnlock": "Wisp Fountain, Mistlands access",
+        "RecommendedGear": "Padded armor, blackmetal weapons, fire resist",
+        "SummonMaterials": [
+          {
+            "ItemId": "FulingTotem",
+            "Label": "Fuling Totem",
+            "Amount": 5
+          }
+        ],
+        "KeyDrops": [ "YagluthDrop" ]
+      },
+      "Gear": [
+        {
+          "ItemId": "ArmorPaddedCuirass",
+          "Label": "Padded Cuirass",
+          "Type": "Armor",
+          "Station": "Forge",
+          "StationLevel": 4,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Iron",
+              "Label": "Iron",
+              "Amount": 10
+            },
+            {
+              "ItemId": "LinenThread",
+              "Label": "Linen Thread",
+              "Amount": 20
+            }
+          ]
+        },
+        {
+          "ItemId": "SwordBlackmetal",
+          "Label": "Blackmetal Sword",
+          "Type": "Weapon",
+          "Station": "Forge",
+          "StationLevel": 4,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "FineWood",
+              "Label": "Fine Wood",
+              "Amount": 2
+            },
+            {
+              "ItemId": "BlackMetal",
+              "Label": "Black Metal",
+              "Amount": 20
+            },
+            {
+              "ItemId": "LinenThread",
+              "Label": "Linen Thread",
+              "Amount": 5
+            }
+          ]
+        }
+      ],
+      "Drops": [
+        {
+          "ItemId": "BlackMetalScrap",
+          "Label": "Black Metal Scrap",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Fuling",
+              "Biome": "Plains",
+              "Chance": 0.8,
+              "Min": 1,
+              "Max": 2,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        },
+        {
+          "ItemId": "Needle",
+          "Label": "Needle",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Deathsquito",
+              "Biome": "Plains",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 2,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        }
+      ],
+      "Recipes": [
+        {
+          "ItemId": "LoxPie",
+          "Label": "Lox Pie",
+          "Station": "Cauldron",
+          "StationLevel": 4,
+          "ModRequired": null,
+          "UnlockNote": "Always known",
+          "Ingredients": [
+            {
+              "ItemId": "BarleyFlour",
+              "Label": "Barley Flour",
+              "Amount": 2
+            },
+            {
+              "ItemId": "LoxMeat",
+              "Label": "Lox Meat",
+              "Amount": 2
+            },
+            {
+              "ItemId": "Cloudberry",
+              "Label": "Cloudberry",
+              "Amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

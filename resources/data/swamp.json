@@ -1,0 +1,155 @@
+{
+  "Stages": [
+    {
+      "Id": "swamp",
+      "Label": "Swamp",
+      "Order": 2,
+      "BiomeDescription": "Dark, wet, and full of poison. Harvest iron from sunken crypts.",
+      "ModRequired": null,
+      "UnlockTrigger": {
+        "Type": "globalKey",
+        "Value": "defeated_gdking"
+      },
+      "PriorityMaterials": [ "Iron", "AncientBark", "Guck", "Chain", "WitheredBone" ],
+      "Boss": {
+        "Name": "Bonemass",
+        "Location": "Swamp altar",
+        "GlobalKeyDrop": "defeated_bonemass",
+        "GlobalUnlock": "Wishbone, Silver detection",
+        "RecommendedGear": "Iron armor, mace (blunt), poison resist mead",
+        "SummonMaterials": [
+          {
+            "ItemId": "WitheredBone",
+            "Label": "Withered Bone",
+            "Amount": 10
+          }
+        ],
+        "KeyDrops": [ "Wishbone" ]
+      },
+      "Gear": [
+        {
+          "ItemId": "ArmorIronChest",
+          "Label": "Iron Scale Mail",
+          "Type": "Armor",
+          "Station": "Forge",
+          "StationLevel": 2,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Iron",
+              "Label": "Iron",
+              "Amount": 20
+            },
+            {
+              "ItemId": "DeerHide",
+              "Label": "Deer Hide",
+              "Amount": 2
+            }
+          ]
+        },
+        {
+          "ItemId": "MaceIron",
+          "Label": "Iron Mace",
+          "Type": "Weapon",
+          "Station": "Forge",
+          "StationLevel": 2,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Wood",
+              "Label": "Wood",
+              "Amount": 4
+            },
+            {
+              "ItemId": "Iron",
+              "Label": "Iron",
+              "Amount": 20
+            },
+            {
+              "ItemId": "LeatherScraps",
+              "Label": "Leather Scraps",
+              "Amount": 3
+            }
+          ]
+        }
+      ],
+      "Drops": [
+        {
+          "ItemId": "Bloodbag",
+          "Label": "Bloodbag",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Leech",
+              "Biome": "Swamp",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 2,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        },
+        {
+          "ItemId": "Entrails",
+          "Label": "Entrails",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Draugr",
+              "Biome": "Swamp",
+              "Chance": 0.3,
+              "Min": 1,
+              "Max": 1,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        },
+        {
+          "ItemId": "Ooze",
+          "Label": "Ooze",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Blob",
+              "Biome": "Swamp",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 2,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        }
+      ],
+      "Recipes": [
+        {
+          "ItemId": "Sausages",
+          "Label": "Sausages",
+          "Station": "Cauldron",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "UnlockNote": "Always known",
+          "Ingredients": [
+            {
+              "ItemId": "Entrails",
+              "Label": "Entrails",
+              "Amount": 2
+            },
+            {
+              "ItemId": "RawMeat",
+              "Label": "Raw Meat",
+              "Amount": 1
+            },
+            {
+              "ItemId": "Thistle",
+              "Label": "Thistle",
+              "Amount": 4
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

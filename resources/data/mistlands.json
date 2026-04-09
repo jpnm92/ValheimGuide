@@ -1,0 +1,134 @@
+{
+  "Stages": [
+    {
+      "Id": "mistlands",
+      "Label": "Mistlands",
+      "Order": 5,
+      "BiomeDescription": "Foggy and magical. Eitr magic awaits.",
+      "ModRequired": null,
+      "UnlockTrigger": {
+        "Type": "globalKey",
+        "Value": "defeated_goblinking"
+      },
+      "PriorityMaterials": [ "YggdrasilWood", "BlackMarble", "Eitr", "RoyalJelly", "Sap" ],
+      "Boss": {
+        "Name": "The Queen",
+        "Location": "Infested Citadel",
+        "GlobalKeyDrop": "defeated_queen",
+        "GlobalUnlock": "Majestic Carapace, Ashlands access",
+        "RecommendedGear": "Carapace armor, magic staves, seeker aspic",
+        "SummonMaterials": [
+          {
+            "ItemId": "Sealbreaker",
+            "Label": "Sealbreaker",
+            "Amount": 1
+          }
+        ],
+        "KeyDrops": [ "MajesticCarapace" ]
+      },
+      "Gear": [
+        {
+          "ItemId": "ArmorCarapaceChest",
+          "Label": "Carapace Breastplate",
+          "Type": "Armor",
+          "Station": "BlackForge",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "Carapace",
+              "Label": "Carapace",
+              "Amount": 15
+            },
+            {
+              "ItemId": "ScaleHide",
+              "Label": "Scale Hide",
+              "Amount": 3
+            }
+          ]
+        },
+        {
+          "ItemId": "StaffFireball",
+          "Label": "Staff of Embers",
+          "Type": "Weapon",
+          "Station": "GaldrTable",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "YggdrasilWood",
+              "Label": "Yggdrasil Wood",
+              "Amount": 10
+            },
+            {
+              "ItemId": "SurtlingCore",
+              "Label": "Surtling Core",
+              "Amount": 4
+            },
+            {
+              "ItemId": "Eitr",
+              "Label": "Eitr",
+              "Amount": 10
+            }
+          ]
+        }
+      ],
+      "Drops": [
+        {
+          "ItemId": "Carapace",
+          "Label": "Carapace",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "Seeker",
+              "Biome": "Mistlands",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        },
+        {
+          "ItemId": "RoyalJelly",
+          "Label": "Royal Jelly",
+          "ModRequired": null,
+          "Sources": [
+            {
+              "Mob": "SeekerBrood",
+              "Biome": "Mistlands",
+              "Chance": 0.5,
+              "Min": 1,
+              "Max": 2,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        }
+      ],
+      "Recipes": [
+        {
+          "ItemId": "SeekerAspic",
+          "Label": "Seeker Aspic",
+          "Station": "Cauldron",
+          "StationLevel": 5,
+          "ModRequired": null,
+          "UnlockNote": "Always known",
+          "Ingredients": [
+            {
+              "ItemId": "RoyalJelly",
+              "Label": "Royal Jelly",
+              "Amount": 2
+            },
+            {
+              "ItemId": "MushroomMagecap",
+              "Label": "Magecap",
+              "Amount": 3
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

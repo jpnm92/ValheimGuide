@@ -1,0 +1,121 @@
+﻿{
+    "Stages": [
+      {
+        "Id": "meadows",
+      "Label": "Meadows",
+      "Order": 0,
+      "BiomeDescription": "Starting biome. Gather basic resources and prepare for Eikthyr.",
+      "ModRequired": null,
+      "UnlockTrigger": {
+            "Type": "none",
+        "Value": ""
+      },
+      "PriorityMaterials": [
+        "Wood",
+        "Stone",
+        "Flint",
+        "LeatherScraps"
+      ],
+      "Boss": {
+            "Name": "Eikthyr",
+        "Location": "Meadows altar",
+        "GlobalKeyDrop": "defeated_eikthyr",
+        "GlobalUnlock": "Antler Pickaxe, Hard Antler",
+        "RecommendedGear": "Leather armor, crude bow, flint spear",
+        "SummonMaterials": [
+          {
+                "ItemId": "DeerHide",
+            "Label": "Deer Hide",
+            "Amount": 2
+          }
+        ],
+        "KeyDrops": [
+          "HardAntler"
+        ]
+      },
+      "Gear": [
+        {
+            "ItemId": "ArmorLeatherChest",
+          "Label": "Leather Tunic",
+          "Type": "Armor",
+          "Station": "Workbench",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "Recipe": [
+            { "ItemId": "LeatherScraps", "Label": "Leather Scraps", "Amount": 6 }
+          ]
+        },
+        {
+            "ItemId": "SpearFlint",
+          "Label": "Flint Spear",
+          "Type": "Weapon",
+          "Station": "Workbench",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "Recipe": [
+            { "ItemId": "Wood", "Label": "Wood", "Amount": 5 },
+            { "ItemId": "Flint", "Label": "Flint", "Amount": 10 },
+            { "ItemId": "LeatherScraps", "Label": "Leather Scraps", "Amount": 2 }
+          ]
+        }
+      ],
+      "Drops": [
+        {
+            "ItemId": "LeatherScraps",
+          "Label": "Leather Scraps",
+          "ModRequired": null,
+          "Sources": [
+            {
+                "Mob": "Boar",
+              "Biome": "Meadows",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 2,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            },
+            {
+                "Mob": "Deer",
+              "Biome": "Meadows",
+              "Chance": 1.0,
+              "Min": 2,
+              "Max": 3,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        },
+        {
+            "ItemId": "Flint",
+          "Label": "Flint",
+          "ModRequired": null,
+          "Sources": [
+            {
+                "Mob": "Shoreline",
+              "Biome": "Meadows",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3,
+              "StarVariantOnly": false,
+              "StarChanceBonus": 0.0
+            }
+          ]
+        }
+      ],
+      "Recipes": [
+        {
+            "ItemId": "CrudeBow",
+          "Label": "Crude Bow",
+          "Station": "Workbench",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "UnlockNote": "Always known",
+          "Ingredients": [
+            { "ItemId": "Wood", "Label": "Wood", "Amount": 10 },
+            { "ItemId": "LeatherScraps", "Label": "Leather Scraps", "Amount": 8 }
+          ]
+        }
+      ]
+    }
+  ]
+}
