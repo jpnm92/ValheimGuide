@@ -54,7 +54,10 @@ namespace ValheimGuide.DataGenerators
             }
 
             var items = ObjectDB.instance.m_items
-                .Where(i => i != null && i.name.EndsWith("_TW") && IsArmorPiece(i))
+                .Where(i => i != null &&
+                            i.name.EndsWith("_TW") &&
+                            !i.name.ToLower().Contains("monster") && // Hard ban on enemy attacks
+                            IsArmorPiece(i))
                 .ToList();
 
             Debug.Log($"[TherzieDataGenerator] Found {items.Count} Armory items.");
@@ -71,7 +74,10 @@ namespace ValheimGuide.DataGenerators
             }
 
             var items = ObjectDB.instance.m_items
-                .Where(i => i != null && i.name.EndsWith("_TW") && IsWeaponOrTool(i))
+                .Where(i => i != null &&
+                            i.name.EndsWith("_TW") &&
+                            !i.name.ToLower().Contains("monster") && // Hard ban on enemy attacks
+                            IsWeaponOrTool(i))
                 .ToList();
 
             Debug.Log($"[TherzieDataGenerator] Found {items.Count} Warfare items.");
@@ -196,7 +202,7 @@ namespace ValheimGuide.DataGenerators
             else
             {
                 string name = prefab.name.ToLower();
-                if (name.Contains("flametal")) { station = "BlackForge"; stationLevel = 2; }
+                if (name.Contains("flametal") || name.Contains("ragnorite") || name.Contains("surtr") || name.Contains("thoradus") || name.Contains("tyranium")) { station = "YmirForge"; stationLevel = 1; }
                 else if (name.Contains("dvergr") || name.Contains("carapace")) { station = "BlackForge"; stationLevel = 1; }
                 else if (name.Contains("blackmetal")) { station = "Forge"; stationLevel = 4; }
                 else if (name.Contains("silver")) { station = "Forge"; stationLevel = 3; }
@@ -265,34 +271,22 @@ namespace ValheimGuide.DataGenerators
         {
             string name = prefab.name.ToLower();
 
-            if (name.Contains("frost") || name.Contains("ice") || name.Contains("njord") || name.Contains("polar")) return "DeepNorth";
-            if (name.Contains("flametal") || name.Contains("ash") || name.Contains("fader")) return "Ashlands";
-            if (name.Contains("carapace") || name.Contains("dvergr") || name.Contains("queen")) return "Mistlands";
-            if (name.Contains("blackmetal") || name.Contains("padded") || name.Contains("bm") || name.Contains("lox")) return "Plains";
-            if (name.Contains("silver") || name.Contains("wolf") || name.Contains("crystal") || name.Contains("obsidian")) return "Mountain";
-            if (name.Contains("iron") || name.Contains("rotten") || name.Contains("swamp") || name.Contains("bonemass")) return "Swamp";
-            if (name.Contains("bronze") || name.Contains("troll") || name.Contains("chitin")) return "Black Forest";
-            if (name.Contains("leather") || name.Contains("razorback") || name.Contains("hunter") || name.Contains("rogue") || name.Contains("vigorous") || name.Contains("warrior") || name.Contains("fenrir") || name.Contains("vidar") || name.Contains("bold") || name.Contains("legion")) return "Meadows";
+            if (name.Contains("tyranium") || name.Contains("thoradus") || name.Contains("lokvyr") || name.Contains("njord") || name.Contains("skadi") || name.Contains("jotunn") || name.Contains("glacier") || name.Contains("storm") || name.Contains("polar") || name.Contains("frost") || name.Contains("ice") || name.Contains("north")) return "DeepNorth";
+            if (name.Contains("ragnorite") || name.Contains("surtr") || name.Contains("volcanic") || name.Contains("demon") || name.Contains("muspelheim") || name.Contains("charred") || name.Contains("fader") || name.Contains("ash") || name.Contains("flametal")) return "Ashlands";
+            if (name.Contains("carapace") || name.Contains("dvergr") || name.Contains("queen") || name.Contains("seeker") || name.Contains("demolisher") || name.Contains("legion")) return "Mistlands";
+            if (name.Contains("blackmetal") || name.Contains("bm") || name.Contains("lox") || name.Contains("scimitar") || name.Contains("yagluth") || name.Contains("blood") || name.Contains("padded") || name.Contains("bold")) return "Plains";
+            if (name.Contains("silver") || name.Contains("wolf") || name.Contains("crystal") || name.Contains("obsidian") || name.Contains("drake") || name.Contains("spirit") || name.Contains("vidar") || name.Contains("fenrir")) return "Mountain";
+            if (name.Contains("iron") || name.Contains("rotten") || name.Contains("swamp") || name.Contains("bonemass") || name.Contains("vampiric") || name.Contains("leech") || name.Contains("warrior")) return "Swamp";
+            if (name.Contains("bronze") || name.Contains("chitin") || name.Contains("troll") || name.Contains("elder") || name.Contains("copper") || name.Contains("tin") || name.Contains("viper") || name.Contains("hunter") || name.Contains("rogue") || name.Contains("vigorous")) return "Black Forest";
+            if (name.Contains("leather") || name.Contains("razorback") || name.Contains("flint") || name.Contains("bone") || name.Contains("eikthyr") || name.Contains("stag") || name.Contains("wood") || name.Contains("scythe") || name.Contains("wrench") || name.Contains("knife") || name.Contains("club") || name.Contains("spear") || name.Contains("axe") || name.Contains("bow") || name.Contains("shield") || name.Contains("mace") || name.Contains("sword") || name.Contains("atgeir") || name.Contains("sledge") || name.Contains("buckler") || name.Contains("tower")) return "Meadows";
 
             return "Other";
         }
 
         private static string GetWarfareTier(GameObject prefab)
         {
-            string name = prefab.name.ToLower();
-
-            if (name.Contains("frost") || name.Contains("ice") || name.Contains("njord") || name.Contains("polar")) return "DeepNorth";
-            if (name.Contains("flametal") || name.Contains("ash") || name.Contains("fader") || name.Contains("charred")) return "Ashlands";
-            if (name.Contains("dvergr") || name.Contains("carapace") || name.Contains("queen") || name.Contains("seeker")) return "Mistlands";
-            if (name.Contains("blackmetal") || name.Contains("lox") || name.Contains("scimitar") || name.Contains("yagluth") || name.Contains("blood") || name.Contains("bm")) return "Plains";
-            if (name.Contains("silver") || name.Contains("crystal") || name.Contains("obsidian") || name.Contains("drake")) return "Mountain";
-            if (name.Contains("iron") || name.Contains("rotten") || name.Contains("swamp") || name.Contains("bonemass") || name.Contains("vampiric") || name.Contains("leech")) return "Swamp";
-            if (name.Contains("bronze") || name.Contains("chitin") || name.Contains("troll") || name.Contains("elder") || name.Contains("copper") || name.Contains("tin") || name.Contains("viper")) return "Black Forest";
-
-            // The massive safety net for early game stragglers
-            if (name.Contains("flint") || name.Contains("bone") || name.Contains("eikthyr") || name.Contains("stag") || name.Contains("wood") || name.Contains("scythe") || name.Contains("wrench") || name.Contains("knife") || name.Contains("club") || name.Contains("spear") || name.Contains("axe") || name.Contains("bow") || name.Contains("shield")) return "Meadows";
-
-            return "Other";
+            // For Warfare, the logic is identical to Armor, keeping the items perfectly synced
+            return GetArmorTier(prefab);
         }
 
         private static void SaveToFile(List<Stage> stages, string fileName)
