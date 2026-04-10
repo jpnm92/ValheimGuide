@@ -12,13 +12,14 @@ namespace ValheimGuide.Data
     {
         private static ManualLogSource _log;
 
-        public static List<Stage> AllStages { get; private set; } = new List<Stage>();
+        private static readonly List<Stage> _allStages = new List<Stage>();
+        public static IReadOnlyList<Stage> AllStages => _allStages;
         public static HashSet<string> InstalledMods { get; set; } = new HashSet<string>();
 
         public static void Load(string dataFolderPath, ManualLogSource log)
         {
             _log = log;
-            AllStages.Clear();
+            _allStages.Clear();
 
             if (!Directory.Exists(dataFolderPath))
             {
@@ -39,12 +40,9 @@ namespace ValheimGuide.Data
                 LoadFile(filePath);
             }
 
-            // Groups perfectly by biome, then vanilla -> armory -> warfare
-            AllStages = AllStages
-                .OrderBy(s => s.Order)
-                .ToList();
+            _allStages.Sort((a, b) => a.Order.CompareTo(b.Order));
 
-            _log.LogInfo($"[GuideDataLoader] Loaded {AllStages.Count} stages from {guideFiles.Length} files.");
+            _log.LogInfo($"[GuideDataLoader] Loaded {_allStages.Count} stages from {guideFiles.Length} files.");
         }
 
         private static void LoadFile(string filePath)
@@ -79,10 +77,9 @@ namespace ValheimGuide.Data
                     stage.Drops = FilterByMod(stage.Drops, d => d.ModRequired);
                     stage.Recipes = FilterByMod(stage.Recipes, r => r.ModRequired);
 
-                    // 🔥 Forces stages to group cleanly regardless of what the JSON says
                     AssignBaseOrder(stage);
 
-                    AllStages.Add(stage);
+                    _allStages.Add(stage);
                     accepted++;
                 }
 
@@ -98,22 +95,10 @@ namespace ValheimGuide.Data
             }
         }
 
-        // Overrides JSON orders to force Biome Grouping (Spacing by 10s)
         private static void AssignBaseOrder(Stage stage)
         {
-            string id = stage.Id.ToLower();
-            int baseOrder = 80; // Defaults to Other
+            int baseOrder = BiomeOrder.FromStageId(stage.Id);
 
-            if (id.Contains("meadows")) baseOrder = 0;
-            else if (id.Contains("blackforest")) baseOrder = 10;
-            else if (id.Contains("swamp")) baseOrder = 20;
-            else if (id.Contains("mountain")) baseOrder = 30;
-            else if (id.Contains("plains")) baseOrder = 40;
-            else if (id.Contains("mistlands")) baseOrder = 50;
-            else if (id.Contains("ashlands")) baseOrder = 60;
-            else if (id.Contains("deepnorth")) baseOrder = 70;
-
-            // Put Armory immediately under Vanilla, then Warfare right under Armory
             if (stage.ModRequired == "Therzie.Armory") baseOrder += 1;
             else if (stage.ModRequired == "Therzie.Warfare") baseOrder += 2;
 
@@ -157,19 +142,19 @@ namespace ValheimGuide.Data
 
         public static Stage GetStageById(string id)
         {
-            return AllStages.FirstOrDefault(s => s.Id == id);
+            return _allStages.FirstOrDefault(s => s.Id == id);
         }
 
         public static Stage GetNextStage(string currentId)
         {
-            int index = AllStages.FindIndex(s => s.Id == currentId);
-            if (index < 0 || index >= AllStages.Count - 1) return null;
-            return AllStages[index + 1];
+            int index = _allStages.FindIndex(s => s.Id == currentId);
+            if (index < 0 || index >= _allStages.Count - 1) return null;
+            return _allStages[index + 1];
         }
 
         public static DropEntry GetDropEntry(string itemId)
         {
-            foreach (Stage stage in AllStages)
+            foreach (Stage stage in _allStages)
             {
                 DropEntry entry = stage.Drops.FirstOrDefault(d => d.ItemId == itemId);
                 if (entry != null) return entry;

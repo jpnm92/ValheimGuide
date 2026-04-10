@@ -8,15 +8,13 @@ namespace ValheimGuide.Patches
         new[] { typeof(ItemDrop.ItemData), typeof(int), typeof(int), typeof(int) })]
     public static class InventoryPatch
     {
-        private static void Postfix(ItemDrop.ItemData item, bool __result)
+        private static void Postfix(ItemDrop.ItemData item, int amount, int x, int y)
         {
-            if (__result && item != null)
-            {
+            if (item == null) return;
 #if DEBUG
-                Debug.Log($"[ValheimGuide] InventoryPatch: Item added - {item?.m_shared?.m_name}");
+            Debug.Log($"[ValheimGuide] InventoryPatch: Item added - {item?.m_shared?.m_name}");
 #endif
-                ProgressionTracker.RefreshCurrentStage();
-            }
+            ProgressionTracker.RefreshCurrentStage();
         }
     }
 }

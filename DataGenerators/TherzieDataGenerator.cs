@@ -121,23 +121,6 @@ namespace ValheimGuide.DataGenerators
             }
         }
 
-        private static int GetBaseOrderForTier(string tier)
-        {
-            switch (tier)
-            {
-                case "Meadows": return 0;
-                case "Black Forest": return 10;
-                case "Swamp": return 20;
-                case "Mountain": return 30;
-                case "Plains": return 40;
-                case "Mistlands": return 50;
-                case "Ashlands": return 60;
-                case "DeepNorth": return 70;
-                case "Other": return 80;
-                default: return 90;
-            }
-        }
-
         private static List<Stage> GroupByTier(List<GameObject> items, string modName,
             string modGuid, Func<GameObject, string> tierSelector)
         {
@@ -151,7 +134,7 @@ namespace ValheimGuide.DataGenerators
                 {
                     Id = $"{modName.ToLower()}_{group.Key.ToLower().Replace(" ", "")}",
                     Label = $"{modName} ({group.Key})",
-                    Order = GetBaseOrderForTier(group.Key) + (modName == "Armory" ? 1 : 2),
+                    Order = BiomeOrder.FromTier(group.Key) + (modName == "Armory" ? 1 : 2),
                     BiomeDescription = $"{modName} items for {group.Key} tier.",
                     ModRequired = modGuid,
                     UnlockTrigger = GetTriggerForTier(group.Key),
