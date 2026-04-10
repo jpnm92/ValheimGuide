@@ -9,7 +9,14 @@ namespace ValheimGuide.Patches
         private static void Postfix(Player __instance)
         {
             if (__instance != Player.m_localPlayer) return;
-            ProgressSaver.Load(__instance.GetPlayerName());
+
+            string playerName = __instance.GetPlayerName();
+
+            long playerID = Game.instance.GetPlayerProfile().GetPlayerID();
+
+            string uniqueSaveName = $"{playerName}_{playerID}";
+
+            ProgressSaver.Load(uniqueSaveName);
         }
     }
 }

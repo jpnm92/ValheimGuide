@@ -11,7 +11,7 @@ namespace ValheimGuide
 {
     [BepInDependency("Therzie.Armory", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("Therzie.Warfare", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInPlugin("com.yourname.valheimguide", "ValheimGuide", "0.1.0")]
+    [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
     public class Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.custom.valheimguide";

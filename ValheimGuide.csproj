@@ -132,12 +132,6 @@
     <Content Include="resources\data\deepnorth.guide">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="resources\data\armory.guide">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resources\data\warfare.guide">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <PropertyGroup>
@@ -166,8 +160,6 @@
     <Copy SourceFiles="$(DataOutputDir)mistlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
     <Copy SourceFiles="$(DataOutputDir)ashlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
     <Copy SourceFiles="$(DataOutputDir)deepnorth.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)armory.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)warfare.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
     
     <Copy SourceFiles="$(DataOutputDir)armory_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)armory_generated.guide')" />
     <Copy SourceFiles="$(DataOutputDir)warfare_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)warfare_generated.guide')" />

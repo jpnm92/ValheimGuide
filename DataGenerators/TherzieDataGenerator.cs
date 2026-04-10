@@ -16,7 +16,6 @@ namespace ValheimGuide.DataGenerators
 
         public static void Register()
         {
-            // ObjectDBReady fires after ALL mods have injected their items and recipes
             ItemManager.OnItemsRegistered += Run;
         }
 
@@ -32,6 +31,12 @@ namespace ValheimGuide.DataGenerators
                 GenerateArmoryData();
                 GenerateWarfareData();
                 Debug.Log("[TherzieDataGenerator] Generation complete.");
+
+                string dataFolder = Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
+                var logger = BepInEx.Logging.Logger.CreateLogSource("ValheimGuide_Gen");
+                GuideDataLoader.Load(dataFolder, logger);
+
+                ProgressionTracker.RefreshCurrentStage();
             }
             catch (Exception ex)
             {
@@ -53,7 +58,6 @@ namespace ValheimGuide.DataGenerators
                 .ToList();
 
             Debug.Log($"[TherzieDataGenerator] Found {items.Count} Armory items.");
-            // CHANGED: File extension updated to .guide
             SaveToFile(GroupByTier(items, "Armory", modGuid, GetArmorTier), "armory_generated.guide");
         }
 
@@ -71,11 +75,8 @@ namespace ValheimGuide.DataGenerators
                 .ToList();
 
             Debug.Log($"[TherzieDataGenerator] Found {items.Count} Warfare items.");
-            // CHANGED: File extension updated to .guide
             SaveToFile(GroupByTier(items, "Warfare", modGuid, GetWarfareTier), "warfare_generated.guide");
         }
-
-        // ── Strict type-only checks — no armor value leak ──
 
         private static bool IsArmorPiece(GameObject prefab)
         {
@@ -97,7 +98,39 @@ namespace ValheimGuide.DataGenerators
                 || type == ItemDrop.ItemData.ItemType.Torch;
         }
 
-        // ── Fixed Order — index counter instead of IndexOf ──
+        private static Trigger GetTriggerForTier(string tier)
+        {
+            switch (tier)
+            {
+                case "Black Forest": return new Trigger { Type = "globalKey", Value = "defeated_eikthyr" };
+                case "Swamp": return new Trigger { Type = "globalKey", Value = "defeated_gdking" };
+                case "Mountain": return new Trigger { Type = "globalKey", Value = "defeated_bonemass" };
+                case "Plains": return new Trigger { Type = "globalKey", Value = "defeated_dragon" };
+                case "Mistlands": return new Trigger { Type = "globalKey", Value = "defeated_goblinking" };
+                case "Ashlands": return new Trigger { Type = "globalKey", Value = "defeated_queen" };
+                case "DeepNorth": return new Trigger { Type = "globalKey", Value = "defeated_fader" };
+                case "Other": return new Trigger { Type = "globalKey", Value = "defeated_fader" };
+                case "Meadows":
+                default: return new Trigger { Type = "none", Value = "" };
+            }
+        }
+
+        private static int GetBaseOrderForTier(string tier)
+        {
+            switch (tier)
+            {
+                case "Meadows": return 0;
+                case "Black Forest": return 10;
+                case "Swamp": return 20;
+                case "Mountain": return 30;
+                case "Plains": return 40;
+                case "Mistlands": return 50;
+                case "Ashlands": return 60;
+                case "DeepNorth": return 70;
+                case "Other": return 80;
+                default: return 90;
+            }
+        }
 
         private static List<Stage> GroupByTier(List<GameObject> items, string modName,
             string modGuid, Func<GameObject, string> tierSelector)
@@ -105,7 +138,6 @@ namespace ValheimGuide.DataGenerators
             var stages = new List<Stage>();
             var groups = items.GroupBy(tierSelector).OrderBy(g => g.Key).ToList();
 
-            int orderBase = modName == "Armory" ? 100 : 200;
             for (int i = 0; i < groups.Count; i++)
             {
                 var group = groups[i];
@@ -113,10 +145,10 @@ namespace ValheimGuide.DataGenerators
                 {
                     Id = $"{modName.ToLower()}_{group.Key.ToLower().Replace(" ", "")}",
                     Label = $"{modName} ({group.Key})",
-                    Order = orderBase + i,
+                    Order = GetBaseOrderForTier(group.Key) + (modName == "Armory" ? 1 : 2),
                     BiomeDescription = $"{modName} items for {group.Key} tier.",
                     ModRequired = modGuid,
-                    UnlockTrigger = new Trigger { Type = "none", Value = "" },
+                    UnlockTrigger = GetTriggerForTier(group.Key),
                     Gear = new List<GearEntry>()
                 };
 
@@ -133,7 +165,6 @@ namespace ValheimGuide.DataGenerators
 
         private static string CleanLabel(string locKey)
         {
-            // "$axe_flametal_TW" → "Axe Flametal"
             return locKey
                 .TrimStart('$')
                 .Replace("_TW", "")
@@ -200,7 +231,6 @@ namespace ValheimGuide.DataGenerators
             };
         }
 
-        // Maps Valheim's localization station keys to clean names
         private static string LocalizeStation(string key)
         {
             switch (key)
@@ -210,7 +240,6 @@ namespace ValheimGuide.DataGenerators
                 case "$piece_blackforge": return "BlackForge";
                 case "$piece_magetable": return "GaldrTable";
                 default:
-                    // Strip $ and piece_ prefix for unknown stations
                     return key.Replace("$piece_", "").Replace("$", "");
             }
         }
@@ -235,32 +264,34 @@ namespace ValheimGuide.DataGenerators
         private static string GetArmorTier(GameObject prefab)
         {
             string name = prefab.name.ToLower();
-            if (name.Contains("leather") || name.Contains("razorback") ||
-               (name.Contains("hunter") && !name.Contains("iron") && !name.Contains("silver")))
-                return "Meadows";
-            if (name.Contains("bronze") || name.Contains("troll")) return "Black Forest";
-            if (name.Contains("iron") && !name.Contains("silver")) return "Swamp";
-            if (name.Contains("silver") || name.Contains("wolf")) return "Mountain";
-            if (name.Contains("blackmetal") || name.Contains("padded")) return "Plains";
-            if (name.Contains("carapace") || name.Contains("dvergr")) return "Mistlands";
-            if (name.Contains("flametal")) return "Ashlands";
+
+            if (name.Contains("frost") || name.Contains("ice") || name.Contains("njord") || name.Contains("polar")) return "DeepNorth";
+            if (name.Contains("flametal") || name.Contains("ash") || name.Contains("fader")) return "Ashlands";
+            if (name.Contains("carapace") || name.Contains("dvergr") || name.Contains("queen")) return "Mistlands";
+            if (name.Contains("blackmetal") || name.Contains("padded") || name.Contains("bm") || name.Contains("lox")) return "Plains";
+            if (name.Contains("silver") || name.Contains("wolf") || name.Contains("crystal") || name.Contains("obsidian")) return "Mountain";
+            if (name.Contains("iron") || name.Contains("rotten") || name.Contains("swamp") || name.Contains("bonemass")) return "Swamp";
+            if (name.Contains("bronze") || name.Contains("troll") || name.Contains("chitin")) return "Black Forest";
+            if (name.Contains("leather") || name.Contains("razorback") || name.Contains("hunter") || name.Contains("rogue") || name.Contains("vigorous") || name.Contains("warrior") || name.Contains("fenrir") || name.Contains("vidar") || name.Contains("bold") || name.Contains("legion")) return "Meadows";
+
             return "Other";
         }
 
         private static string GetWarfareTier(GameObject prefab)
         {
             string name = prefab.name.ToLower();
-            if (name.Contains("flint") || name.Contains("bone") || name.Contains("eikthyr"))
-                return "Meadows";
-            if (name.Contains("bronze") || name.Contains("chitin") || name.Contains("troll"))
-                return "Black Forest";
-            if (name.Contains("iron") && !name.Contains("silver")) return "Swamp";
-            if (name.Contains("silver") || name.Contains("crystal") || name.Contains("obsidian"))
-                return "Mountain";
-            if (name.Contains("blackmetal") || name.Contains("lox") || name.Contains("scimitar"))
-                return "Plains";
-            if (name.Contains("dvergr") || name.Contains("carapace")) return "Mistlands";
-            if (name.Contains("flametal")) return "Ashlands";
+
+            if (name.Contains("frost") || name.Contains("ice") || name.Contains("njord") || name.Contains("polar")) return "DeepNorth";
+            if (name.Contains("flametal") || name.Contains("ash") || name.Contains("fader") || name.Contains("charred")) return "Ashlands";
+            if (name.Contains("dvergr") || name.Contains("carapace") || name.Contains("queen") || name.Contains("seeker")) return "Mistlands";
+            if (name.Contains("blackmetal") || name.Contains("lox") || name.Contains("scimitar") || name.Contains("yagluth") || name.Contains("blood") || name.Contains("bm")) return "Plains";
+            if (name.Contains("silver") || name.Contains("crystal") || name.Contains("obsidian") || name.Contains("drake")) return "Mountain";
+            if (name.Contains("iron") || name.Contains("rotten") || name.Contains("swamp") || name.Contains("bonemass") || name.Contains("vampiric") || name.Contains("leech")) return "Swamp";
+            if (name.Contains("bronze") || name.Contains("chitin") || name.Contains("troll") || name.Contains("elder") || name.Contains("copper") || name.Contains("tin") || name.Contains("viper")) return "Black Forest";
+
+            // The massive safety net for early game stragglers
+            if (name.Contains("flint") || name.Contains("bone") || name.Contains("eikthyr") || name.Contains("stag") || name.Contains("wood") || name.Contains("scythe") || name.Contains("wrench") || name.Contains("knife") || name.Contains("club") || name.Contains("spear") || name.Contains("axe") || name.Contains("bow") || name.Contains("shield")) return "Meadows";
+
             return "Other";
         }
 

@@ -12,15 +12,8 @@ namespace ValheimGuide.Data
     {
         private static ManualLogSource _log;
 
-        // All stages merged and sorted from every loaded guide file
         public static List<Stage> AllStages { get; private set; } = new List<Stage>();
-
-        // Detected mod IDs — set by Plugin.cs before Load() is called
         public static HashSet<string> InstalledMods { get; set; } = new HashSet<string>();
-
-        // ─────────────────────────────────────────
-        //  ENTRY POINT
-        // ─────────────────────────────────────────
 
         public static void Load(string dataFolderPath, ManualLogSource log)
         {
@@ -33,7 +26,6 @@ namespace ValheimGuide.Data
                 return;
             }
 
-            // Look for .guide files instead of .json to avoid crashing other mods
             string[] guideFiles = Directory.GetFiles(dataFolderPath, "*.guide");
 
             if (guideFiles.Length == 0)
@@ -47,17 +39,13 @@ namespace ValheimGuide.Data
                 LoadFile(filePath);
             }
 
-            // Sort all stages across all files by their Order field
+            // Groups perfectly by biome, then vanilla -> armory -> warfare
             AllStages = AllStages
                 .OrderBy(s => s.Order)
                 .ToList();
 
             _log.LogInfo($"[GuideDataLoader] Loaded {AllStages.Count} stages from {guideFiles.Length} files.");
         }
-
-        // ─────────────────────────────────────────
-        //  PER FILE
-        // ─────────────────────────────────────────
 
         private static void LoadFile(string filePath)
         {
@@ -81,18 +69,18 @@ namespace ValheimGuide.Data
                     if (!ValidateStage(stage, fileName))
                         continue;
 
-                    // Drop the whole stage if it requires a mod that isn't installed
                     if (!string.IsNullOrEmpty(stage.ModRequired) &&
                         !InstalledMods.Contains(stage.ModRequired))
                     {
-                        _log.LogInfo($"[GuideDataLoader] Skipping stage '{stage.Id}' — mod '{stage.ModRequired}' not installed.");
                         continue;
                     }
 
-                    // Filter mod-gated entries within the stage
                     stage.Gear = FilterByMod(stage.Gear, g => g.ModRequired);
                     stage.Drops = FilterByMod(stage.Drops, d => d.ModRequired);
                     stage.Recipes = FilterByMod(stage.Recipes, r => r.ModRequired);
+
+                    // 🔥 Forces stages to group cleanly regardless of what the JSON says
+                    AssignBaseOrder(stage);
 
                     AllStages.Add(stage);
                     accepted++;
@@ -110,9 +98,27 @@ namespace ValheimGuide.Data
             }
         }
 
-        // ─────────────────────────────────────────
-        //  MOD FILTER
-        // ─────────────────────────────────────────
+        // Overrides JSON orders to force Biome Grouping (Spacing by 10s)
+        private static void AssignBaseOrder(Stage stage)
+        {
+            string id = stage.Id.ToLower();
+            int baseOrder = 80; // Defaults to Other
+
+            if (id.Contains("meadows")) baseOrder = 0;
+            else if (id.Contains("blackforest")) baseOrder = 10;
+            else if (id.Contains("swamp")) baseOrder = 20;
+            else if (id.Contains("mountain")) baseOrder = 30;
+            else if (id.Contains("plains")) baseOrder = 40;
+            else if (id.Contains("mistlands")) baseOrder = 50;
+            else if (id.Contains("ashlands")) baseOrder = 60;
+            else if (id.Contains("deepnorth")) baseOrder = 70;
+
+            // Put Armory immediately under Vanilla, then Warfare right under Armory
+            if (stage.ModRequired == "Therzie.Armory") baseOrder += 1;
+            else if (stage.ModRequired == "Therzie.Warfare") baseOrder += 2;
+
+            stage.Order = baseOrder;
+        }
 
         private static List<T> FilterByMod<T>(List<T> list, Func<T, string> getModRequired)
         {
@@ -122,42 +128,32 @@ namespace ValheimGuide.Data
                 .Where(item =>
                 {
                     string mod = getModRequired(item);
-                    if (string.IsNullOrEmpty(mod)) return true;           // vanilla entry, always keep
-                    return InstalledMods.Contains(mod);                   // keep only if mod present
+                    if (string.IsNullOrEmpty(mod)) return true;
+                    return InstalledMods.Contains(mod);
                 })
                 .ToList();
         }
 
-        // ─────────────────────────────────────────
-        //  VALIDATION
-        // ─────────────────────────────────────────
-
         private static bool ValidateStage(Stage stage, string fileName)
         {
-            if (string.IsNullOrEmpty(stage.Id))
+            if (string.IsNullOrEmpty(stage.Id)) return false;
+            if (string.IsNullOrEmpty(stage.Label)) return false;
+
+            if ((stage.Id.StartsWith("armory_") || stage.Id.StartsWith("warfare_")) && stage.UnlockTrigger?.Type == "none")
             {
-                _log.LogWarning($"[GuideDataLoader] Stage in {fileName} is missing Id — skipping.");
-                return false;
+                if (stage.Id.Contains("blackforest")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_eikthyr" };
+                else if (stage.Id.Contains("swamp")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_gdking" };
+                else if (stage.Id.Contains("mountain")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_bonemass" };
+                else if (stage.Id.Contains("plains")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_dragon" };
+                else if (stage.Id.Contains("mistlands")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_goblinking" };
+                else if (stage.Id.Contains("ashlands")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_queen" };
+                else if (stage.Id.Contains("deepnorth")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_fader" };
             }
 
-            if (string.IsNullOrEmpty(stage.Label))
-            {
-                _log.LogWarning($"[GuideDataLoader] Stage '{stage.Id}' in {fileName} is missing Label — skipping.");
-                return false;
-            }
-
-            if (stage.UnlockTrigger == null)
-            {
-                _log.LogWarning($"[GuideDataLoader] Stage '{stage.Id}' in {fileName} has no UnlockTrigger — skipping.");
-                return false;
-            }
+            if (stage.UnlockTrigger == null) return false;
 
             return true;
         }
-
-        // ─────────────────────────────────────────
-        //  HELPERS  (used by ProgressionTracker)
-        // ─────────────────────────────────────────
 
         public static Stage GetStageById(string id)
         {
