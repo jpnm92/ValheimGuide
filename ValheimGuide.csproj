@@ -102,12 +102,15 @@
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\GuidePanel.cs" />
+	<Compile Include="Data\BiomeOrder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="PackagingAssets\Changelog.md" />
     <None Include="PackagingAssets\Manifest.json" />
     <None Include="PackagingAssets\README.md" />
+	<None Include="PackagingAssets\icon.png" />
+	<None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\data\meadows.guide">
@@ -142,23 +145,6 @@
   <ItemGroup>
     <AllProfiles Include="$([System.IO.Directory]::GetDirectories('$(R2ModmanProfilesDir)'))" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Message Text="Deploying to ALL profiles..." Importance="high" />
-    <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
-    <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
-    <Copy SourceFiles="$(TargetDir)Newtonsoft.Json.dll" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
-    <Copy SourceFiles="$(DataOutputDir)meadows.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)blackforest.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)swamp.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)mountain.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)plains.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)mistlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)ashlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)deepnorth.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)armory_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)armory_generated.guide')" />
-    <Copy SourceFiles="$(DataOutputDir)warfare_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)warfare_generated.guide')" />
-  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
@@ -171,4 +157,76 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\ILRepack.2.0.44\build\ILRepack.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ILRepack.2.0.44\build\ILRepack.props'))" />
   </Target>
+  <Target Name="ILRepacker" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Message Importance="High" Text="Merging Newtonsoft.Json into ValheimGuide.dll..." />
+    <ItemGroup>
+        <InputAssemblies Include="$(TargetPath)" />
+        <InputAssemblies Include="$(TargetDir)Newtonsoft.Json.dll" />
+    </ItemGroup>
+    <ILRepack
+        Parallel="true"
+        Internalize="true"
+        InputAssemblies="@(InputAssemblies)"
+        TargetKind="Dll"
+        OutputFile="$(TargetPath)"
+        LibraryPath="$(TargetDir);$(MSBuildProjectDirectory)\packages"
+    />
+	</Target>
+	<Target Name="PackageMod" AfterTargets="ILRepacker" Condition="'$(Configuration)' == 'Release'">
+		<Message Importance="High" Text="Building Thunderstore and Nexus release zips..." />
+
+		<PropertyGroup>
+			<TSStage>$(TargetDir)ThunderstoreStage\</TSStage>
+			<NexusStage>$(TargetDir)NexusStage\</NexusStage>
+			<PluginSubdir>BepInEx\plugins\ValheimGuide\</PluginSubdir>
+		</PropertyGroup>
+
+		<ItemGroup>
+			<GuideFiles Include="$(TargetDir)resources\data\*.guide" />
+		</ItemGroup>
+
+		<MakeDir Directories="$(TSStage)$(PluginSubdir)data" />
+		<MakeDir Directories="$(NexusStage)$(PluginSubdir)data" />
+
+		<!-- Single merged DLL into both -->
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(TSStage)$(PluginSubdir)" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(NexusStage)$(PluginSubdir)" />
+
+		<!-- Guide data files into both -->
+		<Copy SourceFiles="@(GuideFiles)" DestinationFolder="$(TSStage)$(PluginSubdir)data" />
+		<Copy SourceFiles="@(GuideFiles)" DestinationFolder="$(NexusStage)$(PluginSubdir)data" />
+
+		<!-- Thunderstore root files -->
+		<Copy SourceFiles="$(ProjectDir)PackagingAssets\manifest.json"  DestinationFolder="$(TSStage)" />
+		<Copy SourceFiles="$(ProjectDir)PackagingAssets\README.md"      DestinationFolder="$(TSStage)" />
+		<Copy SourceFiles="$(ProjectDir)PackagingAssets\icon.png"       DestinationFolder="$(TSStage)" />
+		<Copy SourceFiles="$(ProjectDir)PackagingAssets\Changelog.md"   DestinationFolder="$(TSStage)" />
+
+		<!-- Nexus root files -->
+		<Copy SourceFiles="$(ProjectDir)PackagingAssets\Changelog.md"   DestinationFolder="$(NexusStage)" />
+
+		<MakeDir Directories="$(ProjectDir)Releases" />
+		<ZipDirectory SourceDirectory="$(TSStage)" DestinationFile="$(ProjectDir)Releases\ValheimGuide_Thunderstore.zip" Overwrite="true" />
+		<ZipDirectory SourceDirectory="$(NexusStage)" DestinationFile="$(ProjectDir)Releases\ValheimGuide_Nexus.zip" Overwrite="true" />
+
+		<RemoveDir Directories="$(TSStage)" />
+		<RemoveDir Directories="$(NexusStage)" />
+		<Message Importance="High" Text="Done — zips in $(ProjectDir)Releases\" />
+	</Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Message Text="Deploying to ALL profiles..." Importance="high" />
+		<MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
+		<MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
+		<Copy SourceFiles="$(DataOutputDir)meadows.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+		<Copy SourceFiles="$(DataOutputDir)blackforest.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+		<Copy SourceFiles="$(DataOutputDir)swamp.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+		<Copy SourceFiles="$(DataOutputDir)mountain.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+		<Copy SourceFiles="$(DataOutputDir)plains.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+		<Copy SourceFiles="$(DataOutputDir)mistlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+		<Copy SourceFiles="$(DataOutputDir)ashlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+		<Copy SourceFiles="$(DataOutputDir)deepnorth.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+		<Copy SourceFiles="$(DataOutputDir)armory_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)armory_generated.guide')" />
+		<Copy SourceFiles="$(DataOutputDir)warfare_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)warfare_generated.guide')" />
+	</Target>
 </Project>
