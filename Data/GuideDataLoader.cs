@@ -12,7 +12,7 @@ namespace ValheimGuide.Data
     {
         private static ManualLogSource _log;
 
-        // All stages merged and sorted from every loaded JSON file
+        // All stages merged and sorted from every loaded guide file
         public static List<Stage> AllStages { get; private set; } = new List<Stage>();
 
         // Detected mod IDs — set by Plugin.cs before Load() is called
@@ -33,15 +33,16 @@ namespace ValheimGuide.Data
                 return;
             }
 
-            string[] jsonFiles = Directory.GetFiles(dataFolderPath, "*.json");
+            // Look for .guide files instead of .json to avoid crashing other mods
+            string[] guideFiles = Directory.GetFiles(dataFolderPath, "*.guide");
 
-            if (jsonFiles.Length == 0)
+            if (guideFiles.Length == 0)
             {
-                _log.LogWarning("[GuideDataLoader] No JSON files found in data folder.");
+                _log.LogWarning("[GuideDataLoader] No .guide files found in data folder.");
                 return;
             }
 
-            foreach (string filePath in jsonFiles)
+            foreach (string filePath in guideFiles)
             {
                 LoadFile(filePath);
             }
@@ -51,7 +52,7 @@ namespace ValheimGuide.Data
                 .OrderBy(s => s.Order)
                 .ToList();
 
-            _log.LogInfo($"[GuideDataLoader] Loaded {AllStages.Count} stages from {jsonFiles.Length} files.");
+            _log.LogInfo($"[GuideDataLoader] Loaded {AllStages.Count} stages from {guideFiles.Length} files.");
         }
 
         // ─────────────────────────────────────────
@@ -101,7 +102,7 @@ namespace ValheimGuide.Data
             }
             catch (JsonException ex)
             {
-                _log.LogError($"[GuideDataLoader] JSON parse error in {fileName}: {ex.Message}");
+                _log.LogError($"[GuideDataLoader] Parse error in {fileName}: {ex.Message}");
             }
             catch (IOException ex)
             {

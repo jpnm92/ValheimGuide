@@ -4,11 +4,14 @@ using HarmonyLib;
 using System.Collections.Generic;
 using UnityEngine;
 using ValheimGuide.Data;
+using ValheimGuide.DataGenerators;
 using ValheimGuide.UI;
 
 namespace ValheimGuide
 {
-    [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
+    [BepInDependency("Therzie.Armory", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("Therzie.Warfare", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInPlugin("com.yourname.valheimguide", "ValheimGuide", "0.1.0")]
     public class Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.custom.valheimguide";
@@ -30,14 +33,14 @@ namespace ValheimGuide
             string dataFolder = System.IO.Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
             GuideDataLoader.Load(dataFolder, Logger);
 
-            // Initialise progression tracker
+            // Initialise other systems
             ProgressionTracker.Initialise(Logger);
             ProgressSaver.Initialise(Logger);
-
             // Apply Harmony patches
             _harmony = new Harmony(PluginGuid);
             _harmony.PatchAll();
 
+            TherzieDataGenerator.Register();
             // Hotkey – F8 by default
             Config.Bind("General", "ToggleGuide", new KeyboardShortcut(KeyCode.F8), "Key to open/close the guide.");
 

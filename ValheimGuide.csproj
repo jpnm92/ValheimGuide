@@ -30,6 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>C:\Users\JPNM9\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\0Harmony.dll</HintPath>
@@ -86,7 +87,9 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+
   <ItemGroup>
+    <Compile Include="DataGenerators\TherzieDataGenerator.cs" />
     <Compile Include="Data\ProgressionSaver.cs" />
     <Compile Include="Data\ProgressionTracker.cs" />
     <Compile Include="Data\GuideDataLoader.cs" />
@@ -99,38 +102,76 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\GuidePanel.cs" />
   </ItemGroup>
+
   <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="resources\data\meadows.json">
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="resources\data\meadows.guide">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="resources\data\armory.json" />
-    <None Include="resources\data\ashlands.json" />
-    <None Include="resources\data\blackforest.json" />
-    <None Include="resources\data\deepnorth.json" />
-    <None Include="resources\data\mistlands.json" />
-    <None Include="resources\data\mountain.json" />
-    <None Include="resources\data\plains.json" />
-    <None Include="resources\data\swamp.json" />
-    <None Include="resources\data\warfare.json" />
+    <Content Include="resources\data\blackforest.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\data\swamp.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\data\mountain.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\data\plains.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\data\mistlands.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\data\ashlands.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\data\deepnorth.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\data\armory.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\data\warfare.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
-  <!-- ============================================ -->
-  <!-- POST BUILD – copy to r2modman Smooth profile -->
-  <!-- ============================================ -->
+
+  <PropertyGroup>
+    <R2ModmanProfilesDir>C:\Users\JPNM9\AppData\Roaming\r2modmanPlus-local\Valheim\profiles</R2ModmanProfilesDir>
+    <DataOutputDir>$(TargetDir)resources\data\</DataOutputDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AllProfiles Include="$([System.IO.Directory]::GetDirectories('$(R2ModmanProfilesDir)'))" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <PropertyGroup>
-      <ProfilePlugins>C:\Users\JPNM9\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Smooth\BepInEx\plugins\ValheimGuide</ProfilePlugins>
-    </PropertyGroup>
-    <Message Text="Deploying to $(ProfilePlugins)" Importance="high" />
-    <!-- Ensure destination folders exist -->
-    <MakeDir Directories="$(ProfilePlugins)" />
-    <MakeDir Directories="$(ProfilePlugins)\data" />
-    <!-- Copy main mod DLL -->
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProfilePlugins)" />
-    <!-- Copy Newtonsoft.Json.dll -->
-    <Copy SourceFiles="$(TargetDir)Newtonsoft.Json.dll" DestinationFolder="$(ProfilePlugins)" />
-    <!-- Copy JSON data files from output -->
-    <Copy SourceFiles="$(TargetDir)resources\data\meadows.json" DestinationFolder="$(ProfilePlugins)\data" />
+    <Message Text="Deploying to ALL profiles..." Importance="high" />
+
+    <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
+    <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
+    <Copy SourceFiles="$(TargetDir)Newtonsoft.Json.dll" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
+
+    <Copy SourceFiles="$(DataOutputDir)meadows.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="$(DataOutputDir)blackforest.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="$(DataOutputDir)swamp.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="$(DataOutputDir)mountain.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="$(DataOutputDir)plains.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="$(DataOutputDir)mistlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="$(DataOutputDir)ashlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="$(DataOutputDir)deepnorth.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="$(DataOutputDir)armory.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="$(DataOutputDir)warfare.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    
+    <Copy SourceFiles="$(DataOutputDir)armory_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)armory_generated.guide')" />
+    <Copy SourceFiles="$(DataOutputDir)warfare_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)warfare_generated.guide')" />
   </Target>
+
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
