@@ -65,10 +65,10 @@ namespace ValheimGuide.Data
             Stage highest = null;
             foreach (Stage stage in GuideDataLoader.AllStages)
             {
+                if (!string.IsNullOrEmpty(stage.ModRequired)) continue;
+
                 if (IsTriggerSatisfied(stage.UnlockTrigger))
                     highest = stage;
-                else
-                    break;
             }
             return highest;
         }

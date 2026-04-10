@@ -13,6 +13,7 @@ namespace ValheimGuide.Data
         private static ManualLogSource _log;
         private static string _saveFolder;
         private static GuideProgress _current;
+        private static bool _isDirty;
 
         public static GuideProgress Current => _current;
 
@@ -23,7 +24,6 @@ namespace ValheimGuide.Data
             Directory.CreateDirectory(_saveFolder);
         }
 
-        // Call when player spawns — pass Player.m_localPlayer.GetPlayerName()
         public static void Load(string characterName)
         {
             string path = GetPath(characterName);
@@ -31,6 +31,7 @@ namespace ValheimGuide.Data
             if (!File.Exists(path))
             {
                 _current = new GuideProgress { CharacterName = characterName };
+                _isDirty = false;
                 _log.LogInfo($"[ProgressSaver] No save found for '{characterName}', starting fresh.");
                 return;
             }
@@ -40,6 +41,7 @@ namespace ValheimGuide.Data
                 string raw = File.ReadAllText(path);
                 _current = JsonConvert.DeserializeObject<GuideProgress>(raw)
                            ?? new GuideProgress { CharacterName = characterName };
+                _isDirty = false;
                 _log.LogInfo($"[ProgressSaver] Loaded progress for '{characterName}'. " +
                              $"Checked items: {_current.CheckedItems.Count}");
             }
@@ -50,14 +52,16 @@ namespace ValheimGuide.Data
             }
         }
 
+        /// <summary>Synchronous save — use on application quit or scene unload.</summary>
         public static void Save()
         {
-            if (_current == null) return;
+            if (_current == null || !_isDirty) return;
 
             try
             {
-                string json = JsonConvert.SerializeObject(_current, Formatting.Indented);
-                File.WriteAllText(GetPath(_current.CharacterName), json);
+                File.WriteAllText(GetPath(_current.CharacterName),
+                    JsonConvert.SerializeObject(_current, Formatting.Indented));
+                _isDirty = false;
             }
             catch (Exception ex)
             {
@@ -65,10 +69,28 @@ namespace ValheimGuide.Data
             }
         }
 
-        public static bool IsChecked(string itemId)
+        /// <summary>Fire-and-forget async save — safe to call on every checkbox click.</summary>
+        private static async void SaveAsync()
         {
-            return _current?.CheckedItems.Contains(itemId) ?? false;
+            if (_current == null || !_isDirty) return;
+
+            // Snapshot state before leaving the main thread
+            string json = JsonConvert.SerializeObject(_current, Formatting.Indented);
+            string path = GetPath(_current.CharacterName);
+
+            try
+            {
+                await System.Threading.Tasks.Task.Run(() => File.WriteAllText(path, json));
+                _isDirty = false;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError($"[ProgressSaver] Async save failed: {ex.Message}");
+            }
         }
+
+        public static bool IsChecked(string itemId)
+            => _current?.CheckedItems.Contains(itemId) ?? false;
 
         public static void SetChecked(string itemId, bool value)
         {
@@ -79,15 +101,14 @@ namespace ValheimGuide.Data
             else if (!value)
                 _current.CheckedItems.Remove(itemId);
 
-            Save();
+            _isDirty = true;
+            SaveAsync(); // non-blocking
         }
 
         private static string GetPath(string characterName)
         {
-            // Sanitise character name for use as filename
             foreach (char c in Path.GetInvalidFileNameChars())
                 characterName = characterName.Replace(c, '_');
-
             return Path.Combine(_saveFolder, characterName + ".json");
         }
     }

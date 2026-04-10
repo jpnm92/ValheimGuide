@@ -15,7 +15,7 @@ namespace ValheimGuide.Patches
 
         private static void Postfix(Menu __instance)
         {
-            if (_guideButton == null)
+            if (_guideButton == null || !_guideButton)
                 CreateGuideButton(__instance);
             else
                 _guideButton.gameObject.SetActive(true);

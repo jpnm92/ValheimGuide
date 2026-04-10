@@ -171,14 +171,14 @@ namespace ValheimGuide.DataGenerators
 
         private static string CleanLabel(string locKey)
         {
+            string localized = Jotunn.Managers.LocalizationManager.Instance?.TryTranslate(locKey);
+            if (!string.IsNullOrEmpty(localized) && localized != locKey)
+                return localized;
+
             return locKey
                 .TrimStart('$')
                 .Replace("_TW", "")
-                .Replace("_", " ")
-                .ToLower()
-                .Replace("armorchest", "Chest")
-                .Replace("armorlegs", "Legs")
-                .Replace("helmet", "Helmet");
+                .Replace("_", " ");
         }
 
         private static GearEntry CreateGearEntry(GameObject prefab, string modGuid)

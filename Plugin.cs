@@ -49,8 +49,8 @@ namespace ValheimGuide
 
         private void Update()
         {
-            if (Config["General", "ToggleGuide"].BoxedValue is KeyboardShortcut shortcut &&
-                shortcut.IsDown())
+            var shortcut = (KeyboardShortcut)Config["General", "ToggleGuide"].BoxedValue;
+            if (shortcut.IsDown())
             {
                 GuidePanel.Toggle();
             }
