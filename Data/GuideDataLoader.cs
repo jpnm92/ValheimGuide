@@ -77,6 +77,9 @@ namespace ValheimGuide.Data
                     stage.Drops = FilterByMod(stage.Drops, d => d.ModRequired);
                     stage.Recipes = FilterByMod(stage.Recipes, r => r.ModRequired);
 
+                    // Re-calculate the order dynamically so Therzie and Vanilla line up perfectly
+                    AssignBaseOrder(stage);
+
                     _allStages.Add(stage);
                     accepted++;
                 }
@@ -91,6 +94,17 @@ namespace ValheimGuide.Data
             {
                 _log.LogError($"[GuideDataLoader] File read error for {fileName}: {ex.Message}");
             }
+        }
+
+        private static void AssignBaseOrder(Stage stage)
+        {
+            // Forces every stage to obey the 10, 20, 30 scaling in BiomeOrder.cs
+            int baseOrder = BiomeOrder.FromStageId(stage.Id);
+
+            if (stage.ModRequired == "Therzie.Armory") baseOrder += 1;
+            else if (stage.ModRequired == "Therzie.Warfare") baseOrder += 2;
+
+            stage.Order = baseOrder;
         }
 
         private static List<T> FilterByMod<T>(List<T> list, Func<T, string> getModRequired)
@@ -111,7 +125,6 @@ namespace ValheimGuide.Data
         {
             if (string.IsNullOrEmpty(stage.Id)) return false;
             if (string.IsNullOrEmpty(stage.Label)) return false;
-
             if (stage.UnlockTrigger == null) return false;
 
             return true;
