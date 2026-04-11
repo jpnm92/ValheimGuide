@@ -18,6 +18,10 @@ namespace ValheimGuide.UI
         private string _searchQuery = "";
         private GameObject _currentTabContentContainer;
 
+        // NEW FILTER STATE
+        private readonly HashSet<string> _activeDamageFilters = new HashSet<string>();
+        private readonly HashSet<string> _activeArmorFilters = new HashSet<string>();
+
         public GuidePanelController(GameObject stageListContainer, GameObject smartPanelContainer, GameObject referenceAreaContainer)
         {
             _stageListContainer = stageListContainer;
@@ -144,6 +148,8 @@ namespace ValheimGuide.UI
         {
             _selectedStage = stage;
             _searchQuery = "";
+            _activeDamageFilters.Clear();
+            _activeArmorFilters.Clear();
 
             foreach (var stageButton in _stageButtons)
             {
@@ -326,13 +332,47 @@ namespace ValheimGuide.UI
                 PopulateActiveTab(stage);
             });
 
+            string[] tabNames = { "GEAR", "DROPS", "RECIPES" };
+            for (int i = 0; i < tabNames.Length; i++)
+            {
+                int captured = i;
+                GameObject tabBtn = new GameObject("Tab_" + tabNames[i], typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+                tabBtn.transform.SetParent(tabBar.transform, false);
+                tabBtn.GetComponent<LayoutElement>().preferredWidth = 90;
+
+                bool isActive = i == _referenceTabIndex;
+                tabBtn.GetComponent<Image>().color = isActive
+                    ? new Color(0.35f, 0.28f, 0.15f, 1f)
+                    : new Color(0.2f, 0.2f, 0.2f, 1f);
+
+                GameObject tabLabel = GuidePanel.CreateText(tabBtn.transform, "Label", tabNames[i]);
+                RectTransform labelRect = tabLabel.GetComponent<RectTransform>();
+                labelRect.anchorMin = Vector2.zero;
+                labelRect.anchorMax = Vector2.one;
+                labelRect.offsetMin = Vector2.zero;
+                labelRect.offsetMax = Vector2.zero;
+                tabLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                tabLabel.GetComponent<Text>().fontSize = 14;
+
+                tabBtn.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    _referenceTabIndex = captured;
+                    BuildReferenceArea(stage);
+                });
+            }
+
+            // ADD FILTER BAR
+            BuildFilterBar(_referenceAreaContainer.transform, stage);
+
             GameObject contentArea = new GameObject("ContentArea", typeof(RectTransform), typeof(ScrollRect));
             contentArea.transform.SetParent(_referenceAreaContainer.transform, false);
             RectTransform contentAreaRect = contentArea.GetComponent<RectTransform>();
             contentAreaRect.anchorMin = Vector2.zero;
             contentAreaRect.anchorMax = new Vector2(1, 1);
             contentAreaRect.offsetMin = new Vector2(8, 8);
-            contentAreaRect.offsetMax = new Vector2(-20, -80);
+
+            // ADJUSTED OFFSET FOR FILTERS
+            contentAreaRect.offsetMax = new Vector2(-20, -120);
 
             ScrollRect scroll = contentArea.GetComponent<ScrollRect>();
             scroll.horizontal = false;
@@ -343,7 +383,7 @@ namespace ValheimGuide.UI
 
             Scrollbar scrollbar = GuidePanel.CreateScrollbar(_referenceAreaContainer.transform);
             RectTransform sbRect = scrollbar.GetComponent<RectTransform>();
-            sbRect.offsetMax = new Vector2(-4, -80);
+            sbRect.offsetMax = new Vector2(-4, -120);
             scroll.verticalScrollbar = scrollbar;
             scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
 
@@ -377,36 +417,93 @@ namespace ValheimGuide.UI
             vlgContent.childControlHeight = true;
             _currentTabContentContainer.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            string[] tabNames = { "GEAR", "DROPS", "RECIPES" };
-            for (int i = 0; i < tabNames.Length; i++)
+            PopulateActiveTab(stage);
+        }
+
+        private void BuildFilterBar(Transform parent, Stage stage)
+        {
+            if (_referenceTabIndex != 0) return;
+
+            bool hasWeapons = stage.Gear.Exists(g => g.Type == "Weapon" || g.Type == "Bow");
+            bool hasArmor = stage.Gear.Exists(g => g.Type == "Armor");
+
+            if (!hasWeapons && !hasArmor) return;
+
+            GameObject filterRow = new GameObject("FilterBar", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            filterRow.transform.SetParent(parent, false);
+
+            RectTransform filterRect = filterRow.GetComponent<RectTransform>();
+            filterRect.anchorMin = new Vector2(0, 1);
+            filterRect.anchorMax = new Vector2(1, 1);
+            filterRect.pivot = new Vector2(0.5f, 1);
+            filterRect.offsetMin = new Vector2(8, -115);
+            filterRect.offsetMax = new Vector2(-8, -80);
+
+            HorizontalLayoutGroup hlg = filterRow.GetComponent<HorizontalLayoutGroup>();
+            hlg.spacing = 4;
+            hlg.childForceExpandWidth = false;
+            hlg.childForceExpandHeight = true;
+            hlg.childControlWidth = false;
+            hlg.childControlHeight = true;
+
+            if (hasWeapons)
             {
-                int captured = i;
-                GameObject tabBtn = new GameObject("Tab_" + tabNames[i], typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
-                tabBtn.transform.SetParent(tabBar.transform, false);
-                tabBtn.GetComponent<LayoutElement>().preferredWidth = 90;
-
-                bool isActive = i == _referenceTabIndex;
-                tabBtn.GetComponent<Image>().color = isActive
-                    ? new Color(0.35f, 0.28f, 0.15f, 1f)
-                    : new Color(0.2f, 0.2f, 0.2f, 1f);
-
-                GameObject tabLabel = GuidePanel.CreateText(tabBtn.transform, "Label", tabNames[i]);
-                RectTransform labelRect = tabLabel.GetComponent<RectTransform>();
-                labelRect.anchorMin = Vector2.zero;
-                labelRect.anchorMax = Vector2.one;
-                labelRect.offsetMin = Vector2.zero;
-                labelRect.offsetMax = Vector2.zero;
-                tabLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                tabLabel.GetComponent<Text>().fontSize = 14;
-
-                tabBtn.GetComponent<Button>().onClick.AddListener(() =>
+                string[] damageTypes = { "Blunt", "Slash", "Pierce", "Fire", "Frost", "Lightning", "Poison", "Spirit" };
+                foreach (string dt in damageTypes)
                 {
-                    _referenceTabIndex = captured;
-                    BuildReferenceArea(stage);
-                });
+                    string captured = dt;
+                    bool active = _activeDamageFilters.Contains(dt);
+                    CreateFilterPill(filterRow.transform, dt, active, () =>
+                    {
+                        if (_activeDamageFilters.Contains(captured)) _activeDamageFilters.Remove(captured);
+                        else _activeDamageFilters.Add(captured);
+                        BuildReferenceArea(_selectedStage);
+                    });
+                }
             }
 
-            PopulateActiveTab(stage);
+            if (hasArmor)
+            {
+                GameObject sep = new GameObject("Sep", typeof(RectTransform), typeof(LayoutElement));
+                sep.transform.SetParent(filterRow.transform, false);
+                sep.GetComponent<LayoutElement>().preferredWidth = 8;
+
+                string[] armorClasses = { "Light", "Medium", "Heavy" };
+                foreach (string ac in armorClasses)
+                {
+                    string captured = ac;
+                    bool active = _activeArmorFilters.Contains(ac);
+                    CreateFilterPill(filterRow.transform, ac, active, () =>
+                    {
+                        if (_activeArmorFilters.Contains(captured)) _activeArmorFilters.Remove(captured);
+                        else _activeArmorFilters.Add(captured);
+                        BuildReferenceArea(_selectedStage);
+                    });
+                }
+            }
+        }
+
+        private GameObject CreateFilterPill(Transform parent, string label, bool active, System.Action onClick)
+        {
+            GameObject pill = new GameObject("Pill_" + label, typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+            pill.transform.SetParent(parent, false);
+            pill.GetComponent<LayoutElement>().preferredWidth = 62;
+            pill.GetComponent<Image>().color = active
+                ? new Color(0.6f, 0.45f, 0.1f)
+                : new Color(0.22f, 0.22f, 0.22f);
+
+            GameObject textObj = GuidePanel.CreateText(pill.transform, "Label", label);
+            RectTransform tr = textObj.GetComponent<RectTransform>();
+            tr.anchorMin = Vector2.zero;
+            tr.anchorMax = Vector2.one;
+            tr.offsetMin = tr.offsetMax = Vector2.zero;
+
+            Text t = textObj.GetComponent<Text>();
+            t.alignment = TextAnchor.MiddleCenter;
+            t.fontSize = 12;
+
+            pill.GetComponent<Button>().onClick.AddListener(() => onClick());
+            return pill;
         }
 
         private void PopulateActiveTab(Stage stage)
@@ -437,6 +534,22 @@ namespace ValheimGuide.UI
             {
                 if (!string.IsNullOrEmpty(_searchQuery) && !gear.Label.ToLower().Contains(_searchQuery))
                     continue;
+
+                // Damage type filter
+                if (_activeDamageFilters.Count > 0 && (gear.Type == "Weapon" || gear.Type == "Bow"))
+                {
+                    bool match = gear.DamageTypes != null &&
+                                 gear.DamageTypes.Exists(d => _activeDamageFilters.Contains(d));
+                    if (!match) continue;
+                }
+
+                // Armor class filter
+                if (_activeArmorFilters.Count > 0 && gear.Type == "Armor")
+                {
+                    if (string.IsNullOrEmpty(gear.ArmorClass) ||
+                        !_activeArmorFilters.Contains(gear.ArmorClass))
+                        continue;
+                }
 
                 count++;
                 GameObject row = new GameObject("Row_" + gear.ItemId, typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));

@@ -16,23 +16,26 @@
         "Flint",
         "LeatherScraps"
       ],
-      "Boss": {
-            "Name": "Eikthyr",
-        "Location": "Meadows altar",
-        "GlobalKeyDrop": "defeated_eikthyr",
-        "GlobalUnlock": "Antler Pickaxe, Hard Antler",
-        "RecommendedGear": "Leather armor, crude bow, flint spear",
-        "SummonMaterials": [
-          {
-                "ItemId": "DeerHide",
-            "Label": "Deer Hide",
-            "Amount": 2
-          }
-        ],
-        "KeyDrops": [
-          "HardAntler"
-        ]
-      },
+        "Boss": {
+          "Name": "Eikthyr",
+          "Location": "Meadows altar",
+          "GlobalKeyDrop": "defeated_eikthyr",
+          "GlobalUnlock": "Antler Pickaxe, Hard Antler",
+          "RecommendedGear": "Leather armor, crude bow, flint spear",
+          "SummonMaterials": [
+            {
+              "ItemId": "DeerHide",
+              "Label": "Deer Hide",
+              "Amount": 2
+            }
+          ],
+          "KeyDrops": [
+            "HardAntler"
+          ],
+          "WeakAgainst": [ "Slash", "Pierce" ],
+          "ResistantTo": [ "Lightning" ],
+          "ImmuneAgainst": []
+        },
       "Gear": [
         {
             "ItemId": "ArmorLeatherChest",

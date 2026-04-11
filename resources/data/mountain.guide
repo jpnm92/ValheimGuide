@@ -24,7 +24,10 @@
             "Amount": 3
           }
         ],
-        "KeyDrops": [ "DragonTear" ]
+        "KeyDrops": [ "DragonTear" ],
+        "WeakAgainst": [ "Fire", "Spirit" ],
+        "ResistantTo": [ "Frost" ],
+        "ImmuneAgainst": []
       },
       "Gear": [
         {

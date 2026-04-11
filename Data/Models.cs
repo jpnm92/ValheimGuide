@@ -55,6 +55,11 @@ namespace ValheimGuide.Data
         public string RecommendedGear { get; set; }   // short note
         public List<ItemStack> SummonMaterials { get; set; } = new List<ItemStack>();
         public List<string> KeyDrops { get; set; } = new List<string>(); // item IDs
+
+        // NEW FILTER PROPERTIES
+        public List<string> WeakAgainst { get; set; } = new List<string>();
+        public List<string> ResistantTo { get; set; } = new List<string>();
+        public List<string> ImmuneAgainst { get; set; } = new List<string>();
     }
 
     // ─────────────────────────────────────────
@@ -70,6 +75,11 @@ namespace ValheimGuide.Data
         public int StationLevel { get; set; }
         public string ModRequired { get; set; }   // null = vanilla
         public List<ItemStack> Recipe { get; set; } = new List<ItemStack>();
+
+        // NEW FILTER PROPERTIES
+        public List<string> DamageTypes { get; set; } = new List<string>();
+        public string ArmorClass { get; set; }
+        public List<string> Resistances { get; set; } = new List<string>();
     }
 
     // ─────────────────────────────────────────

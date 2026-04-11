@@ -24,7 +24,10 @@
             "Amount": 3
           }
         ],
-        "KeyDrops": [ "FaderRelic" ]
+        "KeyDrops": [ "FaderRelic" ],
+        "WeakAgainst": [ "Frost", "Poison" ],
+        "ResistantTo": [ "Fire" ],
+        "ImmuneAgainst": []
       },
       "Gear": [
         {

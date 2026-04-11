@@ -24,7 +24,10 @@
             "Amount": 10
           }
         ],
-        "KeyDrops": [ "Wishbone" ]
+        "KeyDrops": [ "Wishbone" ],
+        "WeakAgainst": [ "Blunt" ],
+        "ResistantTo": [ "Slash", "Pierce", "Fire", "Frost" ],
+        "ImmuneAgainst": [ "Poison" ]
       },
       "Gear": [
         {

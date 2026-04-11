@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\ILRepack.2.0.44\build\ILRepack.props" Condition="Exists('packages\ILRepack.2.0.44\build\ILRepack.props')" />
+  <Import Project="Environment.props" Condition="Exists('Environment.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,6 +13,7 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <ValheimManagedPath>$(ValheimInstallPath)\valheim_Data\Managed</ValheimManagedPath>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -35,19 +36,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>C:\Users\JPNM9\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>$(ActiveProfilePath)\BepInEx\core\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="assembly_valheim">
-      <HintPath>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed\assembly_valheim.dll</HintPath>
+      <HintPath>$(ValheimManagedPath)\assembly_valheim.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>C:\Users\JPNM9\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>$(ActiveProfilePath)\BepInEx\core\BepInEx.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Jotunn">
-      <HintPath>..\..\..\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Smooth\BepInEx\plugins\ValheimModding-Jotunn\Jotunn.dll</HintPath>
+      <HintPath>$(R2ModmanProfilesPath)\Smooth\BepInEx\plugins\ValheimModding-Jotunn\Jotunn.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -62,34 +64,35 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(ValheimManagedPath)\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(ValheimManagedPath)\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>$(ValheimManagedPath)\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>$(ValheimManagedPath)\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>$(ValheimManagedPath)\UnityEngine.UIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>$(ValheimManagedPath)\Unity.TextMeshPro.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>$(ValheimManagedPath)\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataGenerators\GuideDataEnricher.cs" />
     <Compile Include="DataGenerators\TherzieDataGenerator.cs" />
     <Compile Include="Data\ProgressionSaver.cs" />
     <Compile Include="Data\ProgressionTracker.cs" />
@@ -140,12 +143,8 @@
     </Content>
   </ItemGroup>
   <PropertyGroup>
-    <R2ModmanProfilesDir>C:\Users\JPNM9\AppData\Roaming\r2modmanPlus-local\Valheim\profiles</R2ModmanProfilesDir>
     <DataOutputDir>$(TargetDir)resources\data\</DataOutputDir>
   </PropertyGroup>
-  <ItemGroup>
-    <AllProfiles Include="$([System.IO.Directory]::GetDirectories('$(R2ModmanProfilesDir)'))" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
@@ -156,16 +155,27 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\ILRepack.2.0.44\build\ILRepack.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ILRepack.2.0.44\build\ILRepack.props'))" />
+    <Error Condition="'$(ValheimInstallPath)' == '' Or !Exists('$(ValheimInstallPath)')" Text="ValheimInstallPath is missing or invalid. Please check your Environment.props file." />
+    <Error Condition="!Exists('packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
   </Target>
-  <Target Name="ILRepacker" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+  
+  <Target Name="ILRepacker" AfterTargets="Build">
     <Message Importance="High" Text="Merging Newtonsoft.Json into ValheimGuide.dll..." />
     <ItemGroup>
       <InputAssemblies Include="$(TargetPath)" />
       <InputAssemblies Include="$(TargetDir)Newtonsoft.Json.dll" />
     </ItemGroup>
-    <ILRepack Parallel="true" Internalize="true" InputAssemblies="@(InputAssemblies)" TargetKind="Dll" OutputFile="$(TargetPath)" LibraryPath="$(TargetDir);$(MSBuildProjectDirectory)\packages" />
+    
+    <ILRepack 
+        Parallel="true" 
+        Internalize="true" 
+        InputAssemblies="@(InputAssemblies)" 
+        TargetKind="Dll" 
+        OutputFile="$(TargetPath)" 
+        LibraryPath="$(TargetDir);$(ValheimManagedPath);$(ActiveProfilePath)\BepInEx\core;$(R2ModmanProfilesPath)\Smooth\BepInEx\plugins\ValheimModding-Jotunn" 
+    />
   </Target>
+  
   <Target Name="PackageMod" AfterTargets="ILRepacker" Condition="'$(Configuration)' == 'Release'">
     <Message Importance="High" Text="Building Thunderstore and Nexus release zips..." />
     <PropertyGroup>
@@ -175,22 +185,15 @@
     </PropertyGroup>
     <ItemGroup>
       <GuideFiles Include="$(TargetDir)resources\data\*.guide" />
+      <ReleaseStages Include="$(TSStage);$(NexusStage)" />
     </ItemGroup>
-    <MakeDir Directories="$(TSStage)$(PluginSubdir)data" />
-    <MakeDir Directories="$(NexusStage)$(PluginSubdir)data" />
-    <!-- Single merged DLL into both -->
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(TSStage)$(PluginSubdir)" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(NexusStage)$(PluginSubdir)" />
-    <!-- Guide data files into both -->
-    <Copy SourceFiles="@(GuideFiles)" DestinationFolder="$(TSStage)$(PluginSubdir)data" />
-    <Copy SourceFiles="@(GuideFiles)" DestinationFolder="$(NexusStage)$(PluginSubdir)data" />
-    <!-- Thunderstore root files -->
+    <MakeDir Directories="%(ReleaseStages.Identity)$(PluginSubdir)data" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="%(ReleaseStages.Identity)$(PluginSubdir)" />
+    <Copy SourceFiles="@(GuideFiles)" DestinationFolder="%(ReleaseStages.Identity)$(PluginSubdir)data" />
+    <Copy SourceFiles="$(ProjectDir)PackagingAssets\Changelog.md" DestinationFolder="%(ReleaseStages.Identity)" />
     <Copy SourceFiles="$(ProjectDir)PackagingAssets\manifest.json" DestinationFolder="$(TSStage)" />
     <Copy SourceFiles="$(ProjectDir)PackagingAssets\README.md" DestinationFolder="$(TSStage)" />
     <Copy SourceFiles="$(ProjectDir)PackagingAssets\icon.png" DestinationFolder="$(TSStage)" />
-    <Copy SourceFiles="$(ProjectDir)PackagingAssets\Changelog.md" DestinationFolder="$(TSStage)" />
-    <!-- Nexus root files -->
-    <Copy SourceFiles="$(ProjectDir)PackagingAssets\Changelog.md" DestinationFolder="$(NexusStage)" />
     <MakeDir Directories="$(ProjectDir)Releases" />
     <ZipDirectory SourceDirectory="$(TSStage)" DestinationFile="$(ProjectDir)Releases\ValheimGuide_Thunderstore.zip" Overwrite="true" />
     <ZipDirectory SourceDirectory="$(NexusStage)" DestinationFile="$(ProjectDir)Releases\ValheimGuide_Nexus.zip" Overwrite="true" />
@@ -198,20 +201,20 @@
     <RemoveDir Directories="$(NexusStage)" />
     <Message Importance="High" Text="Done — zips in $(ProjectDir)Releases\" />
   </Target>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  
+  <Target Name="PostBuild" AfterTargets="ILRepacker" Condition="'$(R2ModmanProfilesPath)' != '' And Exists('$(R2ModmanProfilesPath)')">
     <Message Text="Deploying to ALL profiles..." Importance="high" />
+    <ItemGroup>
+      <AllProfiles Include="$([System.IO.Directory]::GetDirectories('$(R2ModmanProfilesPath)'))" />
+      <DeployGuideFiles Include="$(DataOutputDir)*.guide" />
+    </ItemGroup>
+    
     <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
     <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
-    <Copy SourceFiles="$(DataOutputDir)meadows.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)blackforest.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)swamp.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)mountain.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)plains.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)mistlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)ashlands.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)deepnorth.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    <Copy SourceFiles="$(DataOutputDir)armory_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)armory_generated.guide')" />
-    <Copy SourceFiles="$(DataOutputDir)warfare_generated.guide" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" Condition="Exists('$(DataOutputDir)warfare_generated.guide')" />
+    <Copy SourceFiles="@(DeployGuideFiles)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
   </Target>
+  
+  <Import Project="packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
 </Project>

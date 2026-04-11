@@ -17,6 +17,9 @@
         "GlobalKeyDrop": "defeated_njord",
         "GlobalUnlock": "Njord's Blessing",
         "RecommendedGear": "FrostMetal armor, fire weapons, frost resist",
+        "WeakAgainst": [ "Fire", "Poison" ],
+        "ResistantTo": [ "Slash", "Pierce" ],
+        "ImmuneAgainst": [ "Frost" ],
         "SummonMaterials": [
           {
             "ItemId": "FrostTotem",

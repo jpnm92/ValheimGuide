@@ -77,8 +77,6 @@ namespace ValheimGuide.Data
                     stage.Drops = FilterByMod(stage.Drops, d => d.ModRequired);
                     stage.Recipes = FilterByMod(stage.Recipes, r => r.ModRequired);
 
-                    AssignBaseOrder(stage);
-
                     _allStages.Add(stage);
                     accepted++;
                 }
@@ -93,16 +91,6 @@ namespace ValheimGuide.Data
             {
                 _log.LogError($"[GuideDataLoader] File read error for {fileName}: {ex.Message}");
             }
-        }
-
-        private static void AssignBaseOrder(Stage stage)
-        {
-            int baseOrder = BiomeOrder.FromStageId(stage.Id);
-
-            if (stage.ModRequired == "Therzie.Armory") baseOrder += 1;
-            else if (stage.ModRequired == "Therzie.Warfare") baseOrder += 2;
-
-            stage.Order = baseOrder;
         }
 
         private static List<T> FilterByMod<T>(List<T> list, Func<T, string> getModRequired)
@@ -123,17 +111,6 @@ namespace ValheimGuide.Data
         {
             if (string.IsNullOrEmpty(stage.Id)) return false;
             if (string.IsNullOrEmpty(stage.Label)) return false;
-
-            if ((stage.Id.StartsWith("armory_") || stage.Id.StartsWith("warfare_")) && stage.UnlockTrigger?.Type == "none")
-            {
-                if (stage.Id.Contains("blackforest")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_eikthyr" };
-                else if (stage.Id.Contains("swamp")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_gdking" };
-                else if (stage.Id.Contains("mountain")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_bonemass" };
-                else if (stage.Id.Contains("plains")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_dragon" };
-                else if (stage.Id.Contains("mistlands")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_goblinking" };
-                else if (stage.Id.Contains("ashlands")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_queen" };
-                else if (stage.Id.Contains("deepnorth")) stage.UnlockTrigger = new Trigger { Type = "globalKey", Value = "defeated_fader" };
-            }
 
             if (stage.UnlockTrigger == null) return false;
 

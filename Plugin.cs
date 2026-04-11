@@ -41,6 +41,11 @@ namespace ValheimGuide
             _harmony.PatchAll();
 
             TherzieDataGenerator.Register();
+
+            Jotunn.Managers.ItemManager.OnItemsRegistered += () => {
+                ValheimGuide.DataGenerators.GuideDataEnricher.Run();
+            };
+
             // Hotkey – F8 by default
             Config.Bind("General", "ToggleGuide", new KeyboardShortcut(KeyCode.F8), "Key to open/close the guide.");
 

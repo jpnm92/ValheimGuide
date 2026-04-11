@@ -24,7 +24,10 @@
             "Amount": 1
           }
         ],
-        "KeyDrops": [ "MajesticCarapace" ]
+        "KeyDrops": [ "MajesticCarapace" ],
+        "WeakAgainst": [ "Fire" ],
+        "ResistantTo": [ "Poison", "Blunt" ],
+        "ImmuneAgainst": []
       },
       "Gear": [
         {

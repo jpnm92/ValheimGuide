@@ -24,7 +24,10 @@
             "Amount": 5
           }
         ],
-        "KeyDrops": [ "YagluthDrop" ]
+        "KeyDrops": [ "YagluthDrop" ],
+        "WeakAgainst": [ "Fire", "Frost", "Spirit" ],
+        "ResistantTo": [ "Blunt", "Slash", "Pierce" ],
+        "ImmuneAgainst": []
       },
       "Gear": [
         {

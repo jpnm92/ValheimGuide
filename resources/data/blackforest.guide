@@ -24,7 +24,10 @@
             "Amount": 3
           }
         ],
-        "KeyDrops": [ "SwampKey" ]
+        "KeyDrops": [ "SwampKey" ],
+        "WeakAgainst": [ "Fire" ],
+        "ResistantTo": [ "Blunt", "Slash", "Pierce" ],
+        "ImmuneAgainst": []
       },
       "Gear": [
         {

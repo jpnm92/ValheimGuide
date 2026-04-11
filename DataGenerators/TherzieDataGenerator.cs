@@ -34,7 +34,10 @@ namespace ValheimGuide.DataGenerators
 
                 string dataFolder = Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
                 var logger = BepInEx.Logging.Logger.CreateLogSource("ValheimGuide_Gen");
+
                 GuideDataLoader.Load(dataFolder, logger);
+
+                GuideDataEnricher.Run();
 
                 ProgressionTracker.RefreshCurrentStage();
             }
@@ -81,7 +84,7 @@ namespace ValheimGuide.DataGenerators
                 .ToList();
 
             Debug.Log($"[TherzieDataGenerator] Found {items.Count} Warfare items.");
-            SaveToFile(GroupByTier(items, "Warfare", modGuid, GetWarfareTier), "warfare_generated.guide");
+            SaveToFile(GroupByTier(items, "Warfare", modGuid, GetArmorTier), "warfare_generated.guide");
         }
 
         private static bool IsArmorPiece(GameObject prefab)
@@ -264,12 +267,6 @@ namespace ValheimGuide.DataGenerators
             if (name.Contains("leather") || name.Contains("razorback") || name.Contains("flint") || name.Contains("bone") || name.Contains("eikthyr") || name.Contains("stag") || name.Contains("wood") || name.Contains("scythe") || name.Contains("wrench") || name.Contains("knife") || name.Contains("club") || name.Contains("spear") || name.Contains("axe") || name.Contains("bow") || name.Contains("shield") || name.Contains("mace") || name.Contains("sword") || name.Contains("atgeir") || name.Contains("sledge") || name.Contains("buckler") || name.Contains("tower")) return "Meadows";
 
             return "Other";
-        }
-
-        private static string GetWarfareTier(GameObject prefab)
-        {
-            // For Warfare, the logic is identical to Armor, keeping the items perfectly synced
-            return GetArmorTier(prefab);
         }
 
         private static void SaveToFile(List<Stage> stages, string fileName)
