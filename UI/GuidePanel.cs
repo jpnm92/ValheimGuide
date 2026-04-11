@@ -61,7 +61,6 @@ namespace ValheimGuide.UI
 
             _panel = new GameObject("GuidePanel", typeof(RectTransform), typeof(Image));
             _panel.transform.SetParent(canvasObj.transform, false);
-            UnityEngine.Object.DontDestroyOnLoad(_panel);
             _panel.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.1f, 0.95f);
 
             RectTransform panelRect = _panel.GetComponent<RectTransform>();
@@ -86,8 +85,8 @@ namespace ValheimGuide.UI
             titleRect.pivot = new Vector2(0, 1);
             titleRect.anchoredPosition = new Vector2(20, -20);
             titleRect.sizeDelta = new Vector2(400, 40);
-            title.GetComponent<TextMeshProUGUI>().fontSize = 28;
-            title.GetComponent<TextMeshProUGUI>().fontStyle = TMPro.FontStyles.Bold;
+            title.GetComponent<Text>().fontSize = 28;
+            title.GetComponent<Text>().fontStyle = FontStyle.Bold;
 
             _stageListContainer = CreatePanelSection(_panel.transform, "StageList",
                 new Vector2(0, 0), new Vector2(0.25f, 1),
@@ -110,17 +109,20 @@ namespace ValheimGuide.UI
 
         internal static void AddLabel(Transform parent, string content, int fontSize, TMPro.FontStyles style, Color color)
         {
-            GameObject go = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI), typeof(LayoutElement));
+            GameObject go = new GameObject("Label", typeof(RectTransform), typeof(Text), typeof(LayoutElement));
             go.transform.SetParent(parent, false);
 
-            TextMeshProUGUI t = go.GetComponent<TextMeshProUGUI>();
+            Text t = go.GetComponent<Text>();
             t.text = content;
+            t.font = GUIManager.Instance.AveriaSerifBold;
             t.fontSize = fontSize;
-            t.fontStyle = style;
+            t.fontStyle = style == TMPro.FontStyles.Bold ? FontStyle.Bold
+                        : style == TMPro.FontStyles.Italic ? FontStyle.Italic
+                        : FontStyle.Normal;
             t.color = color;
             t.raycastTarget = false;
-            t.textWrappingMode = TMPro.TextWrappingModes.Normal;
-            t.overflowMode = TMPro.TextOverflowModes.Overflow;
+            t.horizontalOverflow = HorizontalWrapMode.Wrap;
+            t.verticalOverflow = VerticalWrapMode.Overflow;
 
             go.GetComponent<LayoutElement>().flexibleWidth = 1;
         }
@@ -167,11 +169,12 @@ namespace ValheimGuide.UI
 
         internal static GameObject CreateText(Transform parent, string name, string content)
         {
-            GameObject go = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
+            GameObject go = new GameObject(name, typeof(RectTransform), typeof(Text));
             go.transform.SetParent(parent, false);
 
-            TextMeshProUGUI text = go.GetComponent<TextMeshProUGUI>();
+            Text text = go.GetComponent<Text>();
             text.text = content;
+            text.font = GUIManager.Instance.AveriaSerifBold;
             text.color = Color.white;
             text.fontSize = 18;
             text.raycastTarget = false;
