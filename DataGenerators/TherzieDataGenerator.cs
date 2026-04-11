@@ -14,12 +14,7 @@ namespace ValheimGuide.DataGenerators
     {
         private static bool _hasRun = false;
 
-        public static void Register()
-        {
-            ItemManager.OnItemsRegistered += Run;
-        }
-
-        private static void Run()
+        public static void GenerateIfPresent()
         {
             if (_hasRun) return;
             _hasRun = true;
@@ -31,15 +26,6 @@ namespace ValheimGuide.DataGenerators
                 GenerateArmoryData();
                 GenerateWarfareData();
                 Debug.Log("[TherzieDataGenerator] Generation complete.");
-
-                string dataFolder = Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
-                var logger = BepInEx.Logging.Logger.CreateLogSource("ValheimGuide_Gen");
-
-                GuideDataLoader.Load(dataFolder, logger);
-
-                GuideDataEnricher.Run();
-
-                ProgressionTracker.RefreshCurrentStage();
             }
             catch (Exception ex)
             {
@@ -64,7 +50,7 @@ namespace ValheimGuide.DataGenerators
                 .ToList();
 
             Debug.Log($"[TherzieDataGenerator] Found {items.Count} Armory items.");
-            SaveToFile(GroupByTier(items, "Armory", modGuid, GetArmorTier), "armory_generated.guide");
+            SaveToFile(GroupByTier(items, "Armory", modGuid, GetTierFromRecipe), "armory_generated.guide");
         }
 
         private static void GenerateWarfareData()
@@ -84,7 +70,7 @@ namespace ValheimGuide.DataGenerators
                 .ToList();
 
             Debug.Log($"[TherzieDataGenerator] Found {items.Count} Warfare items.");
-            SaveToFile(GroupByTier(items, "Warfare", modGuid, GetArmorTier), "warfare_generated.guide");
+            SaveToFile(GroupByTier(items, "Warfare", modGuid, GetTierFromRecipe), "warfare_generated.guide");
         }
 
         private static bool IsArmorPiece(GameObject prefab)
@@ -253,19 +239,111 @@ namespace ValheimGuide.DataGenerators
             }
         }
 
-        private static string GetArmorTier(GameObject prefab)
+        private static string GetTierFromRecipe(GameObject prefab)
         {
-            string name = prefab.name.ToLower();
+            var itemDrop = prefab.GetComponent<ItemDrop>();
+            if (itemDrop == null) return "Other";
 
-            if (name.Contains("tyranium") || name.Contains("thoradus") || name.Contains("lokvyr") || name.Contains("njord") || name.Contains("skadi") || name.Contains("jotunn") || name.Contains("glacier") || name.Contains("storm") || name.Contains("polar") || name.Contains("frost") || name.Contains("ice") || name.Contains("north")) return "DeepNorth";
-            if (name.Contains("ragnorite") || name.Contains("surtr") || name.Contains("volcanic") || name.Contains("demon") || name.Contains("muspelheim") || name.Contains("charred") || name.Contains("fader") || name.Contains("ash") || name.Contains("flametal")) return "Ashlands";
-            if (name.Contains("carapace") || name.Contains("dvergr") || name.Contains("queen") || name.Contains("seeker") || name.Contains("demolisher") || name.Contains("legion")) return "Mistlands";
-            if (name.Contains("blackmetal") || name.Contains("bm") || name.Contains("lox") || name.Contains("scimitar") || name.Contains("yagluth") || name.Contains("blood") || name.Contains("padded") || name.Contains("bold")) return "Plains";
-            if (name.Contains("silver") || name.Contains("wolf") || name.Contains("crystal") || name.Contains("obsidian") || name.Contains("drake") || name.Contains("spirit") || name.Contains("vidar") || name.Contains("fenrir")) return "Mountain";
-            if (name.Contains("iron") || name.Contains("rotten") || name.Contains("swamp") || name.Contains("bonemass") || name.Contains("vampiric") || name.Contains("leech") || name.Contains("warrior")) return "Swamp";
-            if (name.Contains("bronze") || name.Contains("chitin") || name.Contains("troll") || name.Contains("elder") || name.Contains("copper") || name.Contains("tin") || name.Contains("viper") || name.Contains("hunter") || name.Contains("rogue") || name.Contains("vigorous")) return "Black Forest";
-            if (name.Contains("leather") || name.Contains("razorback") || name.Contains("flint") || name.Contains("bone") || name.Contains("eikthyr") || name.Contains("stag") || name.Contains("wood") || name.Contains("scythe") || name.Contains("wrench") || name.Contains("knife") || name.Contains("club") || name.Contains("spear") || name.Contains("axe") || name.Contains("bow") || name.Contains("shield") || name.Contains("mace") || name.Contains("sword") || name.Contains("atgeir") || name.Contains("sledge") || name.Contains("buckler") || name.Contains("tower")) return "Meadows";
+            var recipe = ObjectDB.instance.GetRecipe(itemDrop.m_itemData);
+            if (recipe != null)
+            {
+                string stationKey = (recipe.m_craftingStation?.m_name ?? "").ToLower();
+                int level = recipe.m_minStationLevel;
 
+                if (stationKey.Contains("forge") && !stationKey.Contains("black") && !stationKey.Contains("ymir"))
+                {
+                    if (level >= 4) return "Plains";
+                    if (level >= 3) return "Mountain";
+                    if (level >= 2) return "Swamp";
+                    return "Black Forest";
+                }
+
+                if (stationKey.Contains("workbench"))
+                    return "Meadows";
+
+                if (stationKey.Contains("fletcher"))
+                {
+                    if (level >= 5) return "Mistlands";
+                    if (level >= 4) return "Plains";
+                    if (level >= 3) return "Mountain";
+                    if (level >= 2) return "Swamp";
+                    return "Meadows";
+                }
+
+                if (stationKey.Contains("armory"))
+                {
+                    if (level >= 6) return "Ashlands";
+                    if (level >= 5) return "Mistlands";
+                    if (level >= 4) return "Plains";
+                    if (level >= 3) return "Mountain";
+                    if (level >= 2) return "Black Forest";
+                    return "Meadows";
+                }
+
+                if (stationKey.Contains("blackforge"))
+                    return level >= 2 ? "Ashlands" : "Mistlands";
+
+                if (stationKey.Contains("ymir"))
+                    return "Ashlands";
+
+                if (stationKey.Contains("galdr") || stationKey.Contains("magetable"))
+                    return "Mistlands";
+            }
+
+            // FALLBACK: name-based matching, warn so bad matches are visible
+            Debug.LogWarning($"[TherzieDataGenerator] No recipe for {prefab.name} — falling back to name-based tier detection.");
+            return GetTierFromName(prefab.name.ToLower());
+        }
+
+        // FALLBACK: original logic, now only reached when no recipe exists
+        private static string GetTierFromName(string name)
+        {
+            if (name.Contains("tyranium") || name.Contains("thoradus") || name.Contains("lokvyr") ||
+                name.Contains("njord") || name.Contains("skadi") || name.Contains("jotunn") ||
+                name.Contains("glacier") || name.Contains("storm") || name.Contains("polar") ||
+                name.Contains("frost") || name.Contains("ice") || name.Contains("north"))
+                return "DeepNorth";
+
+            if (name.Contains("ragnorite") || name.Contains("surtr") || name.Contains("volcanic") ||
+                name.Contains("demon") || name.Contains("muspelheim") || name.Contains("charred") ||
+                name.Contains("fader") || name.Contains("ash") || name.Contains("flametal"))
+                return "Ashlands";
+
+            if (name.Contains("carapace") || name.Contains("dvergr") || name.Contains("queen") ||
+                name.Contains("seeker") || name.Contains("demolisher") || name.Contains("legion"))
+                return "Mistlands";
+
+            if (name.Contains("blackmetal") || name.Contains("bm") || name.Contains("lox") ||
+                name.Contains("scimitar") || name.Contains("yagluth") || name.Contains("blood") ||
+                name.Contains("padded") || name.Contains("bold"))
+                return "Plains";
+
+            if (name.Contains("silver") || name.Contains("wolf") || name.Contains("crystal") ||
+                name.Contains("obsidian") || name.Contains("drake") || name.Contains("spirit") ||
+                name.Contains("vidar") || name.Contains("fenrir"))
+                return "Mountain";
+
+            if (name.Contains("iron") || name.Contains("rotten") || name.Contains("swamp") ||
+                name.Contains("bonemass") || name.Contains("vampiric") || name.Contains("leech") ||
+                name.Contains("warrior"))
+                return "Swamp";
+
+            if (name.Contains("bronze") || name.Contains("chitin") || name.Contains("troll") ||
+                name.Contains("elder") || name.Contains("copper") || name.Contains("tin") ||
+                name.Contains("viper") || name.Contains("hunter") || name.Contains("rogue") ||
+                name.Contains("vigorous"))
+                return "Black Forest";
+
+            if (name.Contains("leather") || name.Contains("razorback") || name.Contains("flint") ||
+                name.Contains("bone") || name.Contains("eikthyr") || name.Contains("stag") ||
+                name.Contains("wood") || name.Contains("scythe") || name.Contains("wrench") ||
+                name.Contains("knife") || name.Contains("club") || name.Contains("spear") ||
+                name.Contains("axe") || name.Contains("bow") || name.Contains("shield") ||
+                name.Contains("mace") || name.Contains("sword") || name.Contains("atgeir") ||
+                name.Contains("sledge") || name.Contains("buckler") || name.Contains("tower"))
+                return "Meadows";
+
+            Debug.LogWarning($"[TherzieDataGenerator] Could not determine tier from name '{name}', assigning Other.");
             return "Other";
         }
 

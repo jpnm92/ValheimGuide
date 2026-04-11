@@ -21,12 +21,22 @@ namespace ValheimGuide.UI
         // NEW FILTER STATE
         private readonly HashSet<string> _activeDamageFilters = new HashSet<string>();
         private readonly HashSet<string> _activeArmorFilters = new HashSet<string>();
+        private readonly List<Image> _tabButtonImages = new List<Image>();
 
         public GuidePanelController(GameObject stageListContainer, GameObject smartPanelContainer, GameObject referenceAreaContainer)
         {
             _stageListContainer = stageListContainer;
             _smartPanelContainer = smartPanelContainer;
             _referenceAreaContainer = referenceAreaContainer;
+        }
+
+        private void RebuildFilterBar(Stage stage)
+        {
+            Transform existing = _referenceAreaContainer.transform.Find("FilterBar");
+            if (existing != null)
+                UnityEngine.Object.Destroy(existing.gameObject);
+
+            BuildFilterBar(_referenceAreaContainer.transform, stage);
         }
 
         public void RefreshContent()
@@ -224,38 +234,38 @@ namespace ValheimGuide.UI
 
             content.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            GuidePanel.AddLabel(content.transform, stage.Label.ToUpper(), 22, FontStyle.Bold, Color.white);
+            GuidePanel.AddLabel(content.transform, stage.Label.ToUpper(), 22, TMPro.FontStyles.Bold, Color.white);
 
             if (!string.IsNullOrEmpty(stage.BiomeDescription))
-                GuidePanel.AddLabel(content.transform, stage.BiomeDescription, 14, FontStyle.Italic, new Color(0.8f, 0.8f, 0.8f));
+                GuidePanel.AddLabel(content.transform, stage.BiomeDescription, 14, TMPro.FontStyles.Italic, new Color(0.8f, 0.8f, 0.8f));
 
             if (stage.PriorityMaterials != null && stage.PriorityMaterials.Count > 0)
             {
                 GuidePanel.AddSpacer(content.transform);
-                GuidePanel.AddLabel(content.transform, "PRIORITY MATERIALS", 15, FontStyle.Bold, new Color(1f, 0.75f, 0.3f));
-                GuidePanel.AddLabel(content.transform, string.Join("  ·  ", stage.PriorityMaterials), 14, FontStyle.Normal, Color.white);
+                GuidePanel.AddLabel(content.transform, "PRIORITY MATERIALS", 15, TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+                GuidePanel.AddLabel(content.transform, string.Join("  ·  ", stage.PriorityMaterials), 14, TMPro.FontStyles.Normal, Color.white);
             }
 
             if (stage.Boss != null)
             {
                 GuidePanel.AddSpacer(content.transform);
-                GuidePanel.AddLabel(content.transform, "BOSS", 15, FontStyle.Bold, new Color(1f, 0.75f, 0.3f));
-                GuidePanel.AddLabel(content.transform, stage.Boss.Name, 18, FontStyle.Bold, new Color(1f, 0.4f, 0.4f));
+                GuidePanel.AddLabel(content.transform, "BOSS", 15, TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+                GuidePanel.AddLabel(content.transform, stage.Boss.Name, 18, TMPro.FontStyles.Bold, new Color(1f, 0.4f, 0.4f));
 
                 if (!string.IsNullOrEmpty(stage.Boss.Location))
-                    GuidePanel.AddLabel(content.transform, "Location: " + stage.Boss.Location, 14, FontStyle.Normal, Color.white);
+                    GuidePanel.AddLabel(content.transform, "Location: " + stage.Boss.Location, 14, TMPro.FontStyles.Normal, Color.white);
 
                 if (!string.IsNullOrEmpty(stage.Boss.RecommendedGear))
-                    GuidePanel.AddLabel(content.transform, "Gear: " + stage.Boss.RecommendedGear, 14, FontStyle.Normal, Color.white);
+                    GuidePanel.AddLabel(content.transform, "Gear: " + stage.Boss.RecommendedGear, 14, TMPro.FontStyles.Normal, Color.white);
 
                 if (stage.Boss.SummonMaterials != null && stage.Boss.SummonMaterials.Count > 0)
                 {
                     string summon = "Summon: " + string.Join(", ", stage.Boss.SummonMaterials.ConvertAll(m => $"{m.Amount}x {m.Label}"));
-                    GuidePanel.AddLabel(content.transform, summon, 14, FontStyle.Normal, Color.white);
+                    GuidePanel.AddLabel(content.transform, summon, 14, TMPro.FontStyles.Normal, Color.white);
                 }
 
                 if (!string.IsNullOrEmpty(stage.Boss.GlobalUnlock))
-                    GuidePanel.AddLabel(content.transform, "Unlocks: " + stage.Boss.GlobalUnlock, 14, FontStyle.Normal, new Color(0.6f, 1f, 0.6f));
+                    GuidePanel.AddLabel(content.transform, "Unlocks: " + stage.Boss.GlobalUnlock, 14, TMPro.FontStyles.Normal, new Color(0.6f, 1f, 0.6f));
             }
         }
 
@@ -332,6 +342,7 @@ namespace ValheimGuide.UI
                 PopulateActiveTab(stage);
             });
 
+            _tabButtonImages.Clear();
             string[] tabNames = { "GEAR", "DROPS", "RECIPES" };
             for (int i = 0; i < tabNames.Length; i++)
             {
@@ -340,10 +351,11 @@ namespace ValheimGuide.UI
                 tabBtn.transform.SetParent(tabBar.transform, false);
                 tabBtn.GetComponent<LayoutElement>().preferredWidth = 90;
 
-                bool isActive = i == _referenceTabIndex;
-                tabBtn.GetComponent<Image>().color = isActive
+                Image tabImage = tabBtn.GetComponent<Image>();
+                tabImage.color = i == _referenceTabIndex
                     ? new Color(0.35f, 0.28f, 0.15f, 1f)
                     : new Color(0.2f, 0.2f, 0.2f, 1f);
+                _tabButtonImages.Add(tabImage); // ← store reference
 
                 GameObject tabLabel = GuidePanel.CreateText(tabBtn.transform, "Label", tabNames[i]);
                 RectTransform labelRect = tabLabel.GetComponent<RectTransform>();
@@ -357,7 +369,17 @@ namespace ValheimGuide.UI
                 tabBtn.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     _referenceTabIndex = captured;
-                    BuildReferenceArea(stage);
+                    _activeDamageFilters.Clear();
+                    _activeArmorFilters.Clear();
+
+                    // Update tab highlight colours only
+                    for (int j = 0; j < _tabButtonImages.Count; j++)
+                        _tabButtonImages[j].color = j == _referenceTabIndex
+                            ? new Color(0.35f, 0.28f, 0.15f, 1f)
+                            : new Color(0.2f, 0.2f, 0.2f, 1f);
+
+                    RebuildFilterBar(stage);    // ← only the filter bar
+                    PopulateActiveTab(stage);   // ← only the content
                 });
             }
 
@@ -468,7 +490,7 @@ namespace ValheimGuide.UI
                 sep.transform.SetParent(filterRow.transform, false);
                 sep.GetComponent<LayoutElement>().preferredWidth = 8;
 
-                string[] armorClasses = { "Light", "Medium", "Heavy" };
+                string[] armorClasses = { "Light", "Heavy" };
                 foreach (string ac in armorClasses)
                 {
                     string captured = ac;
@@ -525,7 +547,7 @@ namespace ValheimGuide.UI
         {
             if (stage.Gear == null || stage.Gear.Count == 0)
             {
-                GuidePanel.AddLabel(parent, "No gear data.", 14, FontStyle.Italic, new Color(0.6f, 0.6f, 0.6f));
+                GuidePanel.AddLabel(parent, "No gear data.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
                 return;
             }
 
@@ -597,26 +619,26 @@ namespace ValheimGuide.UI
 
                 string type = gear.Type + "  ·  " + gear.Station;
                 if (gear.StationLevel > 1) type += " (Lv " + gear.StationLevel + ")";
-                GuidePanel.AddLabel(parent, type, 13, FontStyle.Normal, new Color(0.7f, 0.7f, 0.7f));
+                GuidePanel.AddLabel(parent, type, 13, TMPro.FontStyles.Normal, new Color(0.7f, 0.7f, 0.7f));
 
                 if (gear.Recipe != null && gear.Recipe.Count > 0)
                 {
                     string recipe = "Recipe: " + string.Join(", ", gear.Recipe.ConvertAll(r => $"{r.Amount}x {r.Label}"));
-                    GuidePanel.AddLabel(parent, recipe, 13, FontStyle.Normal, Color.white);
+                    GuidePanel.AddLabel(parent, recipe, 13, TMPro.FontStyles.Normal, Color.white);
                 }
 
                 GuidePanel.AddSpacer(parent);
             }
 
             if (count == 0)
-                GuidePanel.AddLabel(parent, "No results found.", 14, FontStyle.Italic, new Color(0.6f, 0.6f, 0.6f));
+                GuidePanel.AddLabel(parent, "No results found.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
         }
 
         private void BuildDropsTab(Transform parent, Stage stage)
         {
             if (stage.Drops == null || stage.Drops.Count == 0)
             {
-                GuidePanel.AddLabel(parent, "No drop data.", 14, FontStyle.Italic, new Color(0.6f, 0.6f, 0.6f));
+                GuidePanel.AddLabel(parent, "No drop data.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
                 return;
             }
 
@@ -627,26 +649,26 @@ namespace ValheimGuide.UI
                     continue;
 
                 count++;
-                GuidePanel.AddLabel(parent, drop.Label.ToUpper(), 15, FontStyle.Bold, Color.white);
+                GuidePanel.AddLabel(parent, drop.Label.ToUpper(), 15, TMPro.FontStyles.Bold, Color.white);
 
                 foreach (DropSource src in drop.Sources)
                 {
                     string line = $"{src.Mob}  ·  {src.Min}-{src.Max}  ·  {(int)(src.Chance * 100)}%";
                     if (src.StarVariantOnly) line += "  (★ only)";
-                    GuidePanel.AddLabel(parent, line, 13, FontStyle.Normal, new Color(0.75f, 0.75f, 0.75f));
+                    GuidePanel.AddLabel(parent, line, 13, TMPro.FontStyles.Normal, new Color(0.75f, 0.75f, 0.75f));
                 }
 
                 GuidePanel.AddSpacer(parent);
             }
             if (count == 0)
-                GuidePanel.AddLabel(parent, "No results found.", 14, FontStyle.Italic, new Color(0.6f, 0.6f, 0.6f));
+                GuidePanel.AddLabel(parent, "No results found.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
         }
 
         private void BuildRecipesTab(Transform parent, Stage stage)
         {
             if (stage.Recipes == null || stage.Recipes.Count == 0)
             {
-                GuidePanel.AddLabel(parent, "No recipe data.", 14, FontStyle.Italic, new Color(0.6f, 0.6f, 0.6f));
+                GuidePanel.AddLabel(parent, "No recipe data.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
                 return;
             }
 
@@ -691,21 +713,21 @@ namespace ValheimGuide.UI
 
                 string station = recipe.Station;
                 if (recipe.StationLevel > 1) station += " (Lv " + recipe.StationLevel + ")";
-                GuidePanel.AddLabel(parent, station, 13, FontStyle.Normal, new Color(0.7f, 0.7f, 0.7f));
+                GuidePanel.AddLabel(parent, station, 13, TMPro.FontStyles.Normal, new Color(0.7f, 0.7f, 0.7f));
 
                 if (!string.IsNullOrEmpty(recipe.UnlockNote))
-                    GuidePanel.AddLabel(parent, recipe.UnlockNote, 13, FontStyle.Italic, new Color(0.6f, 1f, 0.6f));
+                    GuidePanel.AddLabel(parent, recipe.UnlockNote, 13, TMPro.FontStyles.Italic, new Color(0.6f, 1f, 0.6f));
 
                 if (recipe.Ingredients != null && recipe.Ingredients.Count > 0)
                 {
                     string ingredients = "Ingredients: " + string.Join(", ", recipe.Ingredients.ConvertAll(i => $"{i.Amount}x {i.Label}"));
-                    GuidePanel.AddLabel(parent, ingredients, 13, FontStyle.Normal, Color.white);
+                    GuidePanel.AddLabel(parent, ingredients, 13, TMPro.FontStyles.Normal, Color.white);
                 }
 
                 GuidePanel.AddSpacer(parent);
             }
             if (count == 0)
-                GuidePanel.AddLabel(parent, "No results found.", 14, FontStyle.Italic, new Color(0.6f, 0.6f, 0.6f));
+                GuidePanel.AddLabel(parent, "No results found.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
         }
     }
 }

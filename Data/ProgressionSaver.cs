@@ -14,6 +14,7 @@ namespace ValheimGuide.Data
         private static string _saveFolder;
         private static GuideProgress _current;
         private static bool _isDirty;
+        private static int _saveGeneration;
 
         public static GuideProgress Current => _current;
 
@@ -69,19 +70,19 @@ namespace ValheimGuide.Data
             }
         }
 
-        /// <summary>Fire-and-forget async save — safe to call on every checkbox click.</summary>
         private static async void SaveAsync()
         {
             if (_current == null || !_isDirty) return;
 
-            // Snapshot state before leaving the main thread
+            int generation = ++_saveGeneration;
             string json = JsonConvert.SerializeObject(_current, Formatting.Indented);
             string path = GetPath(_current.CharacterName);
 
             try
             {
                 await System.Threading.Tasks.Task.Run(() => File.WriteAllText(path, json));
-                _isDirty = false;
+                if (_saveGeneration == generation)
+                    _isDirty = false;
             }
             catch (Exception ex)
             {

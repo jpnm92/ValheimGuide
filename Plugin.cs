@@ -19,43 +19,40 @@ namespace ValheimGuide
         public const string PluginVersion = "0.1.0";
 
         private Harmony _harmony;
-
+        private ConfigEntry<KeyboardShortcut> _toggleGuideKey;
         private void Awake()
         {
-            // Detect installed mods
             GuideDataLoader.InstalledMods = new HashSet<string>();
             foreach (var plugin in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
-            {
                 GuideDataLoader.InstalledMods.Add(plugin.Metadata.GUID);
-            }
 
-            // Load JSON data
-            string dataFolder = System.IO.Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
-            GuideDataLoader.Load(dataFolder, Logger);
-
-            // Initialise other systems
             ProgressionTracker.Initialise(Logger);
             ProgressSaver.Initialise(Logger);
-            // Apply Harmony patches
+
             _harmony = new Harmony(PluginGuid);
             _harmony.PatchAll();
 
-            TherzieDataGenerator.Register();
+            _toggleGuideKey = Config.Bind("General", "ToggleGuide", new KeyboardShortcut(KeyCode.F8), "Key to open/close the guide.");
 
-            Jotunn.Managers.ItemManager.OnItemsRegistered += () => {
-                ValheimGuide.DataGenerators.GuideDataEnricher.Run();
-            };
+            Jotunn.Managers.ItemManager.OnItemsRegistered += OnItemsRegistered;
 
-            // Hotkey – F8 by default
-            Config.Bind("General", "ToggleGuide", new KeyboardShortcut(KeyCode.F8), "Key to open/close the guide.");
-
-            Logger.LogInfo($"{PluginName} loaded. Stages: {GuideDataLoader.AllStages.Count}");
+            Logger.LogInfo($"{PluginName} loaded.");
         }
 
+        private void OnItemsRegistered()
+        {
+            string dataFolder = System.IO.Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
+
+            TherzieDataGenerator.GenerateIfPresent(); // 1. write generated .guide files if mods present
+            GuideDataLoader.Load(dataFolder, Logger); // 2. load all files including generated ones
+            GuideDataEnricher.Run();                 // 3. enrich with live ObjectDB data
+            ProgressionTracker.RefreshCurrentStage(); // 4. set initial stage
+
+            Logger.LogInfo($"{PluginName} ready. Stages: {GuideDataLoader.AllStages.Count}");
+        }
         private void Update()
         {
-            var shortcut = (KeyboardShortcut)Config["General", "ToggleGuide"].BoxedValue;
-            if (shortcut.IsDown())
+            if (_toggleGuideKey.Value.IsDown())
             {
                 GuidePanel.Toggle();
             }
