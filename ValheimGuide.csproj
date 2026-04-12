@@ -104,6 +104,7 @@
     <Compile Include="Patches\PlayerSpawnPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\FirstLaunchOverlay.cs" />
     <Compile Include="UI\GuidePanel.cs" />
     <Compile Include="Data\BiomeOrder.cs" />
     <Compile Include="UI\GuidePanelController.cs" />
@@ -115,7 +116,6 @@
     <None Include="PackagingAssets\README.md" />
     <None Include="PackagingAssets\icon.png" />
     <None Include=".gitignore" />
-    <None Include="resources\data\playstyles.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\data\meadows.guide">
@@ -140,6 +140,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="resources\data\deepnorth.guide">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\data\playstyles.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -197,11 +200,13 @@
     <ItemGroup>
       <AllProfiles Include="$([System.IO.Directory]::GetDirectories('$(R2ModmanProfilesPath)'))" />
       <DeployGuideFiles Include="$(DataOutputDir)*.guide" />
+      <DeployDataFiles Include="$(DataOutputDir)*.json" />
     </ItemGroup>
     <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
     <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
     <Copy SourceFiles="@(DeployGuideFiles)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
+    <Copy SourceFiles="@(DeployDataFiles)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
   </Target>
   <Import Project="packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
 </Project>

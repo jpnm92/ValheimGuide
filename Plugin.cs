@@ -9,6 +9,7 @@ using ValheimGuide.UI;
 
 namespace ValheimGuide
 {
+    [BepInDependency(Jotunn.Main.ModGuid)]
     [BepInDependency("Therzie.Armory", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("Therzie.Warfare", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]

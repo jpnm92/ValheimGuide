@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using ValheimGuide.Data;
@@ -636,30 +637,72 @@ namespace ValheimGuide.UI
 
         private void BuildDropsTab(Transform parent, Stage stage)
         {
-            if (stage.Drops == null || stage.Drops.Count == 0)
+            if (stage.Mobs == null || stage.Mobs.Count == 0)
             {
-                GuidePanel.AddLabel(parent, "No drop data.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
+                GuidePanel.AddLabel(parent, "No mob data.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
                 return;
             }
 
             int count = 0;
-            foreach (DropEntry drop in stage.Drops)
+            foreach (MobEntry mob in stage.Mobs)
             {
-                if (!string.IsNullOrEmpty(_searchQuery) && !drop.Label.ToLower().Contains(_searchQuery))
+                if (!string.IsNullOrEmpty(_searchQuery) && !mob.Label.ToLower().Contains(_searchQuery))
                     continue;
 
                 count++;
-                GuidePanel.AddLabel(parent, drop.Label.ToUpper(), 15, TMPro.FontStyles.Bold, Color.white);
 
-                foreach (DropSource src in drop.Sources)
+                // Mob name + health
+                string header = mob.Label.ToUpper();
+                if (mob.Health > 0)
+                    header += $"  ·  {mob.Health} HP";
+                GuidePanel.AddLabel(parent, header, 15, TMPro.FontStyles.Bold, Color.white);
+
+                // Spawn chances
+                if (mob.SpawnChanceDay > 0 || mob.SpawnChanceNight > 0)
                 {
-                    string line = $"{src.Mob}  ·  {src.Min}-{src.Max}  ·  {(int)(src.Chance * 100)}%";
-                    if (src.StarVariantOnly) line += "  (★ only)";
-                    GuidePanel.AddLabel(parent, line, 13, TMPro.FontStyles.Normal, new Color(0.75f, 0.75f, 0.75f));
+                    string spawn = $"Spawn: Day {(int)(mob.SpawnChanceDay * 100)}%  ·  Night {(int)(mob.SpawnChanceNight * 100)}%";
+                    GuidePanel.AddLabel(parent, spawn, 13, TMPro.FontStyles.Normal, new Color(0.65f, 0.65f, 0.65f));
                 }
+
+                // Weaknesses / immunities — only show non-Normal entries
+                if (mob.Resistances != null && mob.Resistances.Count > 0)
+                {
+                    var weak = mob.Resistances.Where(r => r.Value == "Weak").Select(r => r.Key).ToList();
+                    var immune = mob.Resistances.Where(r => r.Value == "Immune").Select(r => r.Key).ToList();
+                    var resist = mob.Resistances.Where(r => r.Value == "Resistant").Select(r => r.Key).ToList();
+
+                    if (weak.Count > 0)
+                        GuidePanel.AddLabel(parent, "Weak: " + string.Join(", ", weak), 13, TMPro.FontStyles.Normal, new Color(1f, 0.5f, 0.5f));
+                    if (immune.Count > 0)
+                        GuidePanel.AddLabel(parent, "Immune: " + string.Join(", ", immune), 13, TMPro.FontStyles.Normal, new Color(0.5f, 0.8f, 1f));
+                    if (resist.Count > 0)
+                        GuidePanel.AddLabel(parent, "Resistant: " + string.Join(", ", resist), 13, TMPro.FontStyles.Normal, new Color(0.7f, 0.9f, 0.7f));
+                }
+
+                // Drops
+                if (mob.Drops != null && mob.Drops.Count > 0)
+                {
+                    string drops = "Drops: " + string.Join(", ", mob.Drops.ConvertAll(d =>
+                        $"{d.Label} ({(int)(d.Chance * 100)}%{(d.Max > 1 ? $" · {d.Min}-{d.Max}" : "")})"));
+                    GuidePanel.AddLabel(parent, drops, 13, TMPro.FontStyles.Normal, Color.white);
+                }
+
+                // Taming
+                if (mob.IsTameable && mob.Taming != null)
+                {
+                    string food = "Tame with: " + string.Join(", ", mob.Taming.FoodItems);
+                    GuidePanel.AddLabel(parent, food, 13, TMPro.FontStyles.Italic, new Color(0.8f, 1f, 0.6f));
+                    if (!string.IsNullOrEmpty(mob.Taming.Note))
+                        GuidePanel.AddLabel(parent, mob.Taming.Note, 13, TMPro.FontStyles.Italic, new Color(0.7f, 0.9f, 0.5f));
+                }
+
+                // Combat note
+                if (!string.IsNullOrEmpty(mob.Note))
+                    GuidePanel.AddLabel(parent, mob.Note, 13, TMPro.FontStyles.Italic, new Color(1f, 0.85f, 0.4f));
 
                 GuidePanel.AddSpacer(parent);
             }
+
             if (count == 0)
                 GuidePanel.AddLabel(parent, "No results found.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
         }

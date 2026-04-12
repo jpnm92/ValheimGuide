@@ -112,5 +112,21 @@ namespace ValheimGuide.Data
                 characterName = characterName.Replace(c, '_');
             return Path.Combine(_saveFolder, characterName + ".json");
         }
+
+        public static void SetSpoilersPreference(bool showFuture)
+        {
+            if (_current == null) return;
+            _current.ShowFutureStages = showFuture;
+            _isDirty = true;
+            SaveAsync();
+        }
+
+        public static void SetPlaystylePreference(string playstyleId)
+        {
+            if (_current == null) return;
+            _current.PlaystyleId = playstyleId;
+            _isDirty = true;
+            SaveAsync();
+        }
     }
 }

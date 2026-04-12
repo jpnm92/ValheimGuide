@@ -26,8 +26,17 @@ namespace ValheimGuide.UI
 
             _panel.SetActive(true);
             _isVisible = true;
+            Time.timeScale = 0f;
             GUIManager.BlockInput(true);
-            _controller.RefreshContent();
+
+            if (FirstLaunchOverlay.IsNeeded())
+            {
+                FirstLaunchOverlay.Show(_panel, () => _controller.RefreshContent());
+            }
+            else
+            {
+                _controller.RefreshContent();
+            }
         }
 
         public static void Hide()
@@ -35,6 +44,7 @@ namespace ValheimGuide.UI
             if (_panel != null)
                 _panel.SetActive(false);
             _isVisible = false;
+            Time.timeScale = 1f;
             GUIManager.BlockInput(false);
         }
 
