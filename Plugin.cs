@@ -53,15 +53,15 @@ namespace ValheimGuide
         }
         private void Update()
         {
+            // Enforce pause every frame while guide is open
+            if (GuidePanel.IsVisible)
+                Time.timeScale = 0f;
+
             if (_toggleGuideKey.Value.IsDown())
-            {
                 GuidePanel.Toggle();
-            }
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) && GuidePanel.IsVisible)
-            {
                 GuidePanel.Hide();
-            }
         }
     }
 }

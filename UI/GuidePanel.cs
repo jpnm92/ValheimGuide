@@ -232,7 +232,7 @@ namespace ValheimGuide.UI
 
     public class SmoothScroll : MonoBehaviour, IScrollHandler, IBeginDragHandler
     {
-        private const float ScrollSpeed = 350f;
+        private const float ScrollSpeed = 700f;
 
         private ScrollRect _scrollRect;
         private float _smoothTime = 0.08f;

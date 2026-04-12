@@ -162,8 +162,7 @@ namespace ValheimGuide.UI
             _searchQuery = "";
             _activeDamageFilters.Clear();
             _activeArmorFilters.Clear();
-            _isReadMode = false;
-            _referenceAreaContainer.SetActive(true);
+            _referenceAreaContainer.SetActive(!_isReadMode);
 
             foreach (var stageButton in _stageButtons)
             {
@@ -172,11 +171,24 @@ namespace ValheimGuide.UI
                 bool isSelected = s == stage;
                 bool isCurrent = s == ProgressionTracker.CurrentStage;
 
-                Color bg = isSelected ? new Color(0.35f, 0.28f, 0.15f, 1f)
-                         : isCurrent ? new Color(0.25f, 0.22f, 0.12f, 1f)
-                         : new Color(0.2f, 0.2f, 0.2f, 1f);
-
+                Color bg = isSelected
+                    ? new Color(0.35f, 0.28f, 0.15f, 1f)
+                    : new Color(0.2f, 0.2f, 0.2f, 1f);
                 btn.GetComponent<Image>().color = bg;
+
+                if (isCurrent && !isSelected)
+                {
+                    GameObject dot = new GameObject("CurrentDot",
+                        typeof(RectTransform), typeof(Image));
+                    dot.transform.SetParent(btnObj.transform, false);
+                    RectTransform dotRect = dot.GetComponent<RectTransform>();
+                    dotRect.anchorMin = new Vector2(0, 0.5f);
+                    dotRect.anchorMax = new Vector2(0, 0.5f);
+                    dotRect.pivot = new Vector2(0, 0.5f);
+                    dotRect.anchoredPosition = new Vector2(4, 0);
+                    dotRect.sizeDelta = new Vector2(4, 4);
+                    dot.GetComponent<Image>().color = new Color(0.4f, 0.9f, 0.4f);
+                }
             }
 
             BuildSmartPanel(stage);
@@ -248,6 +260,25 @@ namespace ValheimGuide.UI
                 BuildSmartPanel(stage);
                 _referenceAreaContainer.SetActive(false);
             });
+
+            // Adjust smart panel layout based on mode
+            RectTransform smartRect = _smartPanelContainer.GetComponent<RectTransform>();
+            if (_isReadMode)
+            {
+                smartRect.anchorMin = new Vector2(0.25f, 0f);
+                smartRect.anchorMax = new Vector2(1f, 1f);
+                smartRect.offsetMin = new Vector2(5, 10);
+                smartRect.offsetMax = new Vector2(-10, -70);
+                _referenceAreaContainer.SetActive(false);
+            }
+            else
+            {
+                smartRect.anchorMin = new Vector2(0.25f, 0.5f);
+                smartRect.anchorMax = new Vector2(1f, 1f);
+                smartRect.offsetMin = new Vector2(5, 5);
+                smartRect.offsetMax = new Vector2(-10, -70);
+                _referenceAreaContainer.SetActive(true);
+            }
 
             // ── Scroll view for content ───────────────────────────────
             GameObject scrollObj = new GameObject("ScrollView", typeof(RectTransform), typeof(ScrollRect));
@@ -1022,8 +1053,21 @@ namespace ValheimGuide.UI
         {
             if (string.IsNullOrEmpty(stage.Article))
             {
-                GuidePanel.AddLabel(parent, "No article available for this stage.", 14,
-                    TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
+                // For generated Therzie stages, point to the parent biome
+                string parentBiome = stage.Label;
+                // Label is e.g. "Armory (Meadows)" or "Warfare (Swamp)"
+                int start = stage.Label.IndexOf('(');
+                int end = stage.Label.IndexOf(')');
+                if (start >= 0 && end > start)
+                    parentBiome = stage.Label.Substring(start + 1, end - start - 1);
+
+                GuidePanel.AddLabel(parent,
+                    $"This tier's guide is covered in the {parentBiome} Read section.",
+                    14, TMPro.FontStyles.Italic, new Color(0.7f, 0.7f, 0.7f));
+                GuidePanel.AddSpacer(parent);
+                GuidePanel.AddLabel(parent,
+                    "Select the base biome stage on the left and click READ.",
+                    13, TMPro.FontStyles.Normal, new Color(0.6f, 0.6f, 0.6f));
                 return;
             }
 
