@@ -134,7 +134,7 @@ namespace ValheimGuide.UI
                 vlg.childAlignment = TextAnchor.MiddleCenter;
                 vlg.childForceExpandWidth = false;
                 vlg.childForceExpandHeight = false;
-                vlg.childControlWidth = false;
+                vlg.childControlWidth = true;
                 vlg.childControlHeight = true;
                 vlg.spacing = 0;
                 vlg.padding = new RectOffset(80, 80, 60, 60);
@@ -163,7 +163,7 @@ namespace ValheimGuide.UI
             t.raycastTarget = false;
 
             var le = go.GetComponent<LayoutElement>();
-            le.preferredWidth = 700;
+            le.flexibleWidth = 1f;
         }
 
         private static void AddSpacer(float height)

@@ -18,6 +18,7 @@ namespace ValheimGuide.UI
         private int _referenceTabIndex;
         private string _searchQuery = "";
         private GameObject _currentTabContentContainer;
+        private bool _isReadMode = false;
 
         // NEW FILTER STATE
         private readonly HashSet<string> _activeDamageFilters = new HashSet<string>();
@@ -161,6 +162,8 @@ namespace ValheimGuide.UI
             _searchQuery = "";
             _activeDamageFilters.Clear();
             _activeArmorFilters.Clear();
+            _isReadMode = false;
+            _referenceAreaContainer.SetActive(true);
 
             foreach (var stageButton in _stageButtons)
             {
@@ -185,44 +188,107 @@ namespace ValheimGuide.UI
             foreach (Transform child in _smartPanelContainer.transform)
                 UnityEngine.Object.Destroy(child.gameObject);
 
+            // ── Mode toggle bar ──────────────────────────────────────
+            GameObject modeBar = new GameObject("ModeBar", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            modeBar.transform.SetParent(_smartPanelContainer.transform, false);
+            RectTransform modeBarRect = modeBar.GetComponent<RectTransform>();
+            modeBarRect.anchorMin = new Vector2(0, 1);
+            modeBarRect.anchorMax = new Vector2(1, 1);
+            modeBarRect.pivot = new Vector2(0.5f, 1);
+            modeBarRect.offsetMin = new Vector2(8, -34);
+            modeBarRect.offsetMax = new Vector2(-8, -4);
+
+            HorizontalLayoutGroup modeHlg = modeBar.GetComponent<HorizontalLayoutGroup>();
+            modeHlg.spacing = 4;
+            modeHlg.childForceExpandWidth = false;
+            modeHlg.childForceExpandHeight = true;
+            modeHlg.childControlWidth = false;
+            modeHlg.childControlHeight = true;
+
+            // Guide button
+            GameObject guideBtn = new GameObject("GuideModeBtn",
+                typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+            guideBtn.transform.SetParent(modeBar.transform, false);
+            guideBtn.GetComponent<LayoutElement>().preferredWidth = 80;
+            guideBtn.GetComponent<Image>().color = !_isReadMode
+                ? new Color(0.35f, 0.28f, 0.15f, 1f)
+                : new Color(0.2f, 0.2f, 0.2f, 1f);
+
+            GameObject guideBtnLabel = GuidePanel.CreateText(guideBtn.transform, "Label", "GUIDE");
+            guideBtnLabel.GetComponent<RectTransform>().anchorMin = Vector2.zero;
+            guideBtnLabel.GetComponent<RectTransform>().anchorMax = Vector2.one;
+            guideBtnLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+            guideBtnLabel.GetComponent<Text>().fontSize = 13;
+
+            // Read button
+            GameObject readBtn = new GameObject("ReadModeBtn",
+                typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+            readBtn.transform.SetParent(modeBar.transform, false);
+            readBtn.GetComponent<LayoutElement>().preferredWidth = 80;
+            readBtn.GetComponent<Image>().color = _isReadMode
+                ? new Color(0.35f, 0.28f, 0.15f, 1f)
+                : new Color(0.2f, 0.2f, 0.2f, 1f);
+
+            GameObject readBtnLabel = GuidePanel.CreateText(readBtn.transform, "Label", "READ");
+            readBtnLabel.GetComponent<RectTransform>().anchorMin = Vector2.zero;
+            readBtnLabel.GetComponent<RectTransform>().anchorMax = Vector2.one;
+            readBtnLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+            readBtnLabel.GetComponent<Text>().fontSize = 13;
+
+            guideBtn.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                _isReadMode = false;
+                BuildSmartPanel(stage);
+                _referenceAreaContainer.SetActive(true);
+            });
+
+            readBtn.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                _isReadMode = true;
+                BuildSmartPanel(stage);
+                _referenceAreaContainer.SetActive(false);
+            });
+
+            // ── Scroll view for content ───────────────────────────────
             GameObject scrollObj = new GameObject("ScrollView", typeof(RectTransform), typeof(ScrollRect));
             scrollObj.transform.SetParent(_smartPanelContainer.transform, false);
             RectTransform scrollRect = scrollObj.GetComponent<RectTransform>();
             scrollRect.anchorMin = Vector2.zero;
             scrollRect.anchorMax = Vector2.one;
             scrollRect.offsetMin = new Vector2(8, 8);
-            scrollRect.offsetMax = new Vector2(-20, -8);
+            scrollRect.offsetMax = new Vector2(-20, -40); // pushed down to make room for mode bar
 
             ScrollRect scroll = scrollObj.GetComponent<ScrollRect>();
             scroll.horizontal = false;
             scroll.vertical = true;
             scroll.movementType = ScrollRect.MovementType.Clamped;
-
             scrollObj.AddComponent<SmoothScroll>();
 
             Scrollbar scrollbar = GuidePanel.CreateScrollbar(_smartPanelContainer.transform);
+            RectTransform sbRect = scrollbar.GetComponent<RectTransform>();
+            sbRect.offsetMax = new Vector2(-4, -40);
             scroll.verticalScrollbar = scrollbar;
             scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
 
-            GameObject viewport = new GameObject("Viewport", typeof(RectTransform), typeof(Image), typeof(Mask));
+            GameObject viewport = new GameObject("Viewport",
+                typeof(RectTransform), typeof(Image), typeof(Mask));
             viewport.transform.SetParent(scrollObj.transform, false);
             viewport.GetComponent<Image>().color = new Color(0, 0, 0, 0.01f);
             viewport.GetComponent<Mask>().showMaskGraphic = false;
             RectTransform vpRect = viewport.GetComponent<RectTransform>();
             vpRect.anchorMin = Vector2.zero;
             vpRect.anchorMax = Vector2.one;
-            vpRect.offsetMin = Vector2.zero;
-            vpRect.offsetMax = Vector2.zero;
+            vpRect.offsetMin = vpRect.offsetMax = Vector2.zero;
             scroll.viewport = vpRect;
 
-            GameObject content = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            GameObject content = new GameObject("Content",
+                typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
             content.transform.SetParent(viewport.transform, false);
             RectTransform contentRect = content.GetComponent<RectTransform>();
             contentRect.anchorMin = new Vector2(0, 1);
             contentRect.anchorMax = new Vector2(1, 1);
             contentRect.pivot = new Vector2(0.5f, 1);
-            contentRect.offsetMin = Vector2.zero;
-            contentRect.offsetMax = Vector2.zero;
+            contentRect.offsetMin = contentRect.offsetMax = Vector2.zero;
             scroll.content = contentRect;
 
             VerticalLayoutGroup vlg = content.GetComponent<VerticalLayoutGroup>();
@@ -232,41 +298,193 @@ namespace ValheimGuide.UI
             vlg.childForceExpandHeight = false;
             vlg.childControlWidth = true;
             vlg.childControlHeight = true;
-
             content.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            GuidePanel.AddLabel(content.transform, stage.Label.ToUpper(), 22, TMPro.FontStyles.Bold, Color.white);
+            // ── READ MODE ─────────────────────────────────────────────
+            if (_isReadMode)
+            {
+                BuildReadContent(content.transform, stage);
+                return;
+            }
+
+            // ── GUIDE MODE ────────────────────────────────────────────
+            GuidePanel.AddLabel(content.transform, stage.Label.ToUpper(), 22,
+                TMPro.FontStyles.Bold, Color.white);
 
             if (!string.IsNullOrEmpty(stage.BiomeDescription))
-                GuidePanel.AddLabel(content.transform, stage.BiomeDescription, 14, TMPro.FontStyles.Italic, new Color(0.8f, 0.8f, 0.8f));
+                GuidePanel.AddLabel(content.transform, stage.BiomeDescription, 14,
+                    TMPro.FontStyles.Italic, new Color(0.8f, 0.8f, 0.8f));
 
+            // Priority materials
             if (stage.PriorityMaterials != null && stage.PriorityMaterials.Count > 0)
             {
                 GuidePanel.AddSpacer(content.transform);
-                GuidePanel.AddLabel(content.transform, "PRIORITY MATERIALS", 15, TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
-                GuidePanel.AddLabel(content.transform, string.Join("  ·  ", stage.PriorityMaterials), 14, TMPro.FontStyles.Normal, Color.white);
+                GuidePanel.AddLabel(content.transform, "PRIORITY MATERIALS", 15,
+                    TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+                GuidePanel.AddLabel(content.transform, string.Join("  ·  ", stage.PriorityMaterials),
+                    14, TMPro.FontStyles.Normal, Color.white);
             }
 
+            // Boss brief
             if (stage.Boss != null)
             {
                 GuidePanel.AddSpacer(content.transform);
-                GuidePanel.AddLabel(content.transform, "BOSS", 15, TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
-                GuidePanel.AddLabel(content.transform, stage.Boss.Name, 18, TMPro.FontStyles.Bold, new Color(1f, 0.4f, 0.4f));
+                GuidePanel.AddLabel(content.transform, "BOSS", 15,
+                    TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+                GuidePanel.AddLabel(content.transform, stage.Boss.Name, 18,
+                    TMPro.FontStyles.Bold, new Color(1f, 0.4f, 0.4f));
 
                 if (!string.IsNullOrEmpty(stage.Boss.Location))
-                    GuidePanel.AddLabel(content.transform, "Location: " + stage.Boss.Location, 14, TMPro.FontStyles.Normal, Color.white);
+                    GuidePanel.AddLabel(content.transform, "Location: " + stage.Boss.Location,
+                        14, TMPro.FontStyles.Normal, Color.white);
 
                 if (!string.IsNullOrEmpty(stage.Boss.RecommendedGear))
-                    GuidePanel.AddLabel(content.transform, "Gear: " + stage.Boss.RecommendedGear, 14, TMPro.FontStyles.Normal, Color.white);
+                    GuidePanel.AddLabel(content.transform, "Gear: " + stage.Boss.RecommendedGear,
+                        14, TMPro.FontStyles.Normal, Color.white);
 
                 if (stage.Boss.SummonMaterials != null && stage.Boss.SummonMaterials.Count > 0)
                 {
-                    string summon = "Summon: " + string.Join(", ", stage.Boss.SummonMaterials.ConvertAll(m => $"{m.Amount}x {m.Label}"));
+                    string summon = "Summon: " + string.Join(", ",
+                        stage.Boss.SummonMaterials.ConvertAll(m => $"{m.Amount}x {m.Label}"));
                     GuidePanel.AddLabel(content.transform, summon, 14, TMPro.FontStyles.Normal, Color.white);
                 }
 
+                if (stage.Boss.WeakAgainst != null && stage.Boss.WeakAgainst.Count > 0)
+                    GuidePanel.AddLabel(content.transform, "Weak: " + string.Join(", ", stage.Boss.WeakAgainst),
+                        14, TMPro.FontStyles.Normal, new Color(1f, 0.5f, 0.5f));
+
+                if (!string.IsNullOrEmpty(stage.Boss.Strategy))
+                    GuidePanel.AddLabel(content.transform, stage.Boss.Strategy, 13,
+                        TMPro.FontStyles.Italic, new Color(0.8f, 0.95f, 0.8f));
+
                 if (!string.IsNullOrEmpty(stage.Boss.GlobalUnlock))
-                    GuidePanel.AddLabel(content.transform, "Unlocks: " + stage.Boss.GlobalUnlock, 14, TMPro.FontStyles.Normal, new Color(0.6f, 1f, 0.6f));
+                    GuidePanel.AddLabel(content.transform, "Unlocks: " + stage.Boss.GlobalUnlock,
+                        14, TMPro.FontStyles.Normal, new Color(0.6f, 1f, 0.6f));
+            }
+
+            // Objectives
+            if (stage.Objectives != null && stage.Objectives.Count > 0)
+            {
+                GuidePanel.AddSpacer(content.transform);
+                GuidePanel.AddLabel(content.transform, "OBJECTIVES", 15,
+                    TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+
+                foreach (Objective obj in stage.Objectives)
+                {
+                    if (!string.IsNullOrEmpty(obj.PlaystyleFilter))
+                    {
+                        string playstyleId = ProgressSaver.Current?.PlaystyleId ?? "all";
+                        if (playstyleId != "all" && playstyleId != obj.PlaystyleFilter)
+                            continue;
+                    }
+
+                    bool done = IsObjectiveComplete(obj);
+                    string tick = done ? "<color=#66ff66>✔</color> " : "○ ";
+                    Color textColor = done
+                        ? new Color(0.5f, 0.8f, 0.5f)
+                        : Color.white;
+
+                    GameObject row = new GameObject("ObjRow",
+                        typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+                    row.transform.SetParent(content.transform, false);
+                    row.GetComponent<LayoutElement>().preferredHeight = 22;
+
+                    HorizontalLayoutGroup rowHlg = row.GetComponent<HorizontalLayoutGroup>();
+                    rowHlg.spacing = 6;
+                    rowHlg.childForceExpandWidth = false;
+                    rowHlg.childForceExpandHeight = true;
+                    rowHlg.childControlWidth = false;
+                    rowHlg.childControlHeight = true;
+
+                    // Manual checkbox for non-autocomplete objectives
+                    if (!obj.AutoComplete)
+                    {
+                        string objKey = "obj_" + obj.Id;
+                        bool isChecked = ProgressSaver.IsChecked(objKey);
+
+                        GameObject checkBox = new GameObject("Check",
+                            typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+                        checkBox.transform.SetParent(row.transform, false);
+                        checkBox.GetComponent<LayoutElement>().preferredWidth = 18;
+                        Image checkImg = checkBox.GetComponent<Image>();
+                        checkImg.color = isChecked
+                            ? new Color(0.2f, 0.6f, 0.2f)
+                            : new Color(0.25f, 0.25f, 0.25f);
+
+                        GameObject mark = GuidePanel.CreateText(checkBox.transform, "Mark", isChecked ? "✔" : "");
+                        mark.GetComponent<RectTransform>().anchorMin = Vector2.zero;
+                        mark.GetComponent<RectTransform>().anchorMax = Vector2.one;
+                        mark.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+                        mark.GetComponent<Text>().fontSize = 11;
+                        Text markText = mark.GetComponent<Text>();
+
+                        checkBox.GetComponent<Button>().onClick.AddListener(() =>
+                        {
+                            bool nowChecked = !ProgressSaver.IsChecked(objKey);
+                            ProgressSaver.SetChecked(objKey, nowChecked);
+                            checkImg.color = nowChecked
+                                ? new Color(0.2f, 0.6f, 0.2f)
+                                : new Color(0.25f, 0.25f, 0.25f);
+                            markText.text = nowChecked ? "✔" : "";
+                        });
+                    }
+                    else
+                    {
+                        // Auto tick indicator (not clickable)
+                        GameObject tickObj = GuidePanel.CreateText(row.transform, "Tick", done ? "✔" : "○");
+                        tickObj.GetComponent<RectTransform>().sizeDelta = new Vector2(18, 0);
+                        Text tickText = tickObj.GetComponent<Text>();
+                        tickText.alignment = TextAnchor.MiddleCenter;
+                        tickText.fontSize = 13;
+                        tickText.color = done ? new Color(0.4f, 0.9f, 0.4f) : new Color(0.6f, 0.6f, 0.6f);
+                    }
+
+                    GameObject label = GuidePanel.CreateText(row.transform, "Text", obj.Text);
+                    label.GetComponent<RectTransform>().sizeDelta = new Vector2(260, 0);
+                    Text labelText = label.GetComponent<Text>();
+                    labelText.fontSize = 13;
+                    labelText.color = textColor;
+                    labelText.fontStyle = done ? FontStyle.Normal : FontStyle.Normal;
+                }
+            }
+
+            // Tips
+            if (stage.Tips != null && stage.Tips.Count > 0)
+            {
+                GuidePanel.AddSpacer(content.transform);
+                GuidePanel.AddLabel(content.transform, "TIPS", 15,
+                    TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+
+                foreach (Tip tip in stage.Tips)
+                {
+                    string prefix;
+                    Color tipColor;
+                    switch (tip.Category)
+                    {
+                        case "combat":
+                            prefix = "[Combat] ";
+                            tipColor = new Color(1f, 0.6f, 0.6f);
+                            break;
+                        case "gathering":
+                            prefix = "[Gather] ";
+                            tipColor = new Color(0.6f, 1f, 0.6f);
+                            break;
+                        case "secret":
+                            prefix = "[Secret] ";
+                            tipColor = new Color(1f, 0.9f, 0.4f);
+                            break;
+                        case "building":
+                            prefix = "[Build] ";
+                            tipColor = new Color(0.6f, 0.8f, 1f);
+                            break;
+                        default:
+                            prefix = "";
+                            tipColor = new Color(0.85f, 0.85f, 0.85f);
+                            break;
+                    }
+                    GuidePanel.AddLabel(content.transform, prefix + tip.Text, 13,
+                        TMPro.FontStyles.Normal, tipColor);
+                }
             }
         }
 
