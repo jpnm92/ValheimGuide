@@ -10,7 +10,12 @@
         "Type": "globalKey",
         "Value": "defeated_bonemass"
       },
-      "PriorityMaterials": [ "Silver", "Obsidian", "WolfPelt", "DragonEgg" ],
+      "PriorityMaterials": [
+        "Silver",
+        "Obsidian",
+        "WolfPelt",
+        "DragonEgg"
+      ],
       "Boss": {
         "Name": "Moder",
         "Location": "Mountain altar",
@@ -24,10 +29,22 @@
             "Amount": 3
           }
         ],
-        "KeyDrops": [ "DragonTear" ],
-        "WeakAgainst": [ "Fire", "Spirit" ],
-        "ResistantTo": [ "Frost" ],
-        "ImmuneAgainst": []
+        "KeyDrops": [
+          "DragonTear"
+        ],
+        "WeakAgainst": [
+          "Fire",
+          "Spirit"
+        ],
+        "ResistantTo": [
+          "Frost"
+        ],
+        "ImmuneAgainst": [],
+        "Strategy": "",
+        "PrefabId": "Moder",
+        "IsBonus": false,
+        "ModRequired": null,
+        "Drops": []
       },
       "Gear": [
         {
@@ -53,7 +70,8 @@
               "Label": "Chain",
               "Amount": 1
             }
-          ]
+          ],
+          "PlaystyleTag": null
         },
         {
           "ItemId": "SwordSilver",
@@ -83,41 +101,8 @@
               "Label": "Iron",
               "Amount": 5
             }
-          ]
-        }
-      ],
-      "Drops": [
-        {
-          "ItemId": "WolfPelt",
-          "Label": "Wolf Pelt",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Wolf",
-              "Biome": "Mountain",
-              "Chance": 1.0,
-              "Min": 1,
-              "Max": 2,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
-        },
-        {
-          "ItemId": "FreezeGland",
-          "Label": "Freeze Gland",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Drake",
-              "Biome": "Mountain",
-              "Chance": 1.0,
-              "Min": 1,
-              "Max": 1,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
+          ],
+          "PlaystyleTag": null
         }
       ],
       "Recipes": [
@@ -151,7 +136,83 @@
             }
           ]
         }
-      ]
+      ],
+      "Mobs": [
+        {
+          "PrefabId": "Wolf",
+          "Label": "Wolf",
+          "Biome": "Mountain",
+          "ModRequired": null,
+          "IsTameable": true,
+          "Health": 60,
+          "SpawnChanceDay": 0.2,
+          "SpawnChanceNight": 0.4,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Resistant"
+          },
+          "Drops": [
+            {
+              "ItemId": "WolfPelt",
+              "Label": "Wolf Pelt",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": {
+            "FoodItems": [
+              "RawMeat",
+              "DeerMeat",
+              "NeckTail",
+              "LoxMeat"
+            ],
+            "Note": "Chain it first — approach slowly"
+          },
+          "Note": "Pack hunter — lure singles away before engaging"
+        },
+        {
+          "PrefabId": "Drake",
+          "Label": "Drake",
+          "Biome": "Mountain",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 100,
+          "SpawnChanceDay": 0.15,
+          "SpawnChanceNight": 0.15,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Weak",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "FreezeGland",
+              "Label": "Freeze Gland",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 1
+            }
+          ],
+          "Taming": null,
+          "Note": "Immune to frost — use fire damage"
+        }
+      ],
+      "Article": "",
+      "BonusBosses": [],
+      "Objectives": [],
+      "Tips": []
     }
   ]
 }

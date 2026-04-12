@@ -10,7 +10,12 @@
         "Type": "globalKey",
         "Value": "defeated_eikthyr"
       },
-      "PriorityMaterials": [ "Copper", "Tin", "Bronze", "SurtlingCore" ],
+      "PriorityMaterials": [
+        "Copper",
+        "Tin",
+        "Bronze",
+        "SurtlingCore"
+      ],
       "Boss": {
         "Name": "The Elder",
         "Location": "Black Forest altar",
@@ -24,10 +29,23 @@
             "Amount": 3
           }
         ],
-        "KeyDrops": [ "SwampKey" ],
-        "WeakAgainst": [ "Fire" ],
-        "ResistantTo": [ "Blunt", "Slash", "Pierce" ],
-        "ImmuneAgainst": []
+        "KeyDrops": [
+          "SwampKey"
+        ],
+        "WeakAgainst": [
+          "Fire"
+        ],
+        "ResistantTo": [
+          "Blunt",
+          "Slash",
+          "Pierce"
+        ],
+        "ImmuneAgainst": [],
+        "Strategy": "",
+        "PrefabId": "TheElder",
+        "IsBonus": false,
+        "ModRequired": null,
+        "Drops": []
       },
       "Gear": [
         {
@@ -48,7 +66,8 @@
               "Label": "Deer Hide",
               "Amount": 2
             }
-          ]
+          ],
+          "PlaystyleTag": null
         },
         {
           "ItemId": "AxeBronze",
@@ -73,7 +92,8 @@
               "Label": "Leather Scraps",
               "Amount": 2
             }
-          ]
+          ],
+          "PlaystyleTag": null
         },
         {
           "ItemId": "PickaxeBronze",
@@ -93,7 +113,8 @@
               "Label": "Bronze",
               "Amount": 10
             }
-          ]
+          ],
+          "PlaystyleTag": null
         },
         {
           "ItemId": "ArmorTrollLeatherChest",
@@ -113,41 +134,8 @@
               "Label": "Bone Fragments",
               "Amount": 15
             }
-          ]
-        }
-      ],
-      "Drops": [
-        {
-          "ItemId": "SurtlingCore",
-          "Label": "Surtling Core",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Surtling",
-              "Biome": "Black Forest",
-              "Chance": 1.0,
-              "Min": 1,
-              "Max": 3,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
-        },
-        {
-          "ItemId": "TrollHide",
-          "Label": "Troll Hide",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Troll",
-              "Biome": "Black Forest",
-              "Chance": 1.0,
-              "Min": 2,
-              "Max": 5,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
+          ],
+          "PlaystyleTag": null
         }
       ],
       "Recipes": [
@@ -176,7 +164,75 @@
             }
           ]
         }
-      ]
+      ],
+      "Mobs": [
+        {
+          "PrefabId": "Surtling",
+          "Label": "Surtling",
+          "Biome": "Black Forest",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 20,
+          "SpawnChanceDay": 0.1,
+          "SpawnChanceNight": 0.1,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Immune",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Weak"
+          },
+          "Drops": [
+            {
+              "ItemId": "SurtlingCore",
+              "Label": "Surtling Core",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3
+            }
+          ],
+          "Taming": null,
+          "Note": "Immune to fire — use frost or physical damage"
+        },
+        {
+          "PrefabId": "Troll",
+          "Label": "Troll",
+          "Biome": "Black Forest",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 600,
+          "SpawnChanceDay": 0.05,
+          "SpawnChanceNight": 0.1,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Normal"
+          },
+          "Drops": [
+            {
+              "ItemId": "TrollHide",
+              "Label": "Troll Hide",
+              "Chance": 1.0,
+              "Min": 2,
+              "Max": 5
+            }
+          ],
+          "Taming": null,
+          "Note": "Stay ranged — one hit can kill early characters"
+        }
+      ],
+      "Article": "",
+      "BonusBosses": [],
+      "Objectives": [],
+      "Tips": []
     }
   ]
 }

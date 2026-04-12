@@ -10,7 +10,13 @@
         "Type": "globalKey",
         "Value": "defeated_goblinking"
       },
-      "PriorityMaterials": [ "YggdrasilWood", "BlackMarble", "Eitr", "RoyalJelly", "Sap" ],
+      "PriorityMaterials": [
+        "YggdrasilWood",
+        "BlackMarble",
+        "Eitr",
+        "RoyalJelly",
+        "Sap"
+      ],
       "Boss": {
         "Name": "The Queen",
         "Location": "Infested Citadel",
@@ -24,10 +30,22 @@
             "Amount": 1
           }
         ],
-        "KeyDrops": [ "MajesticCarapace" ],
-        "WeakAgainst": [ "Fire" ],
-        "ResistantTo": [ "Poison", "Blunt" ],
-        "ImmuneAgainst": []
+        "KeyDrops": [
+          "MajesticCarapace"
+        ],
+        "WeakAgainst": [
+          "Fire"
+        ],
+        "ResistantTo": [
+          "Poison",
+          "Blunt"
+        ],
+        "ImmuneAgainst": [],
+        "Strategy": "",
+        "PrefabId": "TheQueen",
+        "IsBonus": false,
+        "ModRequired": null,
+        "Drops": []
       },
       "Gear": [
         {
@@ -48,7 +66,8 @@
               "Label": "Scale Hide",
               "Amount": 3
             }
-          ]
+          ],
+          "PlaystyleTag": null
         },
         {
           "ItemId": "StaffFireball",
@@ -73,41 +92,8 @@
               "Label": "Eitr",
               "Amount": 10
             }
-          ]
-        }
-      ],
-      "Drops": [
-        {
-          "ItemId": "Carapace",
-          "Label": "Carapace",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Seeker",
-              "Biome": "Mistlands",
-              "Chance": 1.0,
-              "Min": 1,
-              "Max": 3,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
-        },
-        {
-          "ItemId": "RoyalJelly",
-          "Label": "Royal Jelly",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "SeekerBrood",
-              "Biome": "Mistlands",
-              "Chance": 0.5,
-              "Min": 1,
-              "Max": 2,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
+          ],
+          "PlaystyleTag": null
         }
       ],
       "Recipes": [
@@ -131,7 +117,75 @@
             }
           ]
         }
-      ]
+      ],
+      "Mobs": [
+        {
+          "PrefabId": "Seeker",
+          "Label": "Seeker",
+          "Biome": "Mistlands",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 300,
+          "SpawnChanceDay": 0.2,
+          "SpawnChanceNight": 0.3,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Resistant",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Normal"
+          },
+          "Drops": [
+            {
+              "ItemId": "Carapace",
+              "Label": "Carapace",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3
+            }
+          ],
+          "Taming": null,
+          "Note": "Flanks aggressively — keep your back to a wall"
+        },
+        {
+          "PrefabId": "SeekerBrood",
+          "Label": "SeekerBrood",
+          "Biome": "Mistlands",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 50,
+          "SpawnChanceDay": 0.2,
+          "SpawnChanceNight": 0.2,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Normal"
+          },
+          "Drops": [
+            {
+              "ItemId": "RoyalJelly",
+              "Label": "Royal Jelly",
+              "Chance": 0.5,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Swarms in numbers — AoE weapons effective"
+        }
+      ],
+      "Article": "",
+      "BonusBosses": [],
+      "Objectives": [],
+      "Tips": []
     }
   ]
 }

@@ -1,0 +1,60 @@
+{
+  "Playstyles": [
+    {
+      "Id": "hunter",
+      "Label": "Bow / Crossbow",
+      "Description": "Stay at range. Pierce damage and stealth bonuses.",
+      "ArmorSet": "Hunter",
+      "WeaponTypes": [ "Bow", "Crossbow" ]
+    },
+    {
+      "Id": "rogue",
+      "Label": "Knives",
+      "Description": "Fast, sneaky melee. High burst, low defense.",
+      "ArmorSet": "Rogue",
+      "WeaponTypes": [ "Knife", "DualKnife" ]
+    },
+    {
+      "Id": "vigorous",
+      "Label": "Axes",
+      "Description": "Stamina-focused brawler. Strong sustained damage.",
+      "ArmorSet": "Vigorous",
+      "WeaponTypes": [ "Axe", "Battleaxe" ]
+    },
+    {
+      "Id": "warrior",
+      "Label": "Clubs / Maces",
+      "Description": "Stand and fight. Built to take hits and deal blunt damage.",
+      "ArmorSet": "Warrior",
+      "WeaponTypes": [ "Club", "Mace", "Sledge" ]
+    },
+    {
+      "Id": "fenrir",
+      "Label": "Fists",
+      "Description": "Mobile unarmed fighter. No movement penalty, high aggression.",
+      "ArmorSet": "Fenrir",
+      "WeaponTypes": [ "Fist" ]
+    },
+    {
+      "Id": "vidar",
+      "Label": "Swords",
+      "Description": "Balanced swordsman. Versatile, good for beginners.",
+      "ArmorSet": "Vidar",
+      "WeaponTypes": [ "Sword", "Bastard", "Claymore", "Scimitar" ]
+    },
+    {
+      "Id": "bold",
+      "Label": "Polearms",
+      "Description": "Aggressive reach fighter. Keep enemies at distance.",
+      "ArmorSet": "Bold",
+      "WeaponTypes": [ "Atgeir", "Lance", "Warpike" ]
+    },
+    {
+      "Id": "legion",
+      "Label": "Spears",
+      "Description": "Defensive spear fighter. Throw or thrust, shield compatible.",
+      "ArmorSet": "Legion",
+      "WeaponTypes": [ "Spear", "Trident" ]
+    }
+  ]
+}

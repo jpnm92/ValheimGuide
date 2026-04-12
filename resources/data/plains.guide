@@ -10,7 +10,13 @@
         "Type": "globalKey",
         "Value": "defeated_dragon"
       },
-      "PriorityMaterials": [ "BlackMetalScrap", "Flax", "Barley", "LoxPelt", "Needle" ],
+      "PriorityMaterials": [
+        "BlackMetalScrap",
+        "Flax",
+        "Barley",
+        "LoxPelt",
+        "Needle"
+      ],
       "Boss": {
         "Name": "Yagluth",
         "Location": "Plains altar",
@@ -24,10 +30,25 @@
             "Amount": 5
           }
         ],
-        "KeyDrops": [ "YagluthDrop" ],
-        "WeakAgainst": [ "Fire", "Frost", "Spirit" ],
-        "ResistantTo": [ "Blunt", "Slash", "Pierce" ],
-        "ImmuneAgainst": []
+        "KeyDrops": [
+          "YagluthDrop"
+        ],
+        "WeakAgainst": [
+          "Fire",
+          "Frost",
+          "Spirit"
+        ],
+        "ResistantTo": [
+          "Blunt",
+          "Slash",
+          "Pierce"
+        ],
+        "ImmuneAgainst": [],
+        "Strategy": "",
+        "PrefabId": "Yagluth",
+        "IsBonus": false,
+        "ModRequired": null,
+        "Drops": []
       },
       "Gear": [
         {
@@ -48,7 +69,8 @@
               "Label": "Linen Thread",
               "Amount": 20
             }
-          ]
+          ],
+          "PlaystyleTag": null
         },
         {
           "ItemId": "SwordBlackmetal",
@@ -73,41 +95,8 @@
               "Label": "Linen Thread",
               "Amount": 5
             }
-          ]
-        }
-      ],
-      "Drops": [
-        {
-          "ItemId": "BlackMetalScrap",
-          "Label": "Black Metal Scrap",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Fuling",
-              "Biome": "Plains",
-              "Chance": 0.8,
-              "Min": 1,
-              "Max": 2,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
-        },
-        {
-          "ItemId": "Needle",
-          "Label": "Needle",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Deathsquito",
-              "Biome": "Plains",
-              "Chance": 1.0,
-              "Min": 1,
-              "Max": 2,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
+          ],
+          "PlaystyleTag": null
         }
       ],
       "Recipes": [
@@ -136,7 +125,75 @@
             }
           ]
         }
-      ]
+      ],
+      "Mobs": [
+        {
+          "PrefabId": "Fuling",
+          "Label": "Fuling",
+          "Biome": "Plains",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 90,
+          "SpawnChanceDay": 0.3,
+          "SpawnChanceNight": 0.5,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Normal"
+          },
+          "Drops": [
+            {
+              "ItemId": "BlackMetalScrap",
+              "Label": "Black Metal Scrap",
+              "Chance": 0.8,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Often in groups — do not engage large camps alone"
+        },
+        {
+          "PrefabId": "Deathsquito",
+          "Label": "Deathsquito",
+          "Biome": "Plains",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 20,
+          "SpawnChanceDay": 0.3,
+          "SpawnChanceNight": 0.3,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Normal"
+          },
+          "Drops": [
+            {
+              "ItemId": "Needle",
+              "Label": "Needle",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "One-shots weak characters — always wear Plains-tier armor"
+        }
+      ],
+      "Article": "",
+      "BonusBosses": [],
+      "Objectives": [],
+      "Tips": []
     }
   ]
 }

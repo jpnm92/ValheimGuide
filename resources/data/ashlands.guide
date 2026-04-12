@@ -10,7 +10,13 @@
         "Type": "globalKey",
         "Value": "defeated_queen"
       },
-      "PriorityMaterials": [ "Flametal", "CharredBone", "CeramicPlate", "AsksvinHide", "BellFragment" ],
+      "PriorityMaterials": [
+        "Flametal",
+        "CharredBone",
+        "CeramicPlate",
+        "AsksvinHide",
+        "BellFragment"
+      ],
       "Boss": {
         "Name": "Fader",
         "Location": "Charred Fortress",
@@ -24,10 +30,22 @@
             "Amount": 3
           }
         ],
-        "KeyDrops": [ "FaderRelic" ],
-        "WeakAgainst": [ "Frost", "Poison" ],
-        "ResistantTo": [ "Fire" ],
-        "ImmuneAgainst": []
+        "KeyDrops": [
+          "FaderRelic"
+        ],
+        "WeakAgainst": [
+          "Frost",
+          "Poison"
+        ],
+        "ResistantTo": [
+          "Fire"
+        ],
+        "ImmuneAgainst": [],
+        "Strategy": "",
+        "PrefabId": "Fader",
+        "IsBonus": false,
+        "ModRequired": null,
+        "Drops": []
       },
       "Gear": [
         {
@@ -48,61 +66,8 @@
               "Label": "Charred Bone",
               "Amount": 10
             }
-          ]
-        },
-        {
-          "ItemId": "AxeFlametal_TW",
-          "Label": "Flametal Axe",
-          "Type": "Weapon",
-          "Station": "BlackForge",
-          "StationLevel": 3,
-          "ModRequired": "Therzie.Warfare",
-          "Recipe": [
-            {
-              "ItemId": "Flametal",
-              "Label": "Flametal",
-              "Amount": 20
-            },
-            {
-              "ItemId": "CeramicPlate",
-              "Label": "Ceramic Plate",
-              "Amount": 5
-            }
-          ]
-        }
-      ],
-      "Drops": [
-        {
-          "ItemId": "CharredBone",
-          "Label": "Charred Bone",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Charred",
-              "Biome": "Ashlands",
-              "Chance": 0.8,
-              "Min": 1,
-              "Max": 2,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
-        },
-        {
-          "ItemId": "AsksvinHide",
-          "Label": "Asksvin Hide",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Asksvin",
-              "Biome": "Ashlands",
-              "Chance": 1.0,
-              "Min": 2,
-              "Max": 4,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
+          ],
+          "PlaystyleTag": null
         }
       ],
       "Recipes": [
@@ -126,7 +91,75 @@
             }
           ]
         }
-      ]
+      ],
+      "Mobs": [
+        {
+          "PrefabId": "Charred_Melee",
+          "Label": "Charred_Melee",
+          "Biome": "Ashlands",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 150,
+          "SpawnChanceDay": 0.3,
+          "SpawnChanceNight": 0.4,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Immune",
+            "Poison": "Weak",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Weak"
+          },
+          "Drops": [
+            {
+              "ItemId": "CharredBone",
+              "Label": "Charred Bone",
+              "Chance": 0.8,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Immune to fire — use frost or poison weapons"
+        },
+        {
+          "PrefabId": "Asksvin",
+          "Label": "Asksvin",
+          "Biome": "Ashlands",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 0,
+          "SpawnChanceDay": 0.0,
+          "SpawnChanceNight": 0.0,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Normal"
+          },
+          "Drops": [
+            {
+              "ItemId": "AsksvinHide",
+              "Label": "Asksvin Hide",
+              "Chance": 1.0,
+              "Min": 2,
+              "Max": 4
+            }
+          ],
+          "Taming": null,
+          "Note": "TODO: fill in note"
+        }
+      ],
+      "Article": "",
+      "BonusBosses": [],
+      "Objectives": [],
+      "Tips": []
     }
   ]
 }

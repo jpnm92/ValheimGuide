@@ -115,6 +115,7 @@
     <None Include="PackagingAssets\README.md" />
     <None Include="PackagingAssets\icon.png" />
     <None Include=".gitignore" />
+    <None Include="resources\data\playstyles.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\data\meadows.guide">
@@ -158,24 +159,14 @@
     <Error Condition="'$(ValheimInstallPath)' == '' Or !Exists('$(ValheimInstallPath)')" Text="ValheimInstallPath is missing or invalid. Please check your Environment.props file." />
     <Error Condition="!Exists('packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
   </Target>
-  
   <Target Name="ILRepacker" AfterTargets="Build">
     <Message Importance="High" Text="Merging Newtonsoft.Json into ValheimGuide.dll..." />
     <ItemGroup>
       <InputAssemblies Include="$(TargetPath)" />
       <InputAssemblies Include="$(TargetDir)Newtonsoft.Json.dll" />
     </ItemGroup>
-    
-    <ILRepack 
-        Parallel="true" 
-        Internalize="true" 
-        InputAssemblies="@(InputAssemblies)" 
-        TargetKind="Dll" 
-        OutputFile="$(TargetPath)" 
-        LibraryPath="$(TargetDir);$(ValheimManagedPath);$(ActiveProfilePath)\BepInEx\core;$(R2ModmanProfilesPath)\Smooth\BepInEx\plugins\ValheimModding-Jotunn" 
-    />
+    <ILRepack Parallel="true" Internalize="true" InputAssemblies="@(InputAssemblies)" TargetKind="Dll" OutputFile="$(TargetPath)" LibraryPath="$(TargetDir);$(ValheimManagedPath);$(ActiveProfilePath)\BepInEx\core;$(R2ModmanProfilesPath)\Smooth\BepInEx\plugins\ValheimModding-Jotunn" />
   </Target>
-  
   <Target Name="PackageMod" AfterTargets="ILRepacker" Condition="'$(Configuration)' == 'Release'">
     <Message Importance="High" Text="Building Thunderstore and Nexus release zips..." />
     <PropertyGroup>
@@ -201,20 +192,16 @@
     <RemoveDir Directories="$(NexusStage)" />
     <Message Importance="High" Text="Done — zips in $(ProjectDir)Releases\" />
   </Target>
-  
   <Target Name="PostBuild" AfterTargets="ILRepacker" Condition="'$(R2ModmanProfilesPath)' != '' And Exists('$(R2ModmanProfilesPath)')">
     <Message Text="Deploying to ALL profiles..." Importance="high" />
     <ItemGroup>
       <AllProfiles Include="$([System.IO.Directory]::GetDirectories('$(R2ModmanProfilesPath)'))" />
       <DeployGuideFiles Include="$(DataOutputDir)*.guide" />
     </ItemGroup>
-    
     <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
     <MakeDir Directories="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-    
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
     <Copy SourceFiles="@(DeployGuideFiles)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
   </Target>
-  
   <Import Project="packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
 </Project>

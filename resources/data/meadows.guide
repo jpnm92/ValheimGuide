@@ -1,13 +1,13 @@
-﻿{
-    "Stages": [
-      {
-        "Id": "meadows",
+{
+  "Stages": [
+    {
+      "Id": "meadows",
       "Label": "Meadows",
       "Order": 0,
       "BiomeDescription": "Starting biome. Gather basic resources and prepare for Eikthyr.",
       "ModRequired": null,
       "UnlockTrigger": {
-            "Type": "none",
+        "Type": "none",
         "Value": ""
       },
       "PriorityMaterials": [
@@ -16,109 +16,209 @@
         "Flint",
         "LeatherScraps"
       ],
-        "Boss": {
-          "Name": "Eikthyr",
-          "Location": "Meadows altar",
-          "GlobalKeyDrop": "defeated_eikthyr",
-          "GlobalUnlock": "Antler Pickaxe, Hard Antler",
-          "RecommendedGear": "Leather armor, crude bow, flint spear",
-          "SummonMaterials": [
-            {
-              "ItemId": "DeerHide",
-              "Label": "Deer Hide",
-              "Amount": 2
-            }
-          ],
-          "KeyDrops": [
-            "HardAntler"
-          ],
-          "WeakAgainst": [ "Slash", "Pierce" ],
-          "ResistantTo": [ "Lightning" ],
-          "ImmuneAgainst": []
-        },
+      "Boss": {
+        "Name": "Eikthyr",
+        "Location": "Meadows altar",
+        "GlobalKeyDrop": "defeated_eikthyr",
+        "GlobalUnlock": "Antler Pickaxe, Hard Antler",
+        "RecommendedGear": "Leather armor, crude bow, flint spear",
+        "SummonMaterials": [
+          {
+            "ItemId": "DeerHide",
+            "Label": "Deer Hide",
+            "Amount": 2
+          }
+        ],
+        "KeyDrops": [
+          "HardAntler"
+        ],
+        "WeakAgainst": [
+          "Slash",
+          "Pierce"
+        ],
+        "ResistantTo": [
+          "Lightning"
+        ],
+        "ImmuneAgainst": [],
+        "Strategy": "",
+        "PrefabId": "Eikthyr",
+        "IsBonus": false,
+        "ModRequired": null,
+        "Drops": []
+      },
       "Gear": [
         {
-            "ItemId": "ArmorLeatherChest",
+          "ItemId": "ArmorLeatherChest",
           "Label": "Leather Tunic",
           "Type": "Armor",
           "Station": "Workbench",
           "StationLevel": 1,
           "ModRequired": null,
           "Recipe": [
-            { "ItemId": "LeatherScraps", "Label": "Leather Scraps", "Amount": 6 }
-          ]
+            {
+              "ItemId": "LeatherScraps",
+              "Label": "Leather Scraps",
+              "Amount": 6
+            }
+          ],
+          "PlaystyleTag": null
         },
         {
-            "ItemId": "SpearFlint",
+          "ItemId": "SpearFlint",
           "Label": "Flint Spear",
           "Type": "Weapon",
           "Station": "Workbench",
           "StationLevel": 1,
           "ModRequired": null,
           "Recipe": [
-            { "ItemId": "Wood", "Label": "Wood", "Amount": 5 },
-            { "ItemId": "Flint", "Label": "Flint", "Amount": 10 },
-            { "ItemId": "LeatherScraps", "Label": "Leather Scraps", "Amount": 2 }
-          ]
-        }
-      ],
-      "Drops": [
-        {
-            "ItemId": "LeatherScraps",
-          "Label": "Leather Scraps",
-          "ModRequired": null,
-          "Sources": [
             {
-                "Mob": "Boar",
-              "Biome": "Meadows",
-              "Chance": 1.0,
-              "Min": 1,
-              "Max": 2,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
+              "ItemId": "Wood",
+              "Label": "Wood",
+              "Amount": 5
             },
             {
-                "Mob": "Deer",
-              "Biome": "Meadows",
-              "Chance": 1.0,
-              "Min": 2,
-              "Max": 3,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
-        },
-        {
-            "ItemId": "Flint",
-          "Label": "Flint",
-          "ModRequired": null,
-          "Sources": [
+              "ItemId": "Flint",
+              "Label": "Flint",
+              "Amount": 10
+            },
             {
-                "Mob": "Shoreline",
-              "Biome": "Meadows",
-              "Chance": 1.0,
-              "Min": 1,
-              "Max": 3,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
+              "ItemId": "LeatherScraps",
+              "Label": "Leather Scraps",
+              "Amount": 2
             }
-          ]
+          ],
+          "PlaystyleTag": null
         }
       ],
       "Recipes": [
         {
-            "ItemId": "CrudeBow",
+          "ItemId": "CrudeBow",
           "Label": "Crude Bow",
           "Station": "Workbench",
           "StationLevel": 1,
           "ModRequired": null,
           "UnlockNote": "Always known",
           "Ingredients": [
-            { "ItemId": "Wood", "Label": "Wood", "Amount": 10 },
-            { "ItemId": "LeatherScraps", "Label": "Leather Scraps", "Amount": 8 }
+            {
+              "ItemId": "Wood",
+              "Label": "Wood",
+              "Amount": 10
+            },
+            {
+              "ItemId": "LeatherScraps",
+              "Label": "Leather Scraps",
+              "Amount": 8
+            }
           ]
         }
-      ]
+      ],
+      "Mobs": [
+        {
+          "PrefabId": "Boar",
+          "Label": "Boar",
+          "Biome": "Meadows",
+          "ModRequired": null,
+          "IsTameable": true,
+          "Health": 10,
+          "SpawnChanceDay": 0.25,
+          "SpawnChanceNight": 0.35,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Normal"
+          },
+          "Drops": [
+            {
+              "ItemId": "LeatherScraps",
+              "Label": "Leather Scraps",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": {
+            "FoodItems": [
+              "Mushroom",
+              "Raspberry",
+              "Blueberries",
+              "Carrot"
+            ],
+            "Note": "Pen with roundpole fences before taming"
+          },
+          "Note": null
+        },
+        {
+          "PrefabId": "Deer",
+          "Label": "Deer",
+          "Biome": "Meadows",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 10,
+          "SpawnChanceDay": 0.3,
+          "SpawnChanceNight": 0.1,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Normal"
+          },
+          "Drops": [
+            {
+              "ItemId": "LeatherScraps",
+              "Label": "Leather Scraps",
+              "Chance": 1.0,
+              "Min": 2,
+              "Max": 3
+            }
+          ],
+          "Taming": null,
+          "Note": "Spooked easily — sneak or use a bow"
+        },
+        {
+          "PrefabId": "Shoreline",
+          "Label": "Shoreline",
+          "Biome": "Meadows",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 0,
+          "SpawnChanceDay": 0.0,
+          "SpawnChanceNight": 0.0,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Normal",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Normal"
+          },
+          "Drops": [
+            {
+              "ItemId": "Flint",
+              "Label": "Flint",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3
+            }
+          ],
+          "Taming": null,
+          "Note": "TODO: fill in note"
+        }
+      ],
+      "Article": "",
+      "BonusBosses": [],
+      "Objectives": [],
+      "Tips": []
     }
   ]
 }

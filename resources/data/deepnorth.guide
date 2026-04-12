@@ -10,16 +10,29 @@
         "Type": "globalKey",
         "Value": "defeated_fader"
       },
-      "PriorityMaterials": [ "FrostMetal", "IceShard", "GiantHide", "NiflheimCore" ],
+      "PriorityMaterials": [
+        "FrostMetal",
+        "IceShard",
+        "GiantHide",
+        "NiflheimCore"
+      ],
       "Boss": {
         "Name": "Njord",
         "Location": "Glacial Fortress",
         "GlobalKeyDrop": "defeated_njord",
         "GlobalUnlock": "Njord's Blessing",
         "RecommendedGear": "FrostMetal armor, fire weapons, frost resist",
-        "WeakAgainst": [ "Fire", "Poison" ],
-        "ResistantTo": [ "Slash", "Pierce" ],
-        "ImmuneAgainst": [ "Frost" ],
+        "WeakAgainst": [
+          "Fire",
+          "Poison"
+        ],
+        "ResistantTo": [
+          "Slash",
+          "Pierce"
+        ],
+        "ImmuneAgainst": [
+          "Frost"
+        ],
         "SummonMaterials": [
           {
             "ItemId": "FrostTotem",
@@ -27,7 +40,14 @@
             "Amount": 5
           }
         ],
-        "KeyDrops": [ "NjordRelic" ]
+        "KeyDrops": [
+          "NjordRelic"
+        ],
+        "Strategy": "",
+        "PrefabId": "Njord",
+        "IsBonus": false,
+        "ModRequired": null,
+        "Drops": []
       },
       "Gear": [
         {
@@ -48,61 +68,8 @@
               "Label": "Giant Hide",
               "Amount": 5
             }
-          ]
-        },
-        {
-          "ItemId": "AxeFrostMetal_TW",
-          "Label": "FrostMetal Axe",
-          "Type": "Weapon",
-          "Station": "YmirForge",
-          "StationLevel": 1,
-          "ModRequired": "Therzie.Warfare",
-          "Recipe": [
-            {
-              "ItemId": "FrostMetal",
-              "Label": "Frost Metal",
-              "Amount": 20
-            },
-            {
-              "ItemId": "IceShard",
-              "Label": "Ice Shard",
-              "Amount": 10
-            }
-          ]
-        }
-      ],
-      "Drops": [
-        {
-          "ItemId": "FrostMetalScrap",
-          "Label": "Frost Metal Scrap",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "Jotunn",
-              "Biome": "DeepNorth",
-              "Chance": 0.7,
-              "Min": 1,
-              "Max": 2,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
-        },
-        {
-          "ItemId": "IceShard",
-          "Label": "Ice Shard",
-          "ModRequired": null,
-          "Sources": [
-            {
-              "Mob": "IceGolem",
-              "Biome": "DeepNorth",
-              "Chance": 1.0,
-              "Min": 1,
-              "Max": 3,
-              "StarVariantOnly": false,
-              "StarChanceBonus": 0.0
-            }
-          ]
+          ],
+          "PlaystyleTag": null
         }
       ],
       "Recipes": [
@@ -126,7 +93,75 @@
             }
           ]
         }
-      ]
+      ],
+      "Mobs": [
+        {
+          "PrefabId": "Jotunn",
+          "Label": "Jotunn",
+          "Biome": "DeepNorth",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 400,
+          "SpawnChanceDay": 0.1,
+          "SpawnChanceNight": 0.1,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Weak",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "FrostMetalScrap",
+              "Label": "Frost Metal Scrap",
+              "Chance": 0.7,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Immune to frost — fire weapons recommended"
+        },
+        {
+          "PrefabId": "IceGolem",
+          "Label": "IceGolem",
+          "Biome": "DeepNorth",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 600,
+          "SpawnChanceDay": 0.05,
+          "SpawnChanceNight": 0.05,
+          "Resistances": {
+            "Blunt": "Weak",
+            "Slash": "Normal",
+            "Pierce": "Normal",
+            "Fire": "Weak",
+            "Poison": "Normal",
+            "Lightning": "Normal",
+            "Spirit": "Immune",
+            "Frost": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "IceShard",
+              "Label": "Ice Shard",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3
+            }
+          ],
+          "Taming": null,
+          "Note": "Weak to fire and blunt — pickaxe or fire weapons"
+        }
+      ],
+      "Article": "",
+      "BonusBosses": [],
+      "Objectives": [],
+      "Tips": []
     }
   ]
 }
