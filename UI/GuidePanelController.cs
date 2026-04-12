@@ -990,5 +990,58 @@ namespace ValheimGuide.UI
             if (count == 0)
                 GuidePanel.AddLabel(parent, "No results found.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
         }
+        private bool IsObjectiveComplete(Objective obj)
+        {
+            if (!obj.AutoComplete)
+                return ProgressSaver.IsChecked("obj_" + obj.Id);
+
+            switch (obj.Type.ToLowerInvariant())
+            {
+                case "globalkey":
+                case "boss":
+                    return ZoneSystem.instance?.GetGlobalKey(obj.Value) ?? false;
+                case "craftitem":
+                case "knownrecipe":
+                    Player p = Player.m_localPlayer;
+                    if (p == null) return false;
+                    var recipes = typeof(Player)
+                        .GetField("m_knownRecipes",
+                            System.Reflection.BindingFlags.NonPublic |
+                            System.Reflection.BindingFlags.Instance)
+                        ?.GetValue(p) as System.Collections.Generic.HashSet<string>;
+                    return recipes?.Contains(obj.Value) ?? false;
+                case "hasitem":
+                    Player player = Player.m_localPlayer;
+                    if (player == null) return false;
+                    return player.GetInventory().CountItems(obj.Value) > 0;
+                default:
+                    return ProgressSaver.IsChecked("obj_" + obj.Id);
+            }
+        }
+        private void BuildReadContent(Transform parent, Stage stage)
+        {
+            if (string.IsNullOrEmpty(stage.Article))
+            {
+                GuidePanel.AddLabel(parent, "No article available for this stage.", 14,
+                    TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
+                return;
+            }
+
+            string[] paragraphs = stage.Article.Split(
+                new[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string paragraph in paragraphs)
+            {
+                string trimmed = paragraph.Trim();
+                if (string.IsNullOrEmpty(trimmed)) continue;
+
+                bool isHeader = trimmed.StartsWith("<size=");
+                int fontSize = isHeader ? 15 : 13;
+
+                GuidePanel.AddLabel(parent, trimmed, fontSize,
+                    TMPro.FontStyles.Normal, Color.white);
+                GuidePanel.AddSpacer(parent);
+            }
+        }
     }
 }
