@@ -196,10 +196,14 @@ namespace ValheimGuide.UI
 
             if (!_collapsed)
             {
+                string playstyleId = ProgressSaver.Current?.PlaystyleId ?? "all";
+
+                // FILTER UPDATE: Now respects the Playstyle filter exactly like the Guide Panel!
                 List<Objective> all = (stage.Objectives ?? new List<Objective>())
-                    .Where(o => string.IsNullOrEmpty(o.ModRequired) ||
-                                GuideDataLoader.InstalledMods.Contains(o.ModRequired))
-                    .ToList();
+                    .Where(o =>
+                        (string.IsNullOrEmpty(o.ModRequired) || GuideDataLoader.InstalledMods.Contains(o.ModRequired)) &&
+                        (string.IsNullOrEmpty(o.PlaystyleFilter) || playstyleId == "all" || playstyleId == o.PlaystyleFilter)
+                    ).ToList();
 
                 // Incomplete first, then ticked — cap at MaxShown
                 var incomplete = all.Where(o => !IsComplete(o)).ToList();
@@ -283,6 +287,14 @@ namespace ValheimGuide.UI
             if (!obj.AutoComplete)
                 return ProgressSaver.IsChecked("obj_" + obj.Id);
 
+            // LOGIC UPDATE: Match the Guide Panel! Check if it was manually ticked in the Gear tab.
+            if (!string.IsNullOrEmpty(obj.Value) && ProgressSaver.IsChecked(obj.Value))
+                return true;
+
+            // LOGIC UPDATE: Check if our new Build or Inventory patches permanently completed it.
+            if (ProgressSaver.IsChecked("obj_" + obj.Id))
+                return true;
+
             switch (obj.Type.ToLowerInvariant())
             {
                 case "globalkey":
@@ -302,7 +314,7 @@ namespace ValheimGuide.UI
                     return pl.GetInventory().CountItems(obj.Value) > 0;
 
                 default:
-                    return ProgressSaver.IsChecked("obj_" + obj.Id);
+                    return false;
             }
         }
 
