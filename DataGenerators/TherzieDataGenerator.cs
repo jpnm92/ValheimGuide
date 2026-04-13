@@ -127,11 +127,11 @@ namespace ValheimGuide.DataGenerators
                 var group = groups[i];
                 var stage = new Stage
                 {
-                    Id = $"{modName.ToLower()}_{group.Key.ToLower().Replace(" ", "")}",
-                    Label = $"{modName} ({group.Key})",
-                    Order = BiomeOrder.FromTier(group.Key) + (modName == "Armory" ? 1 : 2),
-                    BiomeDescription = $"{modName} items for {group.Key} tier.",
-                    ModRequired = modGuid,
+                    Id = GetVanillaStageId(group.Key), // <--- CHANGED
+                    Label = group.Key,
+                    Order = BiomeOrder.FromTier(group.Key),
+                    BiomeDescription = "",
+                    ModRequired = null, // <--- CHANGED: Null so it merges safely into the vanilla tab
                     UnlockTrigger = GetTriggerForTier(group.Key),
                     Gear = new List<GearEntry>()
                 };
@@ -293,7 +293,7 @@ namespace ValheimGuide.DataGenerators
                     if (level >= 4) return "Plains";
                     if (level >= 3) return "Mountain";
                     if (level >= 2) return "Black Forest";
-                    return "Black Forest"; // Most custom Armory items start at the Bronze tier
+                    return "Meadows"; // Fixed! It will correctly allow Level 1 armory into Meadows now.
                 }
 
                 if (stationKey.Contains("blackforge"))
@@ -306,27 +306,27 @@ namespace ValheimGuide.DataGenerators
                     return "Mistlands";
             }
 
-            // 3. FALLBACK: Name-based matching (only reached if no recipe exists)
+            // 3. FALLBACK: Name-based matching
             Debug.LogWarning($"[TherzieDataGenerator] No defining recipe features for {prefab.name} — falling back to name-based tier detection.");
             return GetTierFromName(prefab.name.ToLower());
         }
 
         private static string GetTierFromIngredients(Recipe recipe)
         {
-            bool hasAshlands = false, hasMistlands = false, hasPlains = false, hasMountain = false, hasSwamp = false, hasBlackForest = false;
+            bool hasAshlands = false, hasMistlands = false, hasPlains = false, hasMountain = false, hasSwamp = false, hasBlackForest = false, hasMeadows = false;
 
             foreach (var req in recipe.m_resources)
             {
                 if (req.m_resItem == null) continue;
                 string name = req.m_resItem.name.ToLower();
 
-                // Check from highest tier to lowest to ensure items using multi-tier materials go to the highest one
                 if (name.Contains("flametal") || name.Contains("charred") || name.Contains("asksvin") || name.Contains("fader")) hasAshlands = true;
                 else if (name.Contains("carapace") || name.Contains("eitr") || name.Contains("blackmarble") || name.Contains("yggdrasil") || name.Contains("seeker")) hasMistlands = true;
                 else if (name.Contains("blackmetal") || name.Contains("lox") || name.Contains("linen") || name.Contains("needle") || name.Contains("yagluth")) hasPlains = true;
                 else if (name.Contains("silver") || name.Contains("wolf") || name.Contains("obsidian") || name.Contains("crystal") || name.Contains("dragon")) hasMountain = true;
                 else if (name.Contains("iron") || name.Contains("chain") || name.Contains("root") || name.Contains("ooze") || name.Contains("bloodbag") || name.Contains("bonemass")) hasSwamp = true;
                 else if (name.Contains("bronze") || name.Contains("copper") || name.Contains("tin") || name.Contains("troll") || name.Contains("finewood") || name.Contains("corewood") || name.Contains("elder")) hasBlackForest = true;
+                else if (name.Contains("flint") || name.Contains("leatherscraps") || name.Contains("deerhide") || name.Contains("bonefragments") || name.Contains("resin") || name.Contains("chitin")) hasMeadows = true;
             }
 
             if (hasAshlands) return "Ashlands";
@@ -335,8 +335,9 @@ namespace ValheimGuide.DataGenerators
             if (hasMountain) return "Mountain";
             if (hasSwamp) return "Swamp";
             if (hasBlackForest) return "Black Forest";
+            if (hasMeadows) return "Meadows"; // Correctly identifies lower-tier materials
 
-            return null; // Return null so the station-check logic takes over
+            return null;
         }
 
         // FALLBACK: original logic, now only reached when no recipe exists
@@ -399,6 +400,22 @@ namespace ValheimGuide.DataGenerators
             File.WriteAllText(filePath,
                 JsonConvert.SerializeObject(new GuideData { Stages = stages }, Formatting.Indented));
             Debug.Log($"[TherzieDataGenerator] Saved {stages.Sum(s => s.Gear.Count)} items to {filePath}");
+        }
+
+        private static string GetVanillaStageId(string tier)
+        {
+            switch (tier)
+            {
+                case "Meadows": return "meadows";
+                case "Black Forest": return "blackforest";
+                case "Swamp": return "swamp";
+                case "Mountain": return "mountain";
+                case "Plains": return "plains";
+                case "Mistlands": return "mistlands";
+                case "Ashlands": return "ashlands";
+                case "DeepNorth": return "deepnorth";
+                default: return "other";
+            }
         }
     }
 }

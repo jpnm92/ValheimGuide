@@ -22,6 +22,7 @@ namespace ValheimGuide.UI
 
         private readonly HashSet<string> _activeDamageFilters = new HashSet<string>();
         private readonly HashSet<string> _activeArmorFilters = new HashSet<string>();
+        private readonly HashSet<string> _activeSourceFilters = new HashSet<string>();
         private readonly List<Image> _tabButtonImages = new List<Image>();
 
         public GuidePanelController(GameObject stageListContainer, GameObject smartPanelContainer, GameObject referenceAreaContainer)
@@ -162,6 +163,7 @@ namespace ValheimGuide.UI
             _activeDamageFilters.Clear();
             _activeArmorFilters.Clear();
             _referenceAreaContainer.SetActive(!_isReadMode);
+            _activeSourceFilters.Clear();
 
             foreach (var stageButton in _stageButtons)
             {
@@ -547,7 +549,18 @@ namespace ValheimGuide.UI
                 });
             }
 
-            BuildFilterBar(_referenceAreaContainer.transform, stage);
+            // --- Dynamic Offset for ScrollView depending on Filters ---
+            bool hasWeapons = stage.Gear.Exists(g => g.Type == "Weapon" || g.Type == "Bow");
+            bool hasArmor = stage.Gear.Exists(g => g.Type == "Armor");
+
+            float topOffset = -80f; // Default (just the search bar)
+            if (_referenceTabIndex == 0)
+            {
+                if (hasWeapons && hasArmor) topOffset = -140f; // 2 rows of filters
+                else if (hasWeapons || hasArmor) topOffset = -110f; // 1 row of filters
+            }
+
+            BuildFilterBar(_referenceAreaContainer.transform, stage, topOffset);
 
             GameObject contentArea = new GameObject("ContentArea", typeof(RectTransform), typeof(ScrollRect));
             contentArea.transform.SetParent(_referenceAreaContainer.transform, false);
@@ -555,7 +568,7 @@ namespace ValheimGuide.UI
             contentAreaRect.anchorMin = Vector2.zero;
             contentAreaRect.anchorMax = new Vector2(1, 1);
             contentAreaRect.offsetMin = new Vector2(8, 8);
-            contentAreaRect.offsetMax = new Vector2(-20, -120);
+            contentAreaRect.offsetMax = new Vector2(-20, topOffset); // Dynamically drops down to make room
 
             ScrollRect scroll = contentArea.GetComponent<ScrollRect>();
             scroll.horizontal = false;
@@ -565,7 +578,7 @@ namespace ValheimGuide.UI
 
             Scrollbar scrollbar = GuidePanel.CreateScrollbar(_referenceAreaContainer.transform);
             RectTransform sbRect = scrollbar.GetComponent<RectTransform>();
-            sbRect.offsetMax = new Vector2(-4, -120);
+            sbRect.offsetMax = new Vector2(-4, topOffset);
             scroll.verticalScrollbar = scrollbar;
             scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
 
@@ -605,34 +618,80 @@ namespace ValheimGuide.UI
 
             bool hasWeapons = stage.Gear.Exists(g => g.Type == "Weapon" || g.Type == "Bow");
             bool hasArmor = stage.Gear.Exists(g => g.Type == "Armor");
+            bool hasArmory = stage.Gear.Exists(g => g.ModRequired == "Therzie.Armory");
+            bool hasWarfare = stage.Gear.Exists(g => g.ModRequired == "Therzie.Warfare");
+            bool hasMods = hasArmory || hasWarfare;
 
-            if (!hasWeapons && !hasArmor) return;
+            int filterRows = 0;
+            if (hasMods) filterRows++;
+            if (hasWeapons) filterRows++;
+            if (hasArmor) filterRows++;
 
-            GameObject filterRow = new GameObject("FilterBar", typeof(RectTransform), typeof(HorizontalLayoutGroup));
-            filterRow.transform.SetParent(parent, false);
+            if (filterRows == 0) return;
 
-            RectTransform filterRect = filterRow.GetComponent<RectTransform>();
+            // Dynamically calculate height based on active rows (30px per row)
+            float topOffset = -80f - (filterRows * 30f);
+
+            GameObject filterBar = new GameObject("FilterBar", typeof(RectTransform), typeof(VerticalLayoutGroup));
+            filterBar.transform.SetParent(parent, false);
+
+            RectTransform filterRect = filterBar.GetComponent<RectTransform>();
             filterRect.anchorMin = new Vector2(0, 1);
             filterRect.anchorMax = new Vector2(1, 1);
             filterRect.pivot = new Vector2(0.5f, 1);
-            filterRect.offsetMin = new Vector2(8, -115);
+            filterRect.offsetMin = new Vector2(8, topOffset);
             filterRect.offsetMax = new Vector2(-8, -80);
 
-            HorizontalLayoutGroup hlg = filterRow.GetComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 4;
-            hlg.childForceExpandWidth = false;
-            hlg.childForceExpandHeight = true;
-            hlg.childControlWidth = false;
-            hlg.childControlHeight = true;
+            VerticalLayoutGroup vlg = filterBar.GetComponent<VerticalLayoutGroup>();
+            vlg.spacing = 4;
+            vlg.childForceExpandWidth = true;
+            vlg.childForceExpandHeight = false;
+            vlg.childControlWidth = true;
+            vlg.childControlHeight = true;
 
+            // 1. SOURCE FILTERS
+            if (hasMods)
+            {
+                GameObject sRow = new GameObject("SourceFilters", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+                sRow.transform.SetParent(filterBar.transform, false);
+                sRow.GetComponent<LayoutElement>().preferredHeight = 24;
+
+                HorizontalLayoutGroup hlg = sRow.GetComponent<HorizontalLayoutGroup>();
+                hlg.spacing = 4; hlg.childForceExpandWidth = false; hlg.childForceExpandHeight = true; hlg.childControlWidth = false; hlg.childControlHeight = true;
+
+                string[] sources = { "Vanilla", "Armory", "Warfare" };
+                foreach (string src in sources)
+                {
+                    if (src == "Armory" && !hasArmory) continue;
+                    if (src == "Warfare" && !hasWarfare) continue;
+
+                    string captured = src;
+                    bool active = _activeSourceFilters.Contains(src);
+                    CreateFilterPill(sRow.transform, src, active, () =>
+                    {
+                        if (_activeSourceFilters.Contains(captured)) _activeSourceFilters.Remove(captured);
+                        else _activeSourceFilters.Add(captured);
+                        BuildReferenceArea(_selectedStage);
+                    });
+                }
+            }
+
+            // 2. WEAPON FILTERS
             if (hasWeapons)
             {
+                GameObject wRow = new GameObject("WeaponFilters", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+                wRow.transform.SetParent(filterBar.transform, false);
+                wRow.GetComponent<LayoutElement>().preferredHeight = 24;
+
+                HorizontalLayoutGroup hlg = wRow.GetComponent<HorizontalLayoutGroup>();
+                hlg.spacing = 4; hlg.childForceExpandWidth = false; hlg.childForceExpandHeight = true; hlg.childControlWidth = false; hlg.childControlHeight = true;
+
                 string[] damageTypes = { "Blunt", "Slash", "Pierce", "Fire", "Frost", "Lightning", "Poison", "Spirit" };
                 foreach (string dt in damageTypes)
                 {
                     string captured = dt;
                     bool active = _activeDamageFilters.Contains(dt);
-                    CreateFilterPill(filterRow.transform, dt, active, () =>
+                    CreateFilterPill(wRow.transform, dt, active, () =>
                     {
                         if (_activeDamageFilters.Contains(captured)) _activeDamageFilters.Remove(captured);
                         else _activeDamageFilters.Add(captured);
@@ -641,18 +700,22 @@ namespace ValheimGuide.UI
                 }
             }
 
+            // 3. ARMOR FILTERS
             if (hasArmor)
             {
-                GameObject sep = new GameObject("Sep", typeof(RectTransform), typeof(LayoutElement));
-                sep.transform.SetParent(filterRow.transform, false);
-                sep.GetComponent<LayoutElement>().preferredWidth = 8;
+                GameObject aRow = new GameObject("ArmorFilters", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+                aRow.transform.SetParent(filterBar.transform, false);
+                aRow.GetComponent<LayoutElement>().preferredHeight = 24;
+
+                HorizontalLayoutGroup hlg = aRow.GetComponent<HorizontalLayoutGroup>();
+                hlg.spacing = 4; hlg.childForceExpandWidth = false; hlg.childForceExpandHeight = true; hlg.childControlWidth = false; hlg.childControlHeight = true;
 
                 string[] armorClasses = { "Light", "Heavy" };
                 foreach (string ac in armorClasses)
                 {
                     string captured = ac;
                     bool active = _activeArmorFilters.Contains(ac);
-                    CreateFilterPill(filterRow.transform, ac, active, () =>
+                    CreateFilterPill(aRow.transform, ac, active, () =>
                     {
                         if (_activeArmorFilters.Contains(captured)) _activeArmorFilters.Remove(captured);
                         else _activeArmorFilters.Add(captured);
