@@ -253,6 +253,12 @@ namespace ValheimGuide.DataGenerators
             var recipe = ObjectDB.instance.GetRecipe(itemDrop.m_itemData);
             if (recipe != null)
             {
+                // 1. INGREDIENT CHECK: The most reliable way to sort modded items
+                string ingredientTier = GetTierFromIngredients(recipe);
+                if (ingredientTier != null)
+                    return ingredientTier;
+
+                // 2. STATION CHECK: Fallback if the recipe only uses generic materials
                 string stationKey = (recipe.m_craftingStation?.m_name ?? "").ToLower();
                 int level = recipe.m_minStationLevel;
 
@@ -265,7 +271,11 @@ namespace ValheimGuide.DataGenerators
                 }
 
                 if (stationKey.Contains("workbench"))
+                {
+                    if (level >= 4) return "Mountain";
+                    if (level >= 2) return "Black Forest";
                     return "Meadows";
+                }
 
                 if (stationKey.Contains("fletcher"))
                 {
@@ -283,7 +293,7 @@ namespace ValheimGuide.DataGenerators
                     if (level >= 4) return "Plains";
                     if (level >= 3) return "Mountain";
                     if (level >= 2) return "Black Forest";
-                    return "Meadows";
+                    return "Black Forest"; // Most custom Armory items start at the Bronze tier
                 }
 
                 if (stationKey.Contains("blackforge"))
@@ -296,9 +306,37 @@ namespace ValheimGuide.DataGenerators
                     return "Mistlands";
             }
 
-            // FALLBACK: name-based matching, warn so bad matches are visible
-            Debug.LogWarning($"[TherzieDataGenerator] No recipe for {prefab.name} — falling back to name-based tier detection.");
+            // 3. FALLBACK: Name-based matching (only reached if no recipe exists)
+            Debug.LogWarning($"[TherzieDataGenerator] No defining recipe features for {prefab.name} — falling back to name-based tier detection.");
             return GetTierFromName(prefab.name.ToLower());
+        }
+
+        private static string GetTierFromIngredients(Recipe recipe)
+        {
+            bool hasAshlands = false, hasMistlands = false, hasPlains = false, hasMountain = false, hasSwamp = false, hasBlackForest = false;
+
+            foreach (var req in recipe.m_resources)
+            {
+                if (req.m_resItem == null) continue;
+                string name = req.m_resItem.name.ToLower();
+
+                // Check from highest tier to lowest to ensure items using multi-tier materials go to the highest one
+                if (name.Contains("flametal") || name.Contains("charred") || name.Contains("asksvin") || name.Contains("fader")) hasAshlands = true;
+                else if (name.Contains("carapace") || name.Contains("eitr") || name.Contains("blackmarble") || name.Contains("yggdrasil") || name.Contains("seeker")) hasMistlands = true;
+                else if (name.Contains("blackmetal") || name.Contains("lox") || name.Contains("linen") || name.Contains("needle") || name.Contains("yagluth")) hasPlains = true;
+                else if (name.Contains("silver") || name.Contains("wolf") || name.Contains("obsidian") || name.Contains("crystal") || name.Contains("dragon")) hasMountain = true;
+                else if (name.Contains("iron") || name.Contains("chain") || name.Contains("root") || name.Contains("ooze") || name.Contains("bloodbag") || name.Contains("bonemass")) hasSwamp = true;
+                else if (name.Contains("bronze") || name.Contains("copper") || name.Contains("tin") || name.Contains("troll") || name.Contains("finewood") || name.Contains("corewood") || name.Contains("elder")) hasBlackForest = true;
+            }
+
+            if (hasAshlands) return "Ashlands";
+            if (hasMistlands) return "Mistlands";
+            if (hasPlains) return "Plains";
+            if (hasMountain) return "Mountain";
+            if (hasSwamp) return "Swamp";
+            if (hasBlackForest) return "Black Forest";
+
+            return null; // Return null so the station-check logic takes over
         }
 
         // FALLBACK: original logic, now only reached when no recipe exists
