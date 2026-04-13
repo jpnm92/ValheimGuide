@@ -180,7 +180,7 @@ namespace ValheimGuide.UI
                 {
                     GameObject dot = new GameObject("CurrentDot",
                         typeof(RectTransform), typeof(Image));
-                    dot.transform.SetParent(btnObj.transform, false);
+                    dot.transform.SetParent(btn.transform, false);
                     RectTransform dotRect = dot.GetComponent<RectTransform>();
                     dotRect.anchorMin = new Vector2(0, 0.5f);
                     dotRect.anchorMax = new Vector2(0, 0.5f);
