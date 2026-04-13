@@ -393,94 +393,44 @@ namespace ValheimGuide.UI
                         14, TMPro.FontStyles.Normal, new Color(0.6f, 1f, 0.6f));
             }
 
-            // Objectives
+            // -- OBJECTIVES & BUILDINGS -------------------------------------------------
             if (stage.Objectives != null && stage.Objectives.Count > 0)
             {
-                GuidePanel.AddSpacer(content.transform);
-                GuidePanel.AddLabel(content.transform, "OBJECTIVES", 15,
-                    TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+                string playstyleId = ProgressSaver.Current?.PlaystyleId ?? "all";
 
-                foreach (Objective obj in stage.Objectives)
+                // Filter by mod + playstyle
+                var visibleObjs = stage.Objectives.Where(o =>
+                    (string.IsNullOrEmpty(o.ModRequired) ||
+                     GuideDataLoader.InstalledMods.Contains(o.ModRequired)) &&
+                    (string.IsNullOrEmpty(o.PlaystyleFilter) ||
+                     playstyleId == "all" ||
+                     playstyleId == o.PlaystyleFilter)
+                ).ToList();
+
+                // Split: build-type vs progress-type
+                var buildObjs = visibleObjs.Where(o => o.Type == "build").ToList();
+                var progressObjs = visibleObjs.Where(o => o.Type != "build").ToList();
+
+                if (buildObjs.Count > 0)
                 {
-                    if (!string.IsNullOrEmpty(obj.PlaystyleFilter))
-                    {
-                        string playstyleId = ProgressSaver.Current?.PlaystyleId ?? "all";
-                        if (playstyleId != "all" && playstyleId != obj.PlaystyleFilter)
-                            continue;
-                    }
+                    GuidePanel.AddSpacer(content.transform);
+                    GuidePanel.AddLabel(content.transform, "BUILD", 15,
+                        TMPro.FontStyles.Bold, new Color(0.5f, 0.8f, 1f));
+                    foreach (var obj in buildObjs)
+                        RenderObjectiveRow(content.transform, obj);
+                }
 
-                    bool done = IsObjectiveComplete(obj);
-                    string tick = done ? "<color=#66ff66>✔</color> " : "○ ";
-                    Color textColor = done
-                        ? new Color(0.5f, 0.8f, 0.5f)
-                        : Color.white;
-
-                    GameObject row = new GameObject("ObjRow",
-                        typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
-                    row.transform.SetParent(content.transform, false);
-                    row.GetComponent<LayoutElement>().preferredHeight = 22;
-
-                    HorizontalLayoutGroup rowHlg = row.GetComponent<HorizontalLayoutGroup>();
-                    rowHlg.spacing = 6;
-                    rowHlg.childForceExpandWidth = false;
-                    rowHlg.childForceExpandHeight = true;
-                    rowHlg.childControlWidth = false;
-                    rowHlg.childControlHeight = true;
-
-                    // Manual checkbox for non-autocomplete objectives
-                    if (!obj.AutoComplete)
-                    {
-                        string objKey = "obj_" + obj.Id;
-                        bool isChecked = ProgressSaver.IsChecked(objKey);
-
-                        GameObject checkBox = new GameObject("Check",
-                            typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
-                        checkBox.transform.SetParent(row.transform, false);
-                        checkBox.GetComponent<LayoutElement>().preferredWidth = 18;
-                        Image checkImg = checkBox.GetComponent<Image>();
-                        checkImg.color = isChecked
-                            ? new Color(0.2f, 0.6f, 0.2f)
-                            : new Color(0.25f, 0.25f, 0.25f);
-
-                        GameObject mark = GuidePanel.CreateText(checkBox.transform, "Mark", isChecked ? "✔" : "");
-                        mark.GetComponent<RectTransform>().anchorMin = Vector2.zero;
-                        mark.GetComponent<RectTransform>().anchorMax = Vector2.one;
-                        mark.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
-                        mark.GetComponent<Text>().fontSize = 11;
-                        Text markText = mark.GetComponent<Text>();
-
-                        checkBox.GetComponent<Button>().onClick.AddListener(() =>
-                        {
-                            bool nowChecked = !ProgressSaver.IsChecked(objKey);
-                            ProgressSaver.SetChecked(objKey, nowChecked);
-                            checkImg.color = nowChecked
-                                ? new Color(0.2f, 0.6f, 0.2f)
-                                : new Color(0.25f, 0.25f, 0.25f);
-                            markText.text = nowChecked ? "✔" : "";
-                        });
-                    }
-                    else
-                    {
-                        // Auto tick indicator (not clickable)
-                        GameObject tickObj = GuidePanel.CreateText(row.transform, "Tick", done ? "✔" : "○");
-                        tickObj.GetComponent<RectTransform>().sizeDelta = new Vector2(18, 0);
-                        Text tickText = tickObj.GetComponent<Text>();
-                        tickText.alignment = TextAnchor.MiddleCenter;
-                        tickText.fontSize = 13;
-                        tickText.color = done ? new Color(0.4f, 0.9f, 0.4f) : new Color(0.6f, 0.6f, 0.6f);
-                    }
-
-                    GameObject label = GuidePanel.CreateText(row.transform, "Text", obj.Text);
-                    label.GetComponent<RectTransform>().sizeDelta = new Vector2(260, 0);
-                    Text labelText = label.GetComponent<Text>();
-                    labelText.fontSize = 13;
-                    labelText.color = textColor;
-                    labelText.fontStyle = done ? FontStyle.Normal : FontStyle.Normal;
+                if (progressObjs.Count > 0)
+                {
+                    GuidePanel.AddSpacer(content.transform);
+                    GuidePanel.AddLabel(content.transform, "OBJECTIVES", 15,
+                        TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+                    foreach (var obj in progressObjs)
+                        RenderObjectiveRow(content.transform, obj);
                 }
             }
-
-            // Tips
-            if (stage.Tips != null && stage.Tips.Count > 0)
+                // Tips
+                if (stage.Tips != null && stage.Tips.Count > 0)
             {
                 GuidePanel.AddSpacer(content.transform);
                 GuidePanel.AddLabel(content.transform, "TIPS", 15,
@@ -1086,6 +1036,72 @@ namespace ValheimGuide.UI
                     TMPro.FontStyles.Normal, Color.white);
                 GuidePanel.AddSpacer(parent);
             }
+        }
+        private void RenderObjectiveRow(Transform parent, Objective obj)
+        {
+            bool done = IsObjectiveComplete(obj);
+            Color textColor = done ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
+
+            GameObject row = new GameObject("ObjRow_" + obj.Id,
+                typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+            row.transform.SetParent(parent, false);
+            row.GetComponent<LayoutElement>().preferredHeight = 22;
+
+            var rowHlg = row.GetComponent<HorizontalLayoutGroup>();
+            rowHlg.spacing = 6;
+            rowHlg.childForceExpandWidth = false;
+            rowHlg.childForceExpandHeight = true;
+            rowHlg.childControlWidth = false;
+            rowHlg.childControlHeight = true;
+
+            if (!obj.AutoComplete)
+            {
+                // Manual checkbox
+                string objKey = "obj_" + obj.Id;
+                bool isChecked = ProgressSaver.IsChecked(objKey);
+
+                GameObject box = new GameObject("Check",
+                    typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+                box.transform.SetParent(row.transform, false);
+                box.GetComponent<LayoutElement>().preferredWidth = 18;
+                Image checkImg = box.GetComponent<Image>();
+                checkImg.color = isChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
+
+                GameObject mark = GuidePanel.CreateText(box.transform, "Mark", isChecked ? "✔" : "");
+                var markRect = mark.GetComponent<RectTransform>();
+                markRect.anchorMin = Vector2.zero;
+                markRect.anchorMax = Vector2.one;
+                markRect.offsetMin = markRect.offsetMax = Vector2.zero;
+                Text markText = mark.GetComponent<Text>();
+                markText.alignment = TextAnchor.MiddleCenter;
+                markText.fontSize = 11;
+
+                box.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    bool now = !ProgressSaver.IsChecked(objKey);
+                    ProgressSaver.SetChecked(objKey, now);
+                    checkImg.color = now ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
+                    markText.text = now ? "✔" : "";
+                    // Notify tracker
+                    ObjectiveTracker.ForceRefresh();
+                });
+            }
+            else
+            {
+                // Auto tick — read-only indicator
+                GameObject tickGo = GuidePanel.CreateText(row.transform, "Tick", done ? "✔" : "○");
+                tickGo.GetComponent<RectTransform>().sizeDelta = new Vector2(18, 0);
+                Text tickText = tickGo.GetComponent<Text>();
+                tickText.alignment = TextAnchor.MiddleCenter;
+                tickText.fontSize = 13;
+                tickText.color = done ? new Color(0.4f, 0.9f, 0.4f) : new Color(0.6f, 0.6f, 0.6f);
+            }
+
+            GameObject labelGo = GuidePanel.CreateText(row.transform, "Text", obj.Text);
+            labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(360, 0);
+            Text labelText = labelGo.GetComponent<Text>();
+            labelText.fontSize = 13;
+            labelText.color = textColor;
         }
     }
 }

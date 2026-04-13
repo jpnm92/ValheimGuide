@@ -19,11 +19,10 @@ namespace ValheimGuide
         public const string PluginName = "ValheimGuide";
         public const string PluginVersion = "0.1.0";
 
+        public static Plugin Instance { get; private set; }
+
         private Harmony _harmony;
         private ConfigEntry<KeyboardShortcut> _toggleGuideKey;
-
-        // Expose instance so we can access the logger globally
-        public static Plugin Instance { get; private set; }
 
         private void Awake()
         {
@@ -39,33 +38,44 @@ namespace ValheimGuide
             _harmony = new Harmony(PluginGuid);
             _harmony.PatchAll();
 
-            _toggleGuideKey = Config.Bind("General", "ToggleGuide", new KeyboardShortcut(KeyCode.F8), "Key to open/close the guide.");
+            _toggleGuideKey = Config.Bind("General", "ToggleGuide",
+                new KeyboardShortcut(KeyCode.F8), "Key to open/close the guide.");
+
+            // Initialise the on-screen tracker
+            ObjectiveTracker.Initialise();
 
             Logger.LogInfo($"{PluginName} loaded.");
         }
 
-        // We moved the generation out of Jotunn's early hook and into a callable method
         public static void LoadGuideData()
         {
-            string dataFolder = System.IO.Path.Combine(Paths.PluginPath, PluginName, "data");
+            string dataFolder = System.IO.Path.Combine(
+                Paths.PluginPath, PluginName, "data");
 
-            TherzieDataGenerator.GenerateIfPresent(); // 1. write generated .guide files if mods present
-            GuideDataLoader.Load(dataFolder, Instance.Logger); // 2. load all files including generated ones
+            TherzieDataGenerator.GenerateIfPresent(); // 1. write generated files (guarded by _hasRun)
+            GuideDataLoader.Load(dataFolder, Instance.Logger); // 2. reload all stages + playstyles
             GuideDataEnricher.Run();                  // 3. enrich with live ObjectDB data
-            ProgressionTracker.RefreshCurrentStage(); // 4. set initial stage
+            ProgressionTracker.RefreshCurrentStage(); // 4. set current stage
 
-            Instance.Logger.LogInfo($"{PluginName} ready. Stages: {GuideDataLoader.AllStages.Count}");
+            Instance.Logger.LogInfo(
+                $"{PluginName} ready. Stages: {GuideDataLoader.AllStages.Count}, " +
+                $"Playstyles: {GuideDataLoader.Playstyles.Count}");
         }
 
         private void Update()
         {
+            // Enforce pause every frame while guide is open
             if (GuidePanel.IsVisible)
                 Time.timeScale = 0f;
 
+            // Toggle key
             if (_toggleGuideKey.Value.IsDown())
                 GuidePanel.Toggle();
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) && GuidePanel.IsVisible)
+            // Tab or Escape closes the guide
+            if (GuidePanel.IsVisible &&
+                (UnityEngine.Input.GetKeyDown(KeyCode.Escape) ||
+                 UnityEngine.Input.GetKeyDown(KeyCode.Tab)))
                 GuidePanel.Hide();
         }
     }
