@@ -237,7 +237,7 @@
           "Text": "Build a Forge",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -246,7 +246,7 @@
           "Text": "Build a Smelter and Charcoal Kiln",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },

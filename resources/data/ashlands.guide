@@ -173,7 +173,7 @@
           "Text": "Build a Shield Generator at your beachhead",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },

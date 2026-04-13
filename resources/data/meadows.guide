@@ -223,7 +223,7 @@
           "Text": "Build a Workbench",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -232,7 +232,7 @@
           "Text": "Build a shelter with a roof and a bed",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },

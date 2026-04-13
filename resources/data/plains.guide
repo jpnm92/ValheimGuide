@@ -198,7 +198,7 @@
           "Text": "Build a Blast Furnace",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -207,7 +207,7 @@
           "Text": "Build a Windmill and Spinning Wheel",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -216,7 +216,7 @@
           "Text": "Raid a Fuling village for Flax and Barley",
           "Type": "manual",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },

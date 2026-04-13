@@ -98,6 +98,7 @@
     <Compile Include="Data\ProgressionTracker.cs" />
     <Compile Include="Data\GuideDataLoader.cs" />
     <Compile Include="Data\Models.cs" />
+    <Compile Include="Patches\BuildPatch.cs" />
     <Compile Include="Patches\GlobalKeyPatch.cs" />
     <Compile Include="Patches\InventoryPatch.cs" />
     <Compile Include="Patches\MenuPatch.cs" />

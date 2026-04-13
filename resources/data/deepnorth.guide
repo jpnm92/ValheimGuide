@@ -166,7 +166,7 @@
           "Text": "Build a fortified outpost at the Deep North border",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -175,7 +175,7 @@
           "Text": "Place a Portal at your Deep North outpost",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -193,7 +193,7 @@
           "Text": "Craft a Deep North Cape (extreme frost resist)",
           "Type": "manual",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": "Therzie.Armory"
         },
@@ -202,7 +202,7 @@
           "Text": "Raid a Svartalfr camp for glacial ore",
           "Type": "manual",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": "Therzie.Warfare"
         }

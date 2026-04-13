@@ -280,7 +280,7 @@
           "Text": "Build the Artisan Table with Dragon Tears",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         }

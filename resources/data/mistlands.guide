@@ -190,7 +190,7 @@
           "Text": "Build a Wisp Fountain",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -208,7 +208,7 @@
           "Text": "Build the Black Forge",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -217,7 +217,7 @@
           "Text": "Build the Galdr Table",
           "Type": "build",
           "Value": null,
-          "AutoComplete": false,
+          "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
         },

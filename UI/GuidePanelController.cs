@@ -20,7 +20,6 @@ namespace ValheimGuide.UI
         private GameObject _currentTabContentContainer;
         private bool _isReadMode = false;
 
-        // NEW FILTER STATE
         private readonly HashSet<string> _activeDamageFilters = new HashSet<string>();
         private readonly HashSet<string> _activeArmorFilters = new HashSet<string>();
         private readonly List<Image> _tabButtonImages = new List<Image>();
@@ -217,7 +216,6 @@ namespace ValheimGuide.UI
             modeHlg.childControlWidth = false;
             modeHlg.childControlHeight = true;
 
-            // Guide button
             GameObject guideBtn = new GameObject("GuideModeBtn",
                 typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
             guideBtn.transform.SetParent(modeBar.transform, false);
@@ -232,7 +230,6 @@ namespace ValheimGuide.UI
             guideBtnLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
             guideBtnLabel.GetComponent<Text>().fontSize = 13;
 
-            // Read button
             GameObject readBtn = new GameObject("ReadModeBtn",
                 typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
             readBtn.transform.SetParent(modeBar.transform, false);
@@ -261,7 +258,6 @@ namespace ValheimGuide.UI
                 _referenceAreaContainer.SetActive(false);
             });
 
-            // Adjust smart panel layout based on mode
             RectTransform smartRect = _smartPanelContainer.GetComponent<RectTransform>();
             if (_isReadMode)
             {
@@ -287,7 +283,7 @@ namespace ValheimGuide.UI
             scrollRect.anchorMin = Vector2.zero;
             scrollRect.anchorMax = Vector2.one;
             scrollRect.offsetMin = new Vector2(8, 8);
-            scrollRect.offsetMax = new Vector2(-20, -40); // pushed down to make room for mode bar
+            scrollRect.offsetMax = new Vector2(-20, -40);
 
             ScrollRect scroll = scrollObj.GetComponent<ScrollRect>();
             scroll.horizontal = false;
@@ -331,7 +327,6 @@ namespace ValheimGuide.UI
             vlg.childControlHeight = true;
             content.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            // ── READ MODE ─────────────────────────────────────────────
             if (_isReadMode)
             {
                 BuildReadContent(content.transform, stage);
@@ -346,7 +341,6 @@ namespace ValheimGuide.UI
                 GuidePanel.AddLabel(content.transform, stage.BiomeDescription, 14,
                     TMPro.FontStyles.Italic, new Color(0.8f, 0.8f, 0.8f));
 
-            // Priority materials
             if (stage.PriorityMaterials != null && stage.PriorityMaterials.Count > 0)
             {
                 GuidePanel.AddSpacer(content.transform);
@@ -356,7 +350,6 @@ namespace ValheimGuide.UI
                     14, TMPro.FontStyles.Normal, Color.white);
             }
 
-            // Boss brief
             if (stage.Boss != null)
             {
                 GuidePanel.AddSpacer(content.transform);
@@ -393,12 +386,10 @@ namespace ValheimGuide.UI
                         14, TMPro.FontStyles.Normal, new Color(0.6f, 1f, 0.6f));
             }
 
-            // -- OBJECTIVES & BUILDINGS -------------------------------------------------
             if (stage.Objectives != null && stage.Objectives.Count > 0)
             {
                 string playstyleId = ProgressSaver.Current?.PlaystyleId ?? "all";
 
-                // Filter by mod + playstyle
                 var visibleObjs = stage.Objectives.Where(o =>
                     (string.IsNullOrEmpty(o.ModRequired) ||
                      GuideDataLoader.InstalledMods.Contains(o.ModRequired)) &&
@@ -407,7 +398,6 @@ namespace ValheimGuide.UI
                      playstyleId == o.PlaystyleFilter)
                 ).ToList();
 
-                // Split: build-type vs progress-type
                 var buildObjs = visibleObjs.Where(o => o.Type == "build").ToList();
                 var progressObjs = visibleObjs.Where(o => o.Type != "build").ToList();
 
@@ -429,8 +419,8 @@ namespace ValheimGuide.UI
                         RenderObjectiveRow(content.transform, obj);
                 }
             }
-                // Tips
-                if (stage.Tips != null && stage.Tips.Count > 0)
+
+            if (stage.Tips != null && stage.Tips.Count > 0)
             {
                 GuidePanel.AddSpacer(content.transform);
                 GuidePanel.AddLabel(content.transform, "TIPS", 15,
@@ -442,26 +432,11 @@ namespace ValheimGuide.UI
                     Color tipColor;
                     switch (tip.Category)
                     {
-                        case "combat":
-                            prefix = "[Combat] ";
-                            tipColor = new Color(1f, 0.6f, 0.6f);
-                            break;
-                        case "gathering":
-                            prefix = "[Gather] ";
-                            tipColor = new Color(0.6f, 1f, 0.6f);
-                            break;
-                        case "secret":
-                            prefix = "[Secret] ";
-                            tipColor = new Color(1f, 0.9f, 0.4f);
-                            break;
-                        case "building":
-                            prefix = "[Build] ";
-                            tipColor = new Color(0.6f, 0.8f, 1f);
-                            break;
-                        default:
-                            prefix = "";
-                            tipColor = new Color(0.85f, 0.85f, 0.85f);
-                            break;
+                        case "combat": prefix = "[Combat] "; tipColor = new Color(1f, 0.6f, 0.6f); break;
+                        case "gathering": prefix = "[Gather] "; tipColor = new Color(0.6f, 1f, 0.6f); break;
+                        case "secret": prefix = "[Secret] "; tipColor = new Color(1f, 0.9f, 0.4f); break;
+                        case "building": prefix = "[Build] "; tipColor = new Color(0.6f, 0.8f, 1f); break;
+                        default: prefix = ""; tipColor = new Color(0.85f, 0.85f, 0.85f); break;
                     }
                     GuidePanel.AddLabel(content.transform, prefix + tip.Text, 13,
                         TMPro.FontStyles.Normal, tipColor);
@@ -504,18 +479,14 @@ namespace ValheimGuide.UI
             placeholderObj.GetComponent<Text>().color = new Color(0.5f, 0.5f, 0.5f, 1f);
             placeholderObj.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
             RectTransform pRect = placeholderObj.GetComponent<RectTransform>();
-            pRect.anchorMin = Vector2.zero;
-            pRect.anchorMax = Vector2.one;
-            pRect.offsetMin = new Vector2(10, 0);
-            pRect.offsetMax = new Vector2(-10, 0);
+            pRect.anchorMin = Vector2.zero; pRect.anchorMax = Vector2.one;
+            pRect.offsetMin = new Vector2(10, 0); pRect.offsetMax = new Vector2(-10, 0);
 
             GameObject textObj = GuidePanel.CreateText(searchBarObj.transform, "Text", "");
             textObj.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
             RectTransform tRect = textObj.GetComponent<RectTransform>();
-            tRect.anchorMin = Vector2.zero;
-            tRect.anchorMax = Vector2.one;
-            tRect.offsetMin = new Vector2(10, 0);
-            tRect.offsetMax = new Vector2(-10, 0);
+            tRect.anchorMin = Vector2.zero; tRect.anchorMax = Vector2.one;
+            tRect.offsetMin = new Vector2(10, 0); tRect.offsetMax = new Vector2(-10, 0);
 
             InputField inputField = searchBarObj.GetComponent<InputField>();
             inputField.textComponent = textObj.GetComponent<Text>();
@@ -552,17 +523,13 @@ namespace ValheimGuide.UI
                 tabBtn.GetComponent<LayoutElement>().preferredWidth = 90;
 
                 Image tabImage = tabBtn.GetComponent<Image>();
-                tabImage.color = i == _referenceTabIndex
-                    ? new Color(0.35f, 0.28f, 0.15f, 1f)
-                    : new Color(0.2f, 0.2f, 0.2f, 1f);
-                _tabButtonImages.Add(tabImage); // ← store reference
+                tabImage.color = i == _referenceTabIndex ? new Color(0.35f, 0.28f, 0.15f, 1f) : new Color(0.2f, 0.2f, 0.2f, 1f);
+                _tabButtonImages.Add(tabImage);
 
                 GameObject tabLabel = GuidePanel.CreateText(tabBtn.transform, "Label", tabNames[i]);
                 RectTransform labelRect = tabLabel.GetComponent<RectTransform>();
-                labelRect.anchorMin = Vector2.zero;
-                labelRect.anchorMax = Vector2.one;
-                labelRect.offsetMin = Vector2.zero;
-                labelRect.offsetMax = Vector2.zero;
+                labelRect.anchorMin = Vector2.zero; labelRect.anchorMax = Vector2.one;
+                labelRect.offsetMin = labelRect.offsetMax = Vector2.zero;
                 tabLabel.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
                 tabLabel.GetComponent<Text>().fontSize = 14;
 
@@ -572,18 +539,14 @@ namespace ValheimGuide.UI
                     _activeDamageFilters.Clear();
                     _activeArmorFilters.Clear();
 
-                    // Update tab highlight colours only
                     for (int j = 0; j < _tabButtonImages.Count; j++)
-                        _tabButtonImages[j].color = j == _referenceTabIndex
-                            ? new Color(0.35f, 0.28f, 0.15f, 1f)
-                            : new Color(0.2f, 0.2f, 0.2f, 1f);
+                        _tabButtonImages[j].color = j == _referenceTabIndex ? new Color(0.35f, 0.28f, 0.15f, 1f) : new Color(0.2f, 0.2f, 0.2f, 1f);
 
-                    RebuildFilterBar(stage);    // ← only the filter bar
-                    PopulateActiveTab(stage);   // ← only the content
+                    RebuildFilterBar(stage);
+                    PopulateActiveTab(stage);
                 });
             }
 
-            // ADD FILTER BAR
             BuildFilterBar(_referenceAreaContainer.transform, stage);
 
             GameObject contentArea = new GameObject("ContentArea", typeof(RectTransform), typeof(ScrollRect));
@@ -592,15 +555,12 @@ namespace ValheimGuide.UI
             contentAreaRect.anchorMin = Vector2.zero;
             contentAreaRect.anchorMax = new Vector2(1, 1);
             contentAreaRect.offsetMin = new Vector2(8, 8);
-
-            // ADJUSTED OFFSET FOR FILTERS
             contentAreaRect.offsetMax = new Vector2(-20, -120);
 
             ScrollRect scroll = contentArea.GetComponent<ScrollRect>();
             scroll.horizontal = false;
             scroll.vertical = true;
             scroll.movementType = ScrollRect.MovementType.Clamped;
-
             contentArea.AddComponent<SmoothScroll>();
 
             Scrollbar scrollbar = GuidePanel.CreateScrollbar(_referenceAreaContainer.transform);
@@ -614,10 +574,8 @@ namespace ValheimGuide.UI
             viewport.GetComponent<Image>().color = new Color(0, 0, 0, 0.01f);
             viewport.GetComponent<Mask>().showMaskGraphic = false;
             RectTransform vpRect = viewport.GetComponent<RectTransform>();
-            vpRect.anchorMin = Vector2.zero;
-            vpRect.anchorMax = Vector2.one;
-            vpRect.offsetMin = Vector2.zero;
-            vpRect.offsetMax = Vector2.zero;
+            vpRect.anchorMin = Vector2.zero; vpRect.anchorMax = Vector2.one;
+            vpRect.offsetMin = vpRect.offsetMax = Vector2.zero;
             scroll.viewport = vpRect;
 
             _currentTabContentContainer = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
@@ -626,8 +584,7 @@ namespace ValheimGuide.UI
             contentRect.anchorMin = new Vector2(0, 1);
             contentRect.anchorMax = new Vector2(1, 1);
             contentRect.pivot = new Vector2(0.5f, 1);
-            contentRect.offsetMin = Vector2.zero;
-            contentRect.offsetMax = Vector2.zero;
+            contentRect.offsetMin = contentRect.offsetMax = Vector2.zero;
             scroll.content = contentRect;
 
             VerticalLayoutGroup vlgContent = _currentTabContentContainer.GetComponent<VerticalLayoutGroup>();
@@ -716,10 +673,8 @@ namespace ValheimGuide.UI
 
             GameObject textObj = GuidePanel.CreateText(pill.transform, "Label", label);
             RectTransform tr = textObj.GetComponent<RectTransform>();
-            tr.anchorMin = Vector2.zero;
-            tr.anchorMax = Vector2.one;
+            tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
             tr.offsetMin = tr.offsetMax = Vector2.zero;
-
             Text t = textObj.GetComponent<Text>();
             t.alignment = TextAnchor.MiddleCenter;
             t.fontSize = 12;
@@ -757,7 +712,6 @@ namespace ValheimGuide.UI
                 if (!string.IsNullOrEmpty(_searchQuery) && !gear.Label.ToLower().Contains(_searchQuery))
                     continue;
 
-                // Damage type filter
                 if (_activeDamageFilters.Count > 0 && (gear.Type == "Weapon" || gear.Type == "Bow"))
                 {
                     bool match = gear.DamageTypes != null &&
@@ -765,7 +719,6 @@ namespace ValheimGuide.UI
                     if (!match) continue;
                 }
 
-                // Armor class filter
                 if (_activeArmorFilters.Count > 0 && gear.Type == "Armor")
                 {
                     if (string.IsNullOrEmpty(gear.ArmorClass) ||
@@ -795,14 +748,18 @@ namespace ValheimGuide.UI
 
                 GameObject checkMark = GuidePanel.CreateText(checkBox.transform, "Mark", isChecked ? "✔" : "");
                 RectTransform markRect = checkMark.GetComponent<RectTransform>();
-                markRect.anchorMin = Vector2.zero;
-                markRect.anchorMax = Vector2.one;
-                markRect.offsetMin = Vector2.zero;
-                markRect.offsetMax = Vector2.zero;
+                markRect.anchorMin = Vector2.zero; markRect.anchorMax = Vector2.one;
+                markRect.offsetMin = markRect.offsetMax = Vector2.zero;
                 Text markText = checkMark.GetComponent<Text>();
                 markText.alignment = TextAnchor.MiddleCenter;
                 markText.fontSize = 12;
                 markText.color = Color.white;
+
+                GameObject nameObj = GuidePanel.CreateText(row.transform, "Name", gear.Label.ToUpper());
+                nameObj.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 0);
+                nameObj.GetComponent<Text>().fontSize = 15;
+                nameObj.GetComponent<Text>().fontStyle = FontStyle.Bold;
+                nameObj.GetComponent<Text>().color = isChecked ? new Color(0.5f, 0.5f, 0.5f) : Color.white;
 
                 checkBox.GetComponent<Button>().onClick.AddListener(() =>
                 {
@@ -810,12 +767,12 @@ namespace ValheimGuide.UI
                     ProgressSaver.SetChecked(itemId, nowChecked);
                     checkImg.color = nowChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
                     markText.text = nowChecked ? "✔" : "";
-                });
+                    nameObj.GetComponent<Text>().color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : Color.white;
 
-                GameObject nameObj = GuidePanel.CreateText(row.transform, "Name", gear.Label.ToUpper());
-                nameObj.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 0);
-                nameObj.GetComponent<Text>().fontSize = 15;
-                nameObj.GetComponent<Text>().fontStyle = FontStyle.Bold;
+                    // Immediately push changes to the HUD tracker and refresh objectives
+                    ObjectiveTracker.ForceRefresh();
+                    BuildSmartPanel(_selectedStage);
+                });
 
                 string type = gear.Type + "  ·  " + gear.Station;
                 if (gear.StationLevel > 1) type += " (Lv " + gear.StationLevel + ")";
@@ -850,20 +807,17 @@ namespace ValheimGuide.UI
 
                 count++;
 
-                // Mob name + health
                 string header = mob.Label.ToUpper();
                 if (mob.Health > 0)
                     header += $"  ·  {mob.Health} HP";
                 GuidePanel.AddLabel(parent, header, 15, TMPro.FontStyles.Bold, Color.white);
 
-                // Spawn chances
                 if (mob.SpawnChanceDay > 0 || mob.SpawnChanceNight > 0)
                 {
                     string spawn = $"Spawn: Day {(int)(mob.SpawnChanceDay * 100)}%  ·  Night {(int)(mob.SpawnChanceNight * 100)}%";
                     GuidePanel.AddLabel(parent, spawn, 13, TMPro.FontStyles.Normal, new Color(0.65f, 0.65f, 0.65f));
                 }
 
-                // Weaknesses / immunities — only show non-Normal entries
                 if (mob.Resistances != null && mob.Resistances.Count > 0)
                 {
                     var weak = mob.Resistances.Where(r => r.Value == "Weak").Select(r => r.Key).ToList();
@@ -878,7 +832,6 @@ namespace ValheimGuide.UI
                         GuidePanel.AddLabel(parent, "Resistant: " + string.Join(", ", resist), 13, TMPro.FontStyles.Normal, new Color(0.7f, 0.9f, 0.7f));
                 }
 
-                // Drops
                 if (mob.Drops != null && mob.Drops.Count > 0)
                 {
                     string drops = "Drops: " + string.Join(", ", mob.Drops.ConvertAll(d =>
@@ -886,7 +839,6 @@ namespace ValheimGuide.UI
                     GuidePanel.AddLabel(parent, drops, 13, TMPro.FontStyles.Normal, Color.white);
                 }
 
-                // Taming
                 if (mob.IsTameable && mob.Taming != null)
                 {
                     string food = "Tame with: " + string.Join(", ", mob.Taming.FoodItems);
@@ -895,7 +847,6 @@ namespace ValheimGuide.UI
                         GuidePanel.AddLabel(parent, mob.Taming.Note, 13, TMPro.FontStyles.Italic, new Color(0.7f, 0.9f, 0.5f));
                 }
 
-                // Combat note
                 if (!string.IsNullOrEmpty(mob.Note))
                     GuidePanel.AddLabel(parent, mob.Note, 13, TMPro.FontStyles.Italic, new Color(1f, 0.85f, 0.4f));
 
@@ -937,21 +888,35 @@ namespace ValheimGuide.UI
 
                 GameObject checkBox = new GameObject("Checkbox", typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
                 checkBox.transform.SetParent(row.transform, false);
-                checkBox.GetComponent<LayoutElement>().preferredWidth = 20;
+                checkBox.GetComponent<LayoutElement>().preferredWidth = 18;
                 Image checkImg = checkBox.GetComponent<Image>();
-                checkImg.color = isChecked ? new Color(0.3f, 0.8f, 0.3f) : new Color(0.3f, 0.3f, 0.3f);
+                checkImg.color = isChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
 
-                checkBox.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    bool nowChecked = !ProgressSaver.IsChecked(itemId);
-                    ProgressSaver.SetChecked(itemId, nowChecked);
-                    checkImg.color = nowChecked ? new Color(0.3f, 0.8f, 0.3f) : new Color(0.3f, 0.3f, 0.3f);
-                });
+                GameObject checkMark = GuidePanel.CreateText(checkBox.transform, "Mark", isChecked ? "✔" : "");
+                RectTransform markRect = checkMark.GetComponent<RectTransform>();
+                markRect.anchorMin = Vector2.zero; markRect.anchorMax = Vector2.one;
+                markRect.offsetMin = markRect.offsetMax = Vector2.zero;
+                Text markText = checkMark.GetComponent<Text>();
+                markText.alignment = TextAnchor.MiddleCenter;
+                markText.fontSize = 12; markText.color = Color.white;
 
                 GameObject nameObj = GuidePanel.CreateText(row.transform, "Name", recipe.Label.ToUpper());
                 nameObj.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 0);
                 nameObj.GetComponent<Text>().fontSize = 15;
                 nameObj.GetComponent<Text>().fontStyle = FontStyle.Bold;
+                nameObj.GetComponent<Text>().color = isChecked ? new Color(0.5f, 0.5f, 0.5f) : Color.white;
+
+                checkBox.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    bool nowChecked = !ProgressSaver.IsChecked(itemId);
+                    ProgressSaver.SetChecked(itemId, nowChecked);
+                    checkImg.color = nowChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
+                    markText.text = nowChecked ? "✔" : "";
+                    nameObj.GetComponent<Text>().color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : Color.white;
+
+                    ObjectiveTracker.ForceRefresh();
+                    BuildSmartPanel(_selectedStage);
+                });
 
                 string station = recipe.Station;
                 if (recipe.StationLevel > 1) station += " (Lv " + recipe.StationLevel + ")";
@@ -971,10 +936,15 @@ namespace ValheimGuide.UI
             if (count == 0)
                 GuidePanel.AddLabel(parent, "No results found.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
         }
+
         private bool IsObjectiveComplete(Objective obj)
         {
             if (!obj.AutoComplete)
                 return ProgressSaver.IsChecked("obj_" + obj.Id);
+
+            // MAGIC LINK: If the user manually ticked the associated gear/recipe item, count the objective as completed!
+            if (!string.IsNullOrEmpty(obj.Value) && ProgressSaver.IsChecked(obj.Value))
+                return true;
 
             switch (obj.Type.ToLowerInvariant())
             {
@@ -999,13 +969,12 @@ namespace ValheimGuide.UI
                     return ProgressSaver.IsChecked("obj_" + obj.Id);
             }
         }
+
         private void BuildReadContent(Transform parent, Stage stage)
         {
             if (string.IsNullOrEmpty(stage.Article))
             {
-                // For generated Therzie stages, point to the parent biome
                 string parentBiome = stage.Label;
-                // Label is e.g. "Armory (Meadows)" or "Warfare (Swamp)"
                 int start = stage.Label.IndexOf('(');
                 int end = stage.Label.IndexOf(')');
                 if (start >= 0 && end > start)
@@ -1037,6 +1006,7 @@ namespace ValheimGuide.UI
                 GuidePanel.AddSpacer(parent);
             }
         }
+
         private void RenderObjectiveRow(Transform parent, Objective obj)
         {
             bool done = IsObjectiveComplete(obj);
@@ -1045,7 +1015,7 @@ namespace ValheimGuide.UI
             GameObject row = new GameObject("ObjRow_" + obj.Id,
                 typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
             row.transform.SetParent(parent, false);
-            row.GetComponent<LayoutElement>().preferredHeight = 22;
+            row.GetComponent<LayoutElement>().minHeight = 22;
 
             var rowHlg = row.GetComponent<HorizontalLayoutGroup>();
             rowHlg.spacing = 6;
@@ -1056,7 +1026,6 @@ namespace ValheimGuide.UI
 
             if (!obj.AutoComplete)
             {
-                // Manual checkbox
                 string objKey = "obj_" + obj.Id;
                 bool isChecked = ProgressSaver.IsChecked(objKey);
 
@@ -1076,32 +1045,40 @@ namespace ValheimGuide.UI
                 markText.alignment = TextAnchor.MiddleCenter;
                 markText.fontSize = 11;
 
+                GameObject labelGo = GuidePanel.CreateText(row.transform, "Text", obj.Text);
+                labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(360, 0);
+                Text labelText = labelGo.GetComponent<Text>();
+                labelText.fontSize = 13;
+                labelText.color = isChecked ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
+
                 box.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     bool now = !ProgressSaver.IsChecked(objKey);
                     ProgressSaver.SetChecked(objKey, now);
                     checkImg.color = now ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
                     markText.text = now ? "✔" : "";
-                    // Notify tracker
+
+                    // Now correctly visually updates text
+                    labelText.color = now ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
+
                     ObjectiveTracker.ForceRefresh();
                 });
             }
             else
             {
-                // Auto tick — read-only indicator
                 GameObject tickGo = GuidePanel.CreateText(row.transform, "Tick", done ? "✔" : "○");
                 tickGo.GetComponent<RectTransform>().sizeDelta = new Vector2(18, 0);
                 Text tickText = tickGo.GetComponent<Text>();
                 tickText.alignment = TextAnchor.MiddleCenter;
                 tickText.fontSize = 13;
                 tickText.color = done ? new Color(0.4f, 0.9f, 0.4f) : new Color(0.6f, 0.6f, 0.6f);
-            }
 
-            GameObject labelGo = GuidePanel.CreateText(row.transform, "Text", obj.Text);
-            labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(360, 0);
-            Text labelText = labelGo.GetComponent<Text>();
-            labelText.fontSize = 13;
-            labelText.color = textColor;
+                GameObject labelGo = GuidePanel.CreateText(row.transform, "Text", obj.Text);
+                labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(360, 0);
+                Text labelText = labelGo.GetComponent<Text>();
+                labelText.fontSize = 13;
+                labelText.color = textColor;
+            }
         }
     }
 }
