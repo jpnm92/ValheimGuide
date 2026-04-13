@@ -21,8 +21,14 @@ namespace ValheimGuide
 
         private Harmony _harmony;
         private ConfigEntry<KeyboardShortcut> _toggleGuideKey;
+
+        // Expose instance so we can access the logger globally
+        public static Plugin Instance { get; private set; }
+
         private void Awake()
         {
+            Instance = this;
+
             GuideDataLoader.InstalledMods = new HashSet<string>();
             foreach (var plugin in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
                 GuideDataLoader.InstalledMods.Add(plugin.Metadata.GUID);
@@ -35,25 +41,24 @@ namespace ValheimGuide
 
             _toggleGuideKey = Config.Bind("General", "ToggleGuide", new KeyboardShortcut(KeyCode.F8), "Key to open/close the guide.");
 
-            Jotunn.Managers.ItemManager.OnItemsRegistered += OnItemsRegistered;
-
             Logger.LogInfo($"{PluginName} loaded.");
         }
 
-        private void OnItemsRegistered()
+        // We moved the generation out of Jotunn's early hook and into a callable method
+        public static void LoadGuideData()
         {
-            string dataFolder = System.IO.Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
+            string dataFolder = System.IO.Path.Combine(Paths.PluginPath, PluginName, "data");
 
             TherzieDataGenerator.GenerateIfPresent(); // 1. write generated .guide files if mods present
-            GuideDataLoader.Load(dataFolder, Logger); // 2. load all files including generated ones
-            GuideDataEnricher.Run();                 // 3. enrich with live ObjectDB data
+            GuideDataLoader.Load(dataFolder, Instance.Logger); // 2. load all files including generated ones
+            GuideDataEnricher.Run();                  // 3. enrich with live ObjectDB data
             ProgressionTracker.RefreshCurrentStage(); // 4. set initial stage
 
-            Logger.LogInfo($"{PluginName} ready. Stages: {GuideDataLoader.AllStages.Count}");
+            Instance.Logger.LogInfo($"{PluginName} ready. Stages: {GuideDataLoader.AllStages.Count}");
         }
+
         private void Update()
         {
-            // Enforce pause every frame while guide is open
             if (GuidePanel.IsVisible)
                 Time.timeScale = 0f;
 

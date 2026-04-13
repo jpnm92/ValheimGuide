@@ -179,12 +179,12 @@
     </PropertyGroup>
     <ItemGroup>
       <GuideFiles Include="$(TargetDir)resources\data\*.guide" />
-      <ReleaseStages Include="$(TSStage);$(NexusStage)" />
+      <DataFiles Include="$(TargetDir)resources\data\*.json" /> <ReleaseStages Include="$(TSStage);$(NexusStage)" />
     </ItemGroup>
     <MakeDir Directories="%(ReleaseStages.Identity)$(PluginSubdir)data" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="%(ReleaseStages.Identity)$(PluginSubdir)" />
     <Copy SourceFiles="@(GuideFiles)" DestinationFolder="%(ReleaseStages.Identity)$(PluginSubdir)data" />
-    <Copy SourceFiles="$(ProjectDir)PackagingAssets\Changelog.md" DestinationFolder="%(ReleaseStages.Identity)" />
+    <Copy SourceFiles="@(DataFiles)" DestinationFolder="%(ReleaseStages.Identity)$(PluginSubdir)data" /> <Copy SourceFiles="$(ProjectDir)PackagingAssets\Changelog.md" DestinationFolder="%(ReleaseStages.Identity)" />
     <Copy SourceFiles="$(ProjectDir)PackagingAssets\manifest.json" DestinationFolder="$(TSStage)" />
     <Copy SourceFiles="$(ProjectDir)PackagingAssets\README.md" DestinationFolder="$(TSStage)" />
     <Copy SourceFiles="$(ProjectDir)PackagingAssets\icon.png" DestinationFolder="$(TSStage)" />
