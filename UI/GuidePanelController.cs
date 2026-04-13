@@ -551,18 +551,18 @@ namespace ValheimGuide.UI
             }
 
             // DYNAMIC SCROLL OFFSET CALCULATION
-            int filterRows = 0;
+            float filterHeight = 0f;
             bool hasWeapons = stage.Gear.Exists(g => g.Type == "Weapon" || g.Type == "Bow");
             bool hasArmor = stage.Gear.Exists(g => g.Type == "Armor");
             bool hasMods = stage.Gear.Exists(g => g.ModRequired == "Therzie.Armory" || g.ModRequired == "Therzie.Warfare");
 
             if (_referenceTabIndex == 0)
             {
-                if (hasMods) filterRows++;
-                if (hasWeapons) filterRows++;
-                if (hasArmor) filterRows++;
+                if (hasMods) filterHeight += 28f;
+                if (hasWeapons) filterHeight += 56f; // 56px gives enough room for 2 rows of weapon filters!
+                if (hasArmor) filterHeight += 28f;
             }
-            float dynamicTopOffset = -80f - (filterRows * 30f);
+            float dynamicTopOffset = -80f - filterHeight;
 
             BuildFilterBar(_referenceAreaContainer.transform, stage, dynamicTopOffset);
 
@@ -675,12 +675,14 @@ namespace ValheimGuide.UI
             // 2. WEAPON FILTERS
             if (hasWeapons)
             {
-                GameObject wRow = new GameObject("WeaponFilters", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+                GameObject wRow = new GameObject("WeaponFilters", typeof(RectTransform), typeof(GridLayoutGroup), typeof(LayoutElement));
                 wRow.transform.SetParent(filterBar.transform, false);
-                wRow.GetComponent<LayoutElement>().preferredHeight = 24;
+                wRow.GetComponent<LayoutElement>().preferredHeight = 52; // Force height for 2 rows
 
-                HorizontalLayoutGroup hlg = wRow.GetComponent<HorizontalLayoutGroup>();
-                hlg.spacing = 4; hlg.childForceExpandWidth = false; hlg.childForceExpandHeight = true; hlg.childControlWidth = false; hlg.childControlHeight = true;
+                GridLayoutGroup glg = wRow.GetComponent<GridLayoutGroup>();
+                glg.cellSize = new Vector2(62, 22); // Exact size of the pills
+                glg.spacing = new Vector2(4, 4);
+                glg.childAlignment = TextAnchor.UpperLeft;
 
                 string[] damageTypes = { "Blunt", "Slash", "Pierce", "Fire", "Frost", "Lightning", "Poison", "Spirit" };
                 foreach (string dt in damageTypes)
@@ -797,24 +799,28 @@ namespace ValheimGuide.UI
                 }
 
                 count++;
+
+                // Main Row Wrapper
                 GameObject row = new GameObject("Row_" + gear.ItemId, typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
                 row.transform.SetParent(parent, false);
-                row.GetComponent<LayoutElement>().preferredHeight = 24;
 
                 HorizontalLayoutGroup rowHlg = row.GetComponent<HorizontalLayoutGroup>();
-                rowHlg.spacing = 6;
-                rowHlg.childForceExpandWidth = false;
-                rowHlg.childForceExpandHeight = true;
+                rowHlg.spacing = 10;
+                rowHlg.childForceExpandWidth = false; // We let the text container expand instead
+                rowHlg.childForceExpandHeight = false;
+                rowHlg.childControlWidth = true;
                 rowHlg.childControlHeight = true;
-                rowHlg.childControlWidth = false;
 
+                // 1. Checkbox Column
                 GameObject checkBox = new GameObject("Checkbox", typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
                 checkBox.transform.SetParent(row.transform, false);
-                checkBox.GetComponent<LayoutElement>().preferredWidth = 18;
+                checkBox.GetComponent<LayoutElement>().preferredWidth = 20;
+                checkBox.GetComponent<LayoutElement>().preferredHeight = 20; // Make it a perfect square
+
                 string itemId = gear.ItemId;
                 bool isChecked = ProgressSaver.IsChecked(itemId);
                 Image checkImg = checkBox.GetComponent<Image>();
-                checkImg.color = isChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
+                checkImg.color = isChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.15f, 0.15f, 0.15f);
 
                 GameObject checkMark = GuidePanel.CreateText(checkBox.transform, "Mark", isChecked ? "✔" : "");
                 RectTransform markRect = checkMark.GetComponent<RectTransform>();
@@ -822,19 +828,35 @@ namespace ValheimGuide.UI
                 markRect.offsetMin = markRect.offsetMax = Vector2.zero;
                 Text markText = checkMark.GetComponent<Text>();
                 markText.alignment = TextAnchor.MiddleCenter;
-                markText.fontSize = 12;
+                markText.fontSize = 14;
                 markText.color = Color.white;
+
+                // 2. Text Content Column (Takes up remaining width)
+                GameObject textContainer = new GameObject("TextContainer", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(LayoutElement));
+                textContainer.transform.SetParent(row.transform, false);
+                textContainer.GetComponent<LayoutElement>().flexibleWidth = 1f; // Fills the empty void!
+
+                VerticalLayoutGroup tvlg = textContainer.GetComponent<VerticalLayoutGroup>();
+                tvlg.spacing = 2;
+                tvlg.childForceExpandHeight = false;
+                tvlg.childForceExpandWidth = true;
+                tvlg.childControlHeight = true;
+                tvlg.childControlWidth = true;
+
+                // 2A. Header Row (Name on Left, Station on Right)
+                GameObject headerRow = new GameObject("HeaderRow", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+                headerRow.transform.SetParent(textContainer.transform, false);
+                HorizontalLayoutGroup hhlg = headerRow.GetComponent<HorizontalLayoutGroup>();
+                hhlg.childForceExpandWidth = true;
+                hhlg.childControlWidth = true;
 
                 // --- PLAYSTYLE HIGHLIGHT LOGIC ---
                 bool isOptimal = false;
-                if (currentPlaystyle != null)
+                if (currentPlaystyle != null && !isChecked)
                 {
-                    if (gear.PlaystyleTag == currentPlaystyle.Id)
-                        isOptimal = true;
-                    else if (gear.Type == "Armor" && !string.IsNullOrEmpty(currentPlaystyle.ArmorSet) && gear.Label.IndexOf(currentPlaystyle.ArmorSet, StringComparison.OrdinalIgnoreCase) >= 0)
-                        isOptimal = true;
-                    else if (currentPlaystyle.WeaponTypes.Any(wt => gear.Label.IndexOf(wt, StringComparison.OrdinalIgnoreCase) >= 0))
-                        isOptimal = true;
+                    if (gear.PlaystyleTag == currentPlaystyle.Id) isOptimal = true;
+                    else if (gear.Type == "Armor" && !string.IsNullOrEmpty(currentPlaystyle.ArmorSet) && gear.Label.IndexOf(currentPlaystyle.ArmorSet, StringComparison.OrdinalIgnoreCase) >= 0) isOptimal = true;
+                    else if (currentPlaystyle.WeaponTypes.Any(wt => gear.Label.IndexOf(wt, StringComparison.OrdinalIgnoreCase) >= 0)) isOptimal = true;
                 }
 
                 string displayName = gear.Label.ToUpper();
@@ -842,37 +864,51 @@ namespace ValheimGuide.UI
 
                 Color baseColor = isOptimal ? new Color(1f, 0.85f, 0.4f) : Color.white;
 
-                GameObject nameObj = GuidePanel.CreateText(row.transform, "Name", displayName);
-                nameObj.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 0);
-                nameObj.GetComponent<Text>().fontSize = 15;
-                nameObj.GetComponent<Text>().fontStyle = FontStyle.Bold;
-                nameObj.GetComponent<Text>().color = isChecked ? new Color(0.5f, 0.5f, 0.5f) : baseColor;
+                // Item Name (Left)
+                GameObject nameObj = GuidePanel.CreateText(headerRow.transform, "Name", displayName);
+                Text nameText = nameObj.GetComponent<Text>();
+                nameText.alignment = TextAnchor.MiddleLeft;
+                nameText.fontSize = 15;
+                nameText.fontStyle = FontStyle.Bold;
+                nameText.color = isChecked ? new Color(0.5f, 0.5f, 0.5f) : baseColor;
 
+                // Crafting Station (Right)
+                string stationStr = gear.Type + "  ·  " + gear.Station;
+                if (gear.StationLevel > 1) stationStr += " (Lv " + gear.StationLevel + ")";
+
+                GameObject stationObj = GuidePanel.CreateText(headerRow.transform, "Station", stationStr);
+                Text stationText = stationObj.GetComponent<Text>();
+                stationText.alignment = TextAnchor.MiddleRight; // Pushes it to the far right!
+                stationText.fontSize = 13;
+                stationText.color = new Color(0.6f, 0.6f, 0.6f);
+
+                // 2B. Recipe Row (Bottom)
+                if (gear.Recipe != null && gear.Recipe.Count > 0)
+                {
+                    string recipe = "Recipe: " + string.Join(", ", gear.Recipe.ConvertAll(r => $"{r.Amount}x {r.Label}"));
+                    GameObject recipeObj = GuidePanel.CreateText(textContainer.transform, "Recipe", recipe);
+                    Text recipeText = recipeObj.GetComponent<Text>();
+                    recipeText.alignment = TextAnchor.MiddleLeft;
+                    recipeText.fontSize = 13;
+                    recipeText.color = isChecked ? new Color(0.4f, 0.4f, 0.4f) : new Color(0.85f, 0.85f, 0.85f);
+                }
+
+                // Checkbox Click Logic
                 checkBox.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     bool nowChecked = !ProgressSaver.IsChecked(itemId);
                     ProgressSaver.SetChecked(itemId, nowChecked);
-                    checkImg.color = nowChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
-                    markText.text = nowChecked ? "✔" : "";
 
-                    // Keep gold highlight if unchecked, gray out if checked
-                    nameObj.GetComponent<Text>().color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : baseColor;
+                    checkImg.color = nowChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.15f, 0.15f, 0.15f);
+                    markText.text = nowChecked ? "✔" : "";
+                    nameText.color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : baseColor;
 
                     ObjectiveTracker.ForceRefresh();
-                    BuildSmartPanel(_selectedStage);
+                    BuildSmartPanel(_selectedStage); // Updates the Guide tab objectives
                 });
 
-                string type = gear.Type + "  ·  " + gear.Station;
-                if (gear.StationLevel > 1) type += " (Lv " + gear.StationLevel + ")";
-                GuidePanel.AddLabel(parent, type, 13, TMPro.FontStyles.Normal, new Color(0.7f, 0.7f, 0.7f));
-
-                if (gear.Recipe != null && gear.Recipe.Count > 0)
-                {
-                    string recipe = "Recipe: " + string.Join(", ", gear.Recipe.ConvertAll(r => $"{r.Amount}x {r.Label}"));
-                    GuidePanel.AddLabel(parent, recipe, 13, TMPro.FontStyles.Normal, Color.white);
-                }
-
                 GuidePanel.AddSpacer(parent);
+                GuidePanel.AddSpacer(parent); // Double spacer for breathing room between items
             }
 
             if (count == 0)

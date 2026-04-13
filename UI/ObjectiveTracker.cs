@@ -43,8 +43,6 @@ namespace ValheimGuide.UI
         private const float RowSpacing = 2f;
         private const float PanelPaddingV = 4f;
 
-        // Offset from top-right corner. Tune Y to sit below your minimap.
-        private static readonly Vector2 AnchoredPos = new Vector2(-12f, -162f);
 
         // ── Reflection cache ──────────────────────────────────────────────────
         private static readonly FieldInfo KnownRecipesField =
@@ -54,7 +52,7 @@ namespace ValheimGuide.UI
         // ── Lifecycle ─────────────────────────────────────────────────────────
         private float _timer;
 
-        private void Awake()
+        private void Start()
         {
             ProgressionTracker.OnStageChanged += _ => RefreshTracker();
             BuildUI();
@@ -98,7 +96,10 @@ namespace ValheimGuide.UI
             pr.anchorMin = new Vector2(1, 1);
             pr.anchorMax = new Vector2(1, 1);
             pr.pivot = new Vector2(1, 1);
-            pr.anchoredPosition = AnchoredPos;
+
+            // --- USE THE CONFIG VALUES HERE ---
+            pr.anchoredPosition = new Vector2(Plugin.TrackerOffsetX.Value, Plugin.TrackerOffsetY.Value);
+
             pr.sizeDelta = new Vector2(PanelWidth, HeaderHeight);
 
             // ── Header row ──────────────────────────────────────────────────
@@ -248,18 +249,18 @@ namespace ValheimGuide.UI
             hlg.childControlWidth = false;
             hlg.childControlHeight = true;
 
-            // Tick
+            // Tick (Replaced the ugly circles with a clean bullet point)
             var tick = MakeText(row.transform, "Tick",
-                done ? "✔" : (obj.Type == "build" ? "□" : "○"),
-                10, FontStyle.Normal,
-                done ? new Color(0.4f, 0.8f, 0.4f) : new Color(0.65f, 0.65f, 0.65f),
-                preferWidth: 12f);
+                done ? "✔" : "▪",
+                12, FontStyle.Normal,
+                done ? new Color(0.4f, 0.8f, 0.4f) : new Color(0.5f, 0.5f, 0.5f),
+                preferWidth: 16f);
             tick.alignment = TextAnchor.UpperCenter;
 
-            // Text
+            // Text (Adjusted color and sizing to look more native)
             var lbl = MakeText(row.transform, "Label", obj.Text,
-                10, FontStyle.Normal,
-                done ? new Color(0.45f, 0.45f, 0.45f) : Color.white,
+                11, FontStyle.Normal,
+                done ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.9f, 0.9f, 0.9f),
                 flexWidth: true);
             lbl.alignment = TextAnchor.UpperLeft;
             lbl.horizontalOverflow = HorizontalWrapMode.Wrap;

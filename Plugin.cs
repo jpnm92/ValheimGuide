@@ -26,6 +26,9 @@ namespace ValheimGuide
         private Harmony _harmony;
         private ConfigEntry<KeyboardShortcut> _toggleGuideKey;
 
+        public static ConfigEntry<float> TrackerOffsetX;
+        public static ConfigEntry<float> TrackerOffsetY;
+
         private void Awake()
         {
             Instance = this;

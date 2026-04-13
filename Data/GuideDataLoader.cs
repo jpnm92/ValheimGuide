@@ -121,16 +121,25 @@ namespace ValheimGuide.Data
                     Stage existing = _allStages.FirstOrDefault(s => s.Id == stage.Id);
                     if (existing != null)
                     {
-                        if (stage.Gear != null) existing.Gear.AddRange(stage.Gear);
-                        if (stage.Mobs != null) existing.Mobs.AddRange(stage.Mobs);
-                        if (stage.Recipes != null) existing.Recipes.AddRange(stage.Recipes);
+                        // Safely merge text and boss data if the existing stage is a generated shell
+                        if (string.IsNullOrEmpty(existing.Article) && !string.IsNullOrEmpty(stage.Article)) existing.Article = stage.Article;
+                        if (string.IsNullOrEmpty(existing.BiomeDescription) && !string.IsNullOrEmpty(stage.BiomeDescription)) existing.BiomeDescription = stage.BiomeDescription;
+                        if (existing.Boss == null && stage.Boss != null) existing.Boss = stage.Boss;
+                        if (existing.UnlockTrigger == null || existing.UnlockTrigger.Type == "none") existing.UnlockTrigger = stage.UnlockTrigger;
+
+                        // Merge lists safely
+                        if (stage.Objectives != null) { if (existing.Objectives == null) existing.Objectives = new List<Objective>(); existing.Objectives.AddRange(stage.Objectives); }
+                        if (stage.Tips != null) { if (existing.Tips == null) existing.Tips = new List<Tip>(); existing.Tips.AddRange(stage.Tips); }
+                        if (stage.PriorityMaterials != null) { if (existing.PriorityMaterials == null) existing.PriorityMaterials = new List<string>(); existing.PriorityMaterials.AddRange(stage.PriorityMaterials); }
+                        if (stage.Gear != null) { if (existing.Gear == null) existing.Gear = new List<GearEntry>(); existing.Gear.AddRange(stage.Gear); }
+                        if (stage.Mobs != null) { if (existing.Mobs == null) existing.Mobs = new List<MobEntry>(); existing.Mobs.AddRange(stage.Mobs); }
+                        if (stage.Recipes != null) { if (existing.Recipes == null) existing.Recipes = new List<RecipeEntry>(); existing.Recipes.AddRange(stage.Recipes); }
                     }
                     else
                     {
                         AssignBaseOrder(stage);
                         _allStages.Add(stage);
                     }
-                    accepted++;
                 }
 
                 _log.LogInfo($"[GuideDataLoader] {fileName} → {accepted} stage(s) accepted/merged.");
