@@ -19,6 +19,12 @@ namespace ValheimGuide.DataGenerators
             if (_hasRun) return;
             _hasRun = true;
 
+            // Always regenerate — ensures tier fixes and new items are picked up
+            string dataFolder = Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
+            string armoryPath = Path.Combine(dataFolder, "armory_generated.guide");
+            string warfarePath = Path.Combine(dataFolder, "warfare_generated.guide");
+            if (File.Exists(armoryPath)) File.Delete(armoryPath);
+            if (File.Exists(warfarePath)) File.Delete(warfarePath);
             Debug.Log("[TherzieDataGenerator] Generation starting.");
 
             try
