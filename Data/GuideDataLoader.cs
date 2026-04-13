@@ -93,13 +93,18 @@ namespace ValheimGuide.Data
                 string raw = File.ReadAllText(filePath);
                 GuideData data = JsonConvert.DeserializeObject<GuideData>(raw);
 
-                if (data == null || data.Stages == null || data.Stages.Count == 0) return;
+                if (data == null || data.Stages == null || data.Stages.Count == 0)
+                {
+                    _log.LogWarning($"[GuideDataLoader] {fileName} deserialized empty — skipping.");
+                    return;
+                }
 
                 int accepted = 0;
 
                 foreach (Stage stage in data.Stages)
                 {
-                    if (!ValidateStage(stage, fileName)) continue;
+                    if (!ValidateStage(stage, fileName))
+                        continue;
 
                     if (!string.IsNullOrEmpty(stage.ModRequired) &&
                         !InstalledMods.Contains(stage.ModRequired))
@@ -112,26 +117,26 @@ namespace ValheimGuide.Data
                     stage.Objectives = FilterByMod(stage.Objectives, o => o.ModRequired);
                     stage.BonusBosses = FilterByMod(stage.BonusBosses, b => b.ModRequired);
 
-                    // --- NEW MERGE LOGIC ---
+                    // --- MERGE LOGIC ---
                     Stage existing = _allStages.FirstOrDefault(s => s.Id == stage.Id);
                     if (existing != null)
                     {
-                        // If the stage already exists (e.g., vanilla Meadows), append the modded gear to it
                         if (stage.Gear != null) existing.Gear.AddRange(stage.Gear);
                         if (stage.Mobs != null) existing.Mobs.AddRange(stage.Mobs);
                         if (stage.Recipes != null) existing.Recipes.AddRange(stage.Recipes);
                     }
                     else
                     {
-                        // It's a new stage, add it to the sidebar
                         AssignBaseOrder(stage);
                         _allStages.Add(stage);
                     }
                     accepted++;
                 }
-                _log.LogInfo($"[GuideDataLoader] {fileName} → {accepted} stage(s) merged/accepted.");
+
+                _log.LogInfo($"[GuideDataLoader] {fileName} → {accepted} stage(s) accepted/merged.");
             }
-            catch (Exception ex) { _log.LogError($"[GuideDataLoader] Error in {fileName}: {ex.Message}"); }
+            catch (JsonException ex) { _log.LogError($"[GuideDataLoader] Parse error in {fileName}: {ex.Message}"); }
+            catch (IOException ex) { _log.LogError($"[GuideDataLoader] File read error for {fileName}: {ex.Message}"); }
         }
 
         private static void AssignBaseOrder(Stage stage)

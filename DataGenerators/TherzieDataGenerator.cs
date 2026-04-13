@@ -127,11 +127,11 @@ namespace ValheimGuide.DataGenerators
                 var group = groups[i];
                 var stage = new Stage
                 {
-                    Id = GetVanillaStageId(group.Key), // <--- CHANGED
+                    Id = GetVanillaStageId(group.Key), // Targets the vanilla tab
                     Label = group.Key,
                     Order = BiomeOrder.FromTier(group.Key),
                     BiomeDescription = "",
-                    ModRequired = null, // <--- CHANGED: Null so it merges safely into the vanilla tab
+                    ModRequired = null, // Null ensures it merges cleanly
                     UnlockTrigger = GetTriggerForTier(group.Key),
                     Gear = new List<GearEntry>()
                 };
@@ -145,6 +145,22 @@ namespace ValheimGuide.DataGenerators
                 if (stage.Gear.Any()) stages.Add(stage);
             }
             return stages;
+        }
+
+        private static string GetVanillaStageId(string tier)
+        {
+            switch (tier)
+            {
+                case "Meadows": return "meadows";
+                case "Black Forest": return "blackforest";
+                case "Swamp": return "swamp";
+                case "Mountain": return "mountain";
+                case "Plains": return "plains";
+                case "Mistlands": return "mistlands";
+                case "Ashlands": return "ashlands";
+                case "DeepNorth": return "deepnorth";
+                default: return "other";
+            }
         }
 
         private static string CleanLabel(string locKey)
@@ -400,22 +416,6 @@ namespace ValheimGuide.DataGenerators
             File.WriteAllText(filePath,
                 JsonConvert.SerializeObject(new GuideData { Stages = stages }, Formatting.Indented));
             Debug.Log($"[TherzieDataGenerator] Saved {stages.Sum(s => s.Gear.Count)} items to {filePath}");
-        }
-
-        private static string GetVanillaStageId(string tier)
-        {
-            switch (tier)
-            {
-                case "Meadows": return "meadows";
-                case "Black Forest": return "blackforest";
-                case "Swamp": return "swamp";
-                case "Mountain": return "mountain";
-                case "Plains": return "plains";
-                case "Mistlands": return "mistlands";
-                case "Ashlands": return "ashlands";
-                case "DeepNorth": return "deepnorth";
-                default: return "other";
-            }
         }
     }
 }

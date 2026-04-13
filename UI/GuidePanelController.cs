@@ -162,8 +162,8 @@ namespace ValheimGuide.UI
             _searchQuery = "";
             _activeDamageFilters.Clear();
             _activeArmorFilters.Clear();
-            _referenceAreaContainer.SetActive(!_isReadMode);
             _activeSourceFilters.Clear();
+            _referenceAreaContainer.SetActive(!_isReadMode);
 
             foreach (var stageButton in _stageButtons)
             {
@@ -540,6 +540,7 @@ namespace ValheimGuide.UI
                     _referenceTabIndex = captured;
                     _activeDamageFilters.Clear();
                     _activeArmorFilters.Clear();
+                    _activeSourceFilters.Clear(); // Clears source filters on tab change
 
                     for (int j = 0; j < _tabButtonImages.Count; j++)
                         _tabButtonImages[j].color = j == _referenceTabIndex ? new Color(0.35f, 0.28f, 0.15f, 1f) : new Color(0.2f, 0.2f, 0.2f, 1f);
@@ -549,18 +550,21 @@ namespace ValheimGuide.UI
                 });
             }
 
-            // --- Dynamic Offset for ScrollView depending on Filters ---
+            // DYNAMIC SCROLL OFFSET CALCULATION
+            int filterRows = 0;
             bool hasWeapons = stage.Gear.Exists(g => g.Type == "Weapon" || g.Type == "Bow");
             bool hasArmor = stage.Gear.Exists(g => g.Type == "Armor");
+            bool hasMods = stage.Gear.Exists(g => g.ModRequired == "Therzie.Armory" || g.ModRequired == "Therzie.Warfare");
 
-            float topOffset = -80f; // Default (just the search bar)
             if (_referenceTabIndex == 0)
             {
-                if (hasWeapons && hasArmor) topOffset = -140f; // 2 rows of filters
-                else if (hasWeapons || hasArmor) topOffset = -110f; // 1 row of filters
+                if (hasMods) filterRows++;
+                if (hasWeapons) filterRows++;
+                if (hasArmor) filterRows++;
             }
+            float dynamicTopOffset = -80f - (filterRows * 30f);
 
-            BuildFilterBar(_referenceAreaContainer.transform, stage, topOffset);
+            BuildFilterBar(_referenceAreaContainer.transform, stage, dynamicTopOffset);
 
             GameObject contentArea = new GameObject("ContentArea", typeof(RectTransform), typeof(ScrollRect));
             contentArea.transform.SetParent(_referenceAreaContainer.transform, false);
@@ -568,7 +572,7 @@ namespace ValheimGuide.UI
             contentAreaRect.anchorMin = Vector2.zero;
             contentAreaRect.anchorMax = new Vector2(1, 1);
             contentAreaRect.offsetMin = new Vector2(8, 8);
-            contentAreaRect.offsetMax = new Vector2(-20, topOffset); // Dynamically drops down to make room
+            contentAreaRect.offsetMax = new Vector2(-20, dynamicTopOffset);
 
             ScrollRect scroll = contentArea.GetComponent<ScrollRect>();
             scroll.horizontal = false;
@@ -578,7 +582,7 @@ namespace ValheimGuide.UI
 
             Scrollbar scrollbar = GuidePanel.CreateScrollbar(_referenceAreaContainer.transform);
             RectTransform sbRect = scrollbar.GetComponent<RectTransform>();
-            sbRect.offsetMax = new Vector2(-4, topOffset);
+            sbRect.offsetMax = new Vector2(-4, dynamicTopOffset);
             scroll.verticalScrollbar = scrollbar;
             scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
 
@@ -612,7 +616,7 @@ namespace ValheimGuide.UI
             PopulateActiveTab(stage);
         }
 
-        private void BuildFilterBar(Transform parent, Stage stage)
+        private void BuildFilterBar(Transform parent, Stage stage, float topOffset = -140f)
         {
             if (_referenceTabIndex != 0) return;
 
@@ -622,15 +626,7 @@ namespace ValheimGuide.UI
             bool hasWarfare = stage.Gear.Exists(g => g.ModRequired == "Therzie.Warfare");
             bool hasMods = hasArmory || hasWarfare;
 
-            int filterRows = 0;
-            if (hasMods) filterRows++;
-            if (hasWeapons) filterRows++;
-            if (hasArmor) filterRows++;
-
-            if (filterRows == 0) return;
-
-            // Dynamically calculate height based on active rows (30px per row)
-            float topOffset = -80f - (filterRows * 30f);
+            if (!hasWeapons && !hasArmor && !hasMods) return;
 
             GameObject filterBar = new GameObject("FilterBar", typeof(RectTransform), typeof(VerticalLayoutGroup));
             filterBar.transform.SetParent(parent, false);
@@ -787,6 +783,13 @@ namespace ValheimGuide.UI
                     if (string.IsNullOrEmpty(gear.ArmorClass) ||
                         !_activeArmorFilters.Contains(gear.ArmorClass))
                         continue;
+                }
+
+                if (_activeSourceFilters.Count > 0)
+                {
+                    string source = string.IsNullOrEmpty(gear.ModRequired) ? "Vanilla" :
+                                    gear.ModRequired == "Therzie.Armory" ? "Armory" : "Warfare";
+                    if (!_activeSourceFilters.Contains(source)) continue;
                 }
 
                 count++;
