@@ -766,6 +766,10 @@ namespace ValheimGuide.UI
             }
 
             int count = 0;
+
+            string playstyleId = ProgressSaver.Current?.PlaystyleId ?? "all";
+            PlaystyleDefinition currentPlaystyle = playstyleId != "all" ? GuideDataLoader.GetPlaystyle(playstyleId) : null;
+
             foreach (GearEntry gear in stage.Gear)
             {
                 if (!string.IsNullOrEmpty(_searchQuery) && !gear.Label.ToLower().Contains(_searchQuery))
@@ -821,11 +825,28 @@ namespace ValheimGuide.UI
                 markText.fontSize = 12;
                 markText.color = Color.white;
 
-                GameObject nameObj = GuidePanel.CreateText(row.transform, "Name", gear.Label.ToUpper());
+                // --- PLAYSTYLE HIGHLIGHT LOGIC ---
+                bool isOptimal = false;
+                if (currentPlaystyle != null)
+                {
+                    if (gear.PlaystyleTag == currentPlaystyle.Id)
+                        isOptimal = true;
+                    else if (gear.Type == "Armor" && !string.IsNullOrEmpty(currentPlaystyle.ArmorSet) && gear.Label.IndexOf(currentPlaystyle.ArmorSet, StringComparison.OrdinalIgnoreCase) >= 0)
+                        isOptimal = true;
+                    else if (currentPlaystyle.WeaponTypes.Any(wt => gear.Label.IndexOf(wt, StringComparison.OrdinalIgnoreCase) >= 0))
+                        isOptimal = true;
+                }
+
+                string displayName = gear.Label.ToUpper();
+                if (isOptimal) displayName = "★ " + displayName;
+
+                Color baseColor = isOptimal ? new Color(1f, 0.85f, 0.4f) : Color.white;
+
+                GameObject nameObj = GuidePanel.CreateText(row.transform, "Name", displayName);
                 nameObj.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 0);
                 nameObj.GetComponent<Text>().fontSize = 15;
                 nameObj.GetComponent<Text>().fontStyle = FontStyle.Bold;
-                nameObj.GetComponent<Text>().color = isChecked ? new Color(0.5f, 0.5f, 0.5f) : Color.white;
+                nameObj.GetComponent<Text>().color = isChecked ? new Color(0.5f, 0.5f, 0.5f) : baseColor;
 
                 checkBox.GetComponent<Button>().onClick.AddListener(() =>
                 {
@@ -833,9 +854,10 @@ namespace ValheimGuide.UI
                     ProgressSaver.SetChecked(itemId, nowChecked);
                     checkImg.color = nowChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
                     markText.text = nowChecked ? "✔" : "";
-                    nameObj.GetComponent<Text>().color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : Color.white;
 
-                    // Immediately push changes to the HUD tracker and refresh objectives
+                    // Keep gold highlight if unchecked, gray out if checked
+                    nameObj.GetComponent<Text>().color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : baseColor;
+
                     ObjectiveTracker.ForceRefresh();
                     BuildSmartPanel(_selectedStage);
                 });
