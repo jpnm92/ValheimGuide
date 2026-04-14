@@ -413,6 +413,48 @@ namespace ValheimGuide.UI
                 if (!string.IsNullOrEmpty(stage.Boss.GlobalUnlock))
                     GuidePanel.AddLabel(content.transform, "Unlocks: " + stage.Boss.GlobalUnlock,
                         14, TMPro.FontStyles.Normal, new Color(0.6f, 1f, 0.6f));
+
+                // ── Bonus bosses (Therzie Monstrum) ──────────────────────────────
+                if (stage.BonusBosses != null && stage.BonusBosses.Count > 0)
+                {
+                    foreach (BossInfo bonus in stage.BonusBosses)
+                    {
+                        GuidePanel.AddSpacer(content.transform);
+                        GuidePanel.AddLabel(content.transform, "OPTIONAL BOSS", 15,
+                            TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+                        GuidePanel.AddLabel(content.transform, bonus.Name, 18,
+                            TMPro.FontStyles.Bold, new Color(0.9f, 0.5f, 1f)); // purple to distinguish from main boss
+
+                        if (!string.IsNullOrEmpty(bonus.Location))
+                            GuidePanel.AddLabel(content.transform, "Location: " + bonus.Location,
+                                14, TMPro.FontStyles.Normal, Color.white);
+
+                        if (!string.IsNullOrEmpty(bonus.RecommendedGear))
+                            GuidePanel.AddLabel(content.transform, "Gear: " + bonus.RecommendedGear,
+                                14, TMPro.FontStyles.Normal, Color.white);
+
+                        if (bonus.SummonMaterials != null && bonus.SummonMaterials.Count > 0)
+                        {
+                            string summon = "Summon: " + string.Join(", ",
+                                bonus.SummonMaterials.ConvertAll(m => $"{m.Amount}x {m.Label}"));
+                            GuidePanel.AddLabel(content.transform, summon,
+                                14, TMPro.FontStyles.Normal, Color.white);
+                        }
+
+                        if (bonus.WeakAgainst != null && bonus.WeakAgainst.Count > 0)
+                            GuidePanel.AddLabel(content.transform,
+                                "Weak: " + string.Join(", ", bonus.WeakAgainst),
+                                14, TMPro.FontStyles.Normal, new Color(1f, 0.5f, 0.5f));
+
+                        if (!string.IsNullOrEmpty(bonus.Strategy))
+                            GuidePanel.AddLabel(content.transform, bonus.Strategy, 13,
+                                TMPro.FontStyles.Italic, new Color(0.8f, 0.95f, 0.8f));
+
+                        if (!string.IsNullOrEmpty(bonus.GlobalUnlock))
+                            GuidePanel.AddLabel(content.transform, "Reward: " + bonus.GlobalUnlock,
+                                14, TMPro.FontStyles.Normal, new Color(0.6f, 1f, 0.6f));
+                    }
+                }
             }
 
             if (stage.Objectives != null && stage.Objectives.Count > 0)
