@@ -109,10 +109,13 @@ namespace ValheimGuide.Data
 
         public static bool IsObjectiveComplete(Objective obj)
         {
-            if (!obj.AutoComplete)
-                return ProgressSaver.IsChecked("obj_" + obj.Id) ||
-                       (!string.IsNullOrEmpty(obj.Value) && ProgressSaver.IsChecked(obj.Value));
+            // 1. If it was permanently checked off (either by auto-complete or clicking), return true immediately!
+            if (ProgressSaver.IsChecked("obj_" + obj.Id)) return true;
 
+            // 2. If it has no value, it is a purely manual objective.
+            if (string.IsNullOrEmpty(obj.Value)) return false;
+
+            // 3. Dynamic fallbacks (in case the player did something before installing the mod)
             switch (obj.Type.ToLowerInvariant())
             {
                 case "globalkey":
@@ -128,7 +131,7 @@ namespace ValheimGuide.Data
                     var pl = Player.m_localPlayer;
                     return pl != null && pl.GetInventory().CountItems(obj.Value) > 0;
                 default:
-                    return ProgressSaver.IsChecked("obj_" + obj.Id);
+                    return false;
             }
         }
     }

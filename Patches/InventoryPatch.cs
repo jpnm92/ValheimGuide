@@ -13,16 +13,13 @@ namespace ValheimGuide.Patches
         private static void Postfix(ItemDrop.ItemData item, int amount, int x, int y)
         {
             if (item == null || item.m_shared == null) return;
-
             if (Player.m_localPlayer == null || ZNet.instance == null) return;
 
             bool updated = false;
             Stage current = ProgressionTracker.CurrentStage;
+            var stagesToCheck = current != null ? new[] { current } : GuideDataLoader.AllStages.ToArray();
 
-            // ADD: only check the current stage, not all stages
-            var stagesToCheck = current != null
-                ? new[] { current }
-                : GuideDataLoader.AllStages.ToArray();
+            string prefabName = item.m_dropPrefab ? item.m_dropPrefab.name : "";
 
             foreach (var stage in stagesToCheck)
             {
@@ -30,42 +27,25 @@ namespace ValheimGuide.Patches
 
                 foreach (var obj in stage.Objectives)
                 {
-                    if (obj.Type.ToLowerInvariant() == "hasitem" && obj.AutoComplete && !string.IsNullOrEmpty(obj.Value))
+                    // REMOVED AutoComplete check!
+                    if (obj.Type.ToLowerInvariant() == "hasitem" && !string.IsNullOrEmpty(obj.Value))
                     {
                         string objKey = "obj_" + obj.Id;
-
                         if (ProgressSaver.IsChecked(objKey)) continue;
 
-                        GameObject objPrefab = ObjectDB.instance.GetItemPrefab(obj.Value);
-                        if (objPrefab != null)
-                        {
-                            ItemDrop objItemDrop = objPrefab.GetComponent<ItemDrop>();
-                            if (objItemDrop != null && objItemDrop.m_itemData.m_shared.m_name == item.m_shared.m_name)
-                            {
-                                ProgressSaver.SetChecked(objKey, true);
-                                updated = true;
-                                Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed gathering objective: {obj.Text}");
+                        bool isMatch = string.Equals(prefabName, obj.Value, System.StringComparison.OrdinalIgnoreCase) ||
+                                       item.m_shared.m_name.IndexOf(obj.Value, System.StringComparison.OrdinalIgnoreCase) >= 0;
 
-                                // --- ADD NATIVE POPUP & SOUND ---
-                                Player.m_localPlayer?.Message(
-                                    MessageHud.MessageType.TopLeft,
-                                    $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
-                                );
-                            }
-                        }
-                        else
+                        if (isMatch)
                         {
-                            if (item.m_shared.m_name.IndexOf(obj.Value, System.StringComparison.OrdinalIgnoreCase) >= 0)
-                            {
-                                ProgressSaver.SetChecked(objKey, true);
-                                updated = true;
+                            ProgressSaver.SetChecked(objKey, true);
+                            updated = true;
+                            Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed gathering objective: {obj.Text}");
 
-                                // --- ADD NATIVE POPUP & SOUND ---
-                                Player.m_localPlayer?.Message(
-                                    MessageHud.MessageType.TopLeft,
-                                    $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
-                                );
-                            }
+                            Player.m_localPlayer?.Message(
+                                MessageHud.MessageType.TopLeft,
+                                $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
+                            );
                         }
                     }
                 }

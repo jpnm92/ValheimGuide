@@ -8,17 +8,15 @@ namespace ValheimGuide.Patches
     [HarmonyPatch(typeof(Player), nameof(Player.PlacePiece))]
     public static class BuildPatch
     {
-        private static void Postfix(ItemDrop.ItemData item, int amount, int x, int y)
+        private static void Postfix(Player __instance, Piece piece)
         {
-            if (item == null || item.m_shared == null) return;
-            if (Player.m_localPlayer == null || ZNet.instance == null) return;
+            if (piece == null || __instance != Player.m_localPlayer) return;
 
             bool updated = false;
             Stage current = ProgressionTracker.CurrentStage;
             var stagesToCheck = current != null ? new[] { current } : GuideDataLoader.AllStages.ToArray();
 
-            // Get the prefab name directly from the item being picked up!
-            string prefabName = item.m_dropPrefab ? item.m_dropPrefab.name : "";
+            string pieceName = piece.gameObject.name.Replace("(Clone)", "").Trim();
 
             foreach (var stage in stagesToCheck)
             {
@@ -26,20 +24,20 @@ namespace ValheimGuide.Patches
 
                 foreach (var obj in stage.Objectives)
                 {
-                    if (obj.Type.ToLowerInvariant() == "hasitem" && obj.AutoComplete && !string.IsNullOrEmpty(obj.Value))
+                    // REMOVED AutoComplete check! If it has a Value, we track it!
+                    if (obj.Type.ToLowerInvariant() == "build" && !string.IsNullOrEmpty(obj.Value))
                     {
                         string objKey = "obj_" + obj.Id;
                         if (ProgressSaver.IsChecked(objKey)) continue;
 
-                        // Compare directly against the prefab name or localization key! No ObjectDB lookups!
-                        bool isMatch = string.Equals(prefabName, obj.Value, System.StringComparison.OrdinalIgnoreCase) ||
-                                       item.m_shared.m_name.IndexOf(obj.Value, System.StringComparison.OrdinalIgnoreCase) >= 0;
+                        bool isMatch = string.Equals(pieceName, obj.Value, System.StringComparison.OrdinalIgnoreCase) ||
+                                       (piece.m_name != null && piece.m_name.IndexOf(obj.Value, System.StringComparison.OrdinalIgnoreCase) >= 0);
 
                         if (isMatch)
                         {
                             ProgressSaver.SetChecked(objKey, true);
                             updated = true;
-                            Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed gathering objective: {obj.Text}");
+                            Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed build objective: {obj.Text}");
 
                             Player.m_localPlayer?.Message(
                                 MessageHud.MessageType.TopLeft,
