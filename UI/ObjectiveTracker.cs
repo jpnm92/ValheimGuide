@@ -237,8 +237,8 @@ namespace ValheimGuide.UI
                 }
 
                 // Incomplete first, then done — cap total at MaxRows
-                var pending = visible.Where(o => !IsComplete(o)).ToList();
-                var done = visible.Where(o => IsComplete(o)).ToList();
+                var pending = visible.Where(o => !ProgressionTracker.IsObjectiveComplete(o)).ToList();
+                var done = visible.Where(o => ProgressionTracker.IsObjectiveComplete(o)).ToList();
 
                 int shown = 0;
                 foreach (var obj in pending)
@@ -326,30 +326,6 @@ namespace ValheimGuide.UI
         private static bool IsInGame() =>
             Player.m_localPlayer != null && ZNet.instance != null;
 
-        private bool IsComplete(Objective obj)
-        {
-            if (!obj.AutoComplete)
-                return ProgressSaver.IsChecked("obj_" + obj.Id);
-
-            switch (obj.Type.ToLowerInvariant())
-            {
-                case "globalkey":
-                case "boss":
-                    return ZoneSystem.instance?.GetGlobalKey(obj.Value) ?? false;
-                case "craftitem":
-                case "knownrecipe":
-                    var p = Player.m_localPlayer;
-                    if (p == null) return false;
-                    var recipes = KnownRecipesField?.GetValue(p) as HashSet<string>;
-                    return recipes?.Contains(obj.Value) ?? false;
-                case "hasitem":
-                    var pl = Player.m_localPlayer;
-                    return pl != null && pl.GetInventory().CountItems(obj.Value) > 0;
-                default:
-                    return ProgressSaver.IsChecked("obj_" + obj.Id);
-            }
-        }
-
         private string GetMaterialProgress(Objective obj)
         {
             if (Player.m_localPlayer == null || ObjectDB.instance == null || ZNetScene.instance == null) return "";
@@ -390,7 +366,7 @@ namespace ValheimGuide.UI
                 if (req.m_resItem == null) continue;
 
                 string matName = req.m_resItem.m_itemData.m_shared.m_name;
-                string locName = Localization.instance.Localize(matName); // Translates $item_wood to "Wood"
+                string locName = global::Localization.instance.Localize(matName);
                 int have = inv.CountItems(matName);
                 int need = req.m_amount;
 

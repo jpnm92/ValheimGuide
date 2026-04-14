@@ -106,5 +106,30 @@ namespace ValheimGuide.Data
         {
             return IsTriggerSatisfied(stage.UnlockTrigger);
         }
+
+        public static bool IsObjectiveComplete(Objective obj)
+        {
+            if (!obj.AutoComplete)
+                return ProgressSaver.IsChecked("obj_" + obj.Id) ||
+                       (!string.IsNullOrEmpty(obj.Value) && ProgressSaver.IsChecked(obj.Value));
+
+            switch (obj.Type.ToLowerInvariant())
+            {
+                case "globalkey":
+                case "boss":
+                    return ZoneSystem.instance?.GetGlobalKey(obj.Value) ?? false;
+                case "craftitem":
+                case "knownrecipe":
+                    var p = Player.m_localPlayer;
+                    if (p == null) return false;
+                    var recipes = _knownRecipesField?.GetValue(p) as HashSet<string>;
+                    return recipes?.Contains(obj.Value) ?? false;
+                case "hasitem":
+                    var pl = Player.m_localPlayer;
+                    return pl != null && pl.GetInventory().CountItems(obj.Value) > 0;
+                default:
+                    return ProgressSaver.IsChecked("obj_" + obj.Id);
+            }
+        }
     }
 }

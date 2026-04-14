@@ -19,14 +19,18 @@ namespace ValheimGuide.UI
         private static GameObject _referenceAreaContainer;
         private static GuidePanelController _controller;
 
+        private static float _originalTimeScale = 1f;
+
         public static void Show()
         {
-            if (_panel == null || !_panel)
-                CreatePanel();
-
+            if (_panel == null || !_panel) CreatePanel();
             _panel.SetActive(true);
             _isVisible = true;
+
+            // SAFELY FREEZE TIME
+            _originalTimeScale = Time.timeScale;
             Time.timeScale = 0f;
+
             GUIManager.BlockInput(true);
 
             if (FirstLaunchOverlay.IsNeeded())
@@ -44,7 +48,9 @@ namespace ValheimGuide.UI
             if (_panel != null)
                 _panel.SetActive(false);
             _isVisible = false;
-            Time.timeScale = 1f;
+
+            Time.timeScale = _originalTimeScale;
+
             GUIManager.BlockInput(false);
         }
 

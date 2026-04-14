@@ -1138,35 +1138,6 @@ namespace ValheimGuide.UI
                 GuidePanel.AddLabel(parent, "No results found.", 14, TMPro.FontStyles.Italic, new Color(0.6f, 0.6f, 0.6f));
         }
 
-        private bool IsObjectiveComplete(Objective obj)
-        {
-            if (!obj.AutoComplete)
-                return ProgressSaver.IsChecked("obj_" + obj.Id);
-
-            // MAGIC LINK: If the user manually ticked the associated gear/recipe item, count the objective as completed!
-            if (!string.IsNullOrEmpty(obj.Value) && ProgressSaver.IsChecked(obj.Value))
-                return true;
-
-            switch (obj.Type.ToLowerInvariant())
-            {
-                case "globalkey":
-                case "boss":
-                    return ZoneSystem.instance?.GetGlobalKey(obj.Value) ?? false;
-                case "craftitem":
-                case "knownrecipe":
-                    Player p = Player.m_localPlayer;
-                    if (p == null) return false;
-                    var recipes = KnownRecipesField?.GetValue(p) as HashSet<string>;
-                    return recipes?.Contains(obj.Value) ?? false;
-                case "hasitem":
-                    Player player = Player.m_localPlayer;
-                    if (player == null) return false;
-                    return player.GetInventory().CountItems(obj.Value) > 0;
-                default:
-                    return ProgressSaver.IsChecked("obj_" + obj.Id);
-            }
-        }
-
         private void BuildReadContent(Transform parent, Stage stage)
         {
             if (string.IsNullOrEmpty(stage.Article))
@@ -1206,7 +1177,7 @@ namespace ValheimGuide.UI
 
         private void RenderObjectiveRow(Transform parent, Objective obj)
         {
-            bool done = IsObjectiveComplete(obj);
+            bool done = ProgressionTracker.IsObjectiveComplete(obj);
             Color textColor = done ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
 
             GameObject row = new GameObject("ObjRow_" + obj.Id,

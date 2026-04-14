@@ -70,9 +70,14 @@ namespace ValheimGuide
                 "How often (in seconds) the tracker checks your inventory for materials. Higher = better performance, lower = more responsive.");
             ObjectiveTracker.Initialise();
 
-            LoadGuideData();
+            Jotunn.Managers.PrefabManager.OnVanillaPrefabsAvailable += LoadGuideData;
 
             Log.LogInfo($"{PluginName} loaded.");
+        }
+        private void OnDestroy()
+        {
+            _harmony?.UnpatchSelf();
+            Jotunn.Managers.PrefabManager.OnVanillaPrefabsAvailable -= LoadGuideData;
         }
 
         public static void LoadGuideData()
@@ -88,20 +93,6 @@ namespace ValheimGuide
             Log.LogInfo($"{PluginName} ready. " +
                         $"Stages: {GuideDataLoader.AllStages.Count}, " +
                         $"Playstyles: {GuideDataLoader.Playstyles.Count}");
-        }
-
-        private void Update()
-        {
-            if (GuidePanel.IsVisible)
-                Time.timeScale = 0f;
-
-            if (_toggleGuideKey.Value.IsDown())
-                GuidePanel.Toggle();
-
-            if (GuidePanel.IsVisible &&
-                (Input.GetKeyDown(KeyCode.Escape) ||
-                 Input.GetKeyDown(KeyCode.Tab)))
-                GuidePanel.Hide();
         }
     }
 }

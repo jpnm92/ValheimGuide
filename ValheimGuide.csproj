@@ -39,6 +39,9 @@
       <HintPath>$(ActiveProfilePath)\BepInEx\core\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="assembly_guiutils">
+      <HintPath>D:\SteamLibrary\steamapps\common\Valheim\valheim_Data\Managed\assembly_guiutils.dll</HintPath>
+    </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>$(ValheimManagedPath)\assembly_valheim.dll</HintPath>
       <Private>False</Private>
@@ -216,9 +219,7 @@
     <ItemGroup>
       <DataFiles Include="$(ProjectDir)resources\data\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(DataFiles)" 
-          DestinationFolder="C:\Users\JPNM9\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Smooth\BepInEx\plugins\ValheimGuide\data\" 
-          SkipUnchangedFiles="false" />
+    <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(AppData)\r2modmanPlus-local\Valheim\profiles\Smooth\BepInEx\plugins\ValheimGuide\data\" SkipUnchangedFiles="false" />
   </Target>
   <Import Project="packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
 </Project>
