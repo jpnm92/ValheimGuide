@@ -15,6 +15,7 @@ namespace ValheimGuide.Data
         private static GuideProgress _current;
         private static bool _isDirty;
         private static int _saveGeneration;
+        private static readonly object _fileLock = new object();
 
         public static GuideProgress Current => _current;
 
@@ -70,7 +71,7 @@ namespace ValheimGuide.Data
             }
         }
 
-        private static async void SaveAsync()
+        private static void SaveAsync()
         {
             if (_current == null || !_isDirty) return;
 
@@ -78,16 +79,24 @@ namespace ValheimGuide.Data
             string json = JsonConvert.SerializeObject(_current, Formatting.Indented);
             string path = GetPath(_current.CharacterName);
 
-            try
+            // Wrap the file write in a lock inside the background thread
+            System.Threading.Tasks.Task.Run(() =>
             {
-                await System.Threading.Tasks.Task.Run(() => File.WriteAllText(path, json));
-                if (_saveGeneration == generation)
-                    _isDirty = false;
-            }
-            catch (Exception ex)
-            {
-                _log.LogError($"[ProgressSaver] Async save failed: {ex.Message}");
-            }
+                try
+                {
+                    lock (_fileLock)
+                    {
+                        File.WriteAllText(path, json);
+                    }
+
+                    if (_saveGeneration == generation)
+                        _isDirty = false;
+                }
+                catch (Exception ex)
+                {
+                    _log.LogError($"[ProgressSaver] Async save failed: {ex.Message}");
+                }
+            });
         }
 
         public static bool IsChecked(string itemId)

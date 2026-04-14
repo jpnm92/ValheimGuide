@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System.Linq;
 using ValheimGuide.Data;
 using ValheimGuide.UI;
 
@@ -16,35 +17,44 @@ namespace ValheimGuide.Patches
     [HarmonyPatch(typeof(Player), nameof(Player.PlacePiece))]
     public static class BuildPatch
     {
-        private static void Postfix(Player __instance, Piece piece)
+        private static void Postfix(ItemDrop.ItemData item, int amount, int x, int y)
         {
-            if (piece == null || __instance != Player.m_localPlayer) return;
+            if (item == null || item.m_shared == null) return;
+            if (Player.m_localPlayer == null || ZNet.instance == null) return;
 
-            string pieceName = piece.gameObject.name.ToLowerInvariant();
             bool updated = false;
+            Stage current = ProgressionTracker.CurrentStage;
+            var stagesToCheck = current != null ? new[] { current } : GuideDataLoader.AllStages.ToArray();
 
-            foreach (var stage in GuideDataLoader.AllStages)
+            // Get the prefab name directly from the item being picked up (e.g., "Wood", "Flametal")
+            string prefabName = item.m_dropPrefab ? item.m_dropPrefab.name : "";
+
+            foreach (var stage in stagesToCheck)
             {
                 if (stage.Objectives == null) continue;
 
                 foreach (var obj in stage.Objectives)
                 {
-                    // Match any build objective that has a Value and isn't already ticked
-                    if (obj.Type != "build") continue;
-                    if (string.IsNullOrEmpty(obj.Value)) continue;
-
-                    string objKey = "obj_" + obj.Id;
-                    if (!ProgressSaver.IsChecked(objKey))
+                    if (obj.Type.ToLowerInvariant() == "hasitem" && obj.AutoComplete && !string.IsNullOrEmpty(obj.Value))
                     {
-                        ProgressSaver.SetChecked(objKey, true);
-                        updated = true;
-                        Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed build objective: {obj.Text}");
+                        string objKey = "obj_" + obj.Id;
+                        if (ProgressSaver.IsChecked(objKey)) continue;
 
-                        // --- ADD NATIVE POPUP & SOUND ---
-                        Player.m_localPlayer?.Message(
-                            MessageHud.MessageType.TopLeft,
-                            $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
-                        );
+                        // OPTIMIZATION: Compare directly against the prefab name or localization key! No ObjectDB lookups!
+                        bool isMatch = string.Equals(prefabName, obj.Value, System.StringComparison.OrdinalIgnoreCase) ||
+                                       item.m_shared.m_name.IndexOf(obj.Value, System.StringComparison.OrdinalIgnoreCase) >= 0;
+
+                        if (isMatch)
+                        {
+                            ProgressSaver.SetChecked(objKey, true);
+                            updated = true;
+                            Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed gathering objective: {obj.Text}");
+
+                            Player.m_localPlayer?.Message(
+                                MessageHud.MessageType.TopLeft,
+                                $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
+                            );
+                        }
                     }
                 }
             }

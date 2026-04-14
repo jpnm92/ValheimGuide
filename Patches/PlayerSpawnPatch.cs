@@ -11,13 +11,6 @@ namespace ValheimGuide.Patches
         {
             if (__instance != Player.m_localPlayer) return;
 
-            // Always call LoadGuideData() on every spawn.
-            // TherzieDataGenerator has its own _hasRun guard so generation only
-            // happens once per session. GuideDataLoader.Load() is fast (JSON reads)
-            // and must re-run so playstyles + stages reload for every character,
-            // which fixes the playstyle prompt showing only "Show All" on char switch.
-            Plugin.LoadGuideData();
-
             if (Game.instance == null || Game.instance.GetPlayerProfile() == null)
                 return;
 

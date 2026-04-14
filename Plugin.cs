@@ -70,6 +70,8 @@ namespace ValheimGuide
                 "How often (in seconds) the tracker checks your inventory for materials. Higher = better performance, lower = more responsive.");
             ObjectiveTracker.Initialise();
 
+            LoadGuideData();
+
             Log.LogInfo($"{PluginName} loaded.");
         }
 
