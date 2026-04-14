@@ -25,6 +25,11 @@ namespace ValheimGuide.UI
         private readonly HashSet<string> _activeSourceFilters = new HashSet<string>();
         private readonly List<Image> _tabButtonImages = new List<Image>();
 
+        private static readonly System.Reflection.FieldInfo KnownRecipesField =
+            typeof(Player).GetField("m_knownRecipes",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+
         public GuidePanelController(GameObject stageListContainer, GameObject smartPanelContainer, GameObject referenceAreaContainer)
         {
             _stageListContainer = stageListContainer;
@@ -45,10 +50,20 @@ namespace ValheimGuide.UI
         {
             BuildStageList();
 
-            Stage toSelect = ProgressionTracker.CurrentStage
+            // Restore last viewed stage, fall back to current progression stage
+            string lastId = ProgressSaver.Current?.LastStageId;
+            string lastMode = ProgressSaver.Current?.LastViewMode;
+
+            Stage toSelect = (!string.IsNullOrEmpty(lastId)
+                                ? GuideDataLoader.GetStageById(lastId)
+                                : null)
+                             ?? ProgressionTracker.CurrentStage
                              ?? (GuideDataLoader.AllStages.Count > 0
                                  ? GuideDataLoader.AllStages[0]
                                  : null);
+
+            if (!string.IsNullOrEmpty(lastMode))
+                _isReadMode = lastMode == "read";
 
             if (toSelect != null)
                 SelectStage(toSelect);
@@ -114,8 +129,16 @@ namespace ValheimGuide.UI
             ContentSizeFitter csf = content.GetComponent<ContentSizeFitter>();
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
+            bool showAll = ProgressSaver.Current?.ShowFutureStages ?? true;
+            Stage currentStage = ProgressionTracker.CurrentStage;
+            int currentOrder = currentStage?.Order ?? 0;
+
             foreach (Stage stage in GuideDataLoader.AllStages)
             {
+                // If player chose "keep it mysterious", hide stages beyond current progression
+                if (!showAll && stage.Order > currentOrder)
+                    continue;
+
                 Stage captured = stage;
 
                 GameObject btnObj = new GameObject("StageBtn_" + stage.Id,
@@ -164,6 +187,8 @@ namespace ValheimGuide.UI
             _activeArmorFilters.Clear();
             _activeSourceFilters.Clear();
             _referenceAreaContainer.SetActive(!_isReadMode);
+
+            ProgressSaver.SetLastStage(stage.Id, _isReadMode ? "read" : "guide");
 
             foreach (var stageButton in _stageButtons)
             {
@@ -249,6 +274,7 @@ namespace ValheimGuide.UI
             guideBtn.GetComponent<Button>().onClick.AddListener(() =>
             {
                 _isReadMode = false;
+                ProgressSaver.SetLastStage(_selectedStage?.Id, "guide");
                 BuildSmartPanel(stage);
                 _referenceAreaContainer.SetActive(true);
             });
@@ -256,6 +282,7 @@ namespace ValheimGuide.UI
             readBtn.GetComponent<Button>().onClick.AddListener(() =>
             {
                 _isReadMode = true;
+                ProgressSaver.SetLastStage(_selectedStage?.Id, "read");
                 BuildSmartPanel(stage);
                 _referenceAreaContainer.SetActive(false);
             });
@@ -904,7 +931,6 @@ namespace ValheimGuide.UI
                     nameText.color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : baseColor;
 
                     ObjectiveTracker.ForceRefresh();
-                    BuildSmartPanel(_selectedStage); // Updates the Guide tab objectives
                 });
 
                 GuidePanel.AddSpacer(parent);
@@ -1039,7 +1065,6 @@ namespace ValheimGuide.UI
                     nameObj.GetComponent<Text>().color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : Color.white;
 
                     ObjectiveTracker.ForceRefresh();
-                    BuildSmartPanel(_selectedStage);
                 });
 
                 string station = recipe.Station;
@@ -1079,11 +1104,7 @@ namespace ValheimGuide.UI
                 case "knownrecipe":
                     Player p = Player.m_localPlayer;
                     if (p == null) return false;
-                    var recipes = typeof(Player)
-                        .GetField("m_knownRecipes",
-                            System.Reflection.BindingFlags.NonPublic |
-                            System.Reflection.BindingFlags.Instance)
-                        ?.GetValue(p) as System.Collections.Generic.HashSet<string>;
+                    var recipes = KnownRecipesField?.GetValue(p) as HashSet<string>;
                     return recipes?.Contains(obj.Value) ?? false;
                 case "hasitem":
                     Player player = Player.m_localPlayer;

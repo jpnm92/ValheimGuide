@@ -12,10 +12,10 @@
       },
       "PriorityMaterials": [
         "Iron",
-        "AncientBark",
+        "Ancient Bark",
         "Guck",
         "Chain",
-        "WitheredBone"
+        "Withered Bone"
       ],
       "Boss": {
         "Name": "Bonemass",
@@ -45,7 +45,7 @@
         "ImmuneAgainst": [
           "Poison"
         ],
-        "Strategy": "",
+        "Strategy": "Blunt damage only — stand in the poison cloud with mead active and keep swinging.",
         "PrefabId": "Bonemass",
         "IsBonus": false,
         "ModRequired": null,
@@ -238,8 +238,8 @@
           "Id": "build_cauldron",
           "Text": "Build a Cauldron",
           "Type": "build",
-          "Value": null,
-          "AutoComplete": true,
+          "Value": "piece_cauldron",
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         },

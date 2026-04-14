@@ -1,6 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Logging; // ADD THIS
+using BepInEx.Logging;
 using HarmonyLib;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,18 +21,15 @@ namespace ValheimGuide
         public const string PluginVersion = "0.1.0";
 
         public static Plugin Instance { get; private set; }
-        public static ManualLogSource Log { get; private set; } // NEW PUBLIC LOGGER
+        public static ManualLogSource Log { get; private set; }
 
         private Harmony _harmony;
         private ConfigEntry<KeyboardShortcut> _toggleGuideKey;
 
-        public static ConfigEntry<float> TrackerOffsetX;
-        public static ConfigEntry<float> TrackerOffsetY;
-
         private void Awake()
         {
             Instance = this;
-            Log = base.Logger; // ASSIGN IT HERE
+            Log = base.Logger;
 
             GuideDataLoader.InstalledMods = new HashSet<string>();
             foreach (var plugin in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
@@ -47,6 +44,7 @@ namespace ValheimGuide
             _toggleGuideKey = Config.Bind("General", "ToggleGuide",
                 new KeyboardShortcut(KeyCode.F8), "Key to open/close the guide.");
 
+            // Safe: tracker defers font usage until GUIManager.OnCustomGUIAvailable
             ObjectiveTracker.Initialise();
 
             Log.LogInfo($"{PluginName} loaded.");
@@ -54,23 +52,30 @@ namespace ValheimGuide
 
         public static void LoadGuideData()
         {
-            string dataFolder = System.IO.Path.Combine(Paths.PluginPath, PluginName, "data");
+            string dataFolder = System.IO.Path.Combine(
+                Paths.PluginPath, PluginName, "data");
 
             TherzieDataGenerator.GenerateIfPresent();
             GuideDataLoader.Load(dataFolder, Log);
             GuideDataEnricher.Run();
             ProgressionTracker.RefreshCurrentStage();
 
-            Log.LogInfo($"{PluginName} ready. Stages: {GuideDataLoader.AllStages.Count}, Playstyles: {GuideDataLoader.Playstyles.Count}");
+            Log.LogInfo($"{PluginName} ready. " +
+                        $"Stages: {GuideDataLoader.AllStages.Count}, " +
+                        $"Playstyles: {GuideDataLoader.Playstyles.Count}");
         }
 
         private void Update()
         {
-            if (GuidePanel.IsVisible) Time.timeScale = 0f;
+            if (GuidePanel.IsVisible)
+                Time.timeScale = 0f;
 
-            if (_toggleGuideKey.Value.IsDown()) GuidePanel.Toggle();
+            if (_toggleGuideKey.Value.IsDown())
+                GuidePanel.Toggle();
 
-            if (GuidePanel.IsVisible && (UnityEngine.Input.GetKeyDown(KeyCode.Escape) || UnityEngine.Input.GetKeyDown(KeyCode.Tab)))
+            if (GuidePanel.IsVisible &&
+                (Input.GetKeyDown(KeyCode.Escape) ||
+                 Input.GetKeyDown(KeyCode.Tab)))
                 GuidePanel.Hide();
         }
     }

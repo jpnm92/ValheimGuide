@@ -11,10 +11,10 @@
         "Value": "defeated_dragon"
       },
       "PriorityMaterials": [
-        "BlackMetalScrap",
+        "Black Metal Scrap",
         "Flax",
         "Barley",
-        "LoxPelt",
+        "Lox Pelt",
         "Needle"
       ],
       "Boss": {
@@ -44,7 +44,7 @@
           "Pierce"
         ],
         "ImmuneAgainst": [],
-        "Strategy": "",
+        "Strategy": "Use the stone pillars as meteor cover, strafe laterally to avoid fire breath.",
         "PrefabId": "Yagluth",
         "IsBonus": false,
         "ModRequired": null,
@@ -197,17 +197,26 @@
           "Id": "build_blast_furnace",
           "Text": "Build a Blast Furnace",
           "Type": "build",
-          "Value": null,
-          "AutoComplete": true,
+          "Value": "blastfurnace",
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
         {
           "Id": "build_windmill",
-          "Text": "Build a Windmill and Spinning Wheel",
+          "Text": "Build a Windmill",
           "Type": "build",
-          "Value": null,
-          "AutoComplete": true,
+          "Value": "windmill",
+          "AutoComplete": false,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+        {
+          "Id": "build_spinning_wheel",
+          "Text": "Build a Spinning Wheel",
+          "Type": "build",
+          "Value": "spinningwheel",
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -216,7 +225,7 @@
           "Text": "Raid a Fuling village for Flax and Barley",
           "Type": "manual",
           "Value": null,
-          "AutoComplete": true,
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         },

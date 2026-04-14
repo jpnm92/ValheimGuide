@@ -14,7 +14,7 @@
         "Copper",
         "Tin",
         "Bronze",
-        "SurtlingCore"
+        "Surtling Cores"
       ],
       "Boss": {
         "Name": "The Elder",
@@ -41,7 +41,7 @@
           "Pierce"
         ],
         "ImmuneAgainst": [],
-        "Strategy": "",
+        "Strategy": "Fire only — hide behind the four altar pillars to block vine attacks.",
         "PrefabId": "TheElder",
         "IsBonus": false,
         "ModRequired": null,
@@ -236,17 +236,26 @@
           "Id": "build_forge",
           "Text": "Build a Forge",
           "Type": "build",
-          "Value": null,
-          "AutoComplete": true,
+          "Value": "piece_forge",
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
         {
           "Id": "build_smelter",
-          "Text": "Build a Smelter and Charcoal Kiln",
+          "Text": "Build a Smelter",
           "Type": "build",
-          "Value": null,
-          "AutoComplete": true,
+          "Value": "smelter",
+          "AutoComplete": false,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+        {
+          "Id": "build_kiln",
+          "Text": "Build a Charcoal Kiln",
+          "Type": "build",
+          "Value": "charcoalkiln",
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         },

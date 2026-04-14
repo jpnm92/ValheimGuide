@@ -11,10 +11,10 @@
         "Value": "defeated_goblinking"
       },
       "PriorityMaterials": [
-        "YggdrasilWood",
-        "BlackMarble",
+        "Yggdrasil Wood",
+        "Black Marble",
         "Eitr",
-        "RoyalJelly",
+        "Royal Jelly",
         "Sap"
       ],
       "Boss": {
@@ -41,7 +41,7 @@
           "Blunt"
         ],
         "ImmuneAgainst": [],
-        "Strategy": "",
+        "Strategy": "Keep moving between floors — Feather Cape mandatory. Never let her corner you.",
         "PrefabId": "TheQueen",
         "IsBonus": false,
         "ModRequired": null,
@@ -189,8 +189,8 @@
           "Id": "build_wisp_fountain",
           "Text": "Build a Wisp Fountain",
           "Type": "build",
-          "Value": null,
-          "AutoComplete": true,
+          "Value": "wisplure",
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -207,8 +207,8 @@
           "Id": "build_black_forge",
           "Text": "Build the Black Forge",
           "Type": "build",
-          "Value": null,
-          "AutoComplete": true,
+          "Value": "blackforge",
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         },
@@ -216,8 +216,8 @@
           "Id": "build_galdr_table",
           "Text": "Build the Galdr Table",
           "Type": "build",
-          "Value": null,
-          "AutoComplete": true,
+          "Value": "magetable",
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         },

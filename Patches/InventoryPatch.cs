@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System.Linq;
 using UnityEngine;
 using ValheimGuide.Data;
 using ValheimGuide.UI;
@@ -13,9 +14,17 @@ namespace ValheimGuide.Patches
         {
             if (item == null || item.m_shared == null) return;
 
-            bool updated = false;
+            if (Player.m_localPlayer == null || ZNet.instance == null) return;
 
-            foreach (var stage in GuideDataLoader.AllStages)
+            bool updated = false;
+            Stage current = ProgressionTracker.CurrentStage;
+
+            // ADD: only check the current stage, not all stages
+            var stagesToCheck = current != null
+                ? new[] { current }
+                : GuideDataLoader.AllStages.ToArray();
+
+            foreach (var stage in stagesToCheck)
             {
                 if (stage.Objectives == null) continue;
 

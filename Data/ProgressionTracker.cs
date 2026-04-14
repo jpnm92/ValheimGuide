@@ -51,13 +51,19 @@ namespace ValheimGuide.Data
         public static void SetManualOverride(string stageId)
         {
             ManualOverrideStage = GuideDataLoader.GetStageById(stageId);
-            ForceRefresh(); // ✅ immediate refresh
+            if (ProgressSaver.Current != null)
+            {
+                ProgressSaver.Current.ManualStageOverride = stageId;
+            }
+            ForceRefresh();
         }
 
         public static void ClearManualOverride()
         {
             ManualOverrideStage = null;
-            ForceRefresh(); // ✅ immediate refresh
+            if (ProgressSaver.Current != null)
+                ProgressSaver.Current.ManualStageOverride = null;
+            ForceRefresh();
         }
 
         private static Stage GetHighestCompletedStage()

@@ -7,18 +7,16 @@ namespace ValheimGuide.Patches
     [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned))]
     public static class PlayerSpawnPatch
     {
-        private static bool _dataLoaded = false; // ACTUAL GUARD VARIABLE
-
         private static void Postfix(Player __instance)
         {
             if (__instance != Player.m_localPlayer) return;
 
-            // Generate and load guide data ONCE per session
-            if (!_dataLoaded)
-            {
-                Plugin.LoadGuideData();
-                _dataLoaded = true;
-            }
+            // Always call LoadGuideData() on every spawn.
+            // TherzieDataGenerator has its own _hasRun guard so generation only
+            // happens once per session. GuideDataLoader.Load() is fast (JSON reads)
+            // and must re-run so playstyles + stages reload for every character,
+            // which fixes the playstyle prompt showing only "Show All" on char switch.
+            Plugin.LoadGuideData();
 
             if (Game.instance == null || Game.instance.GetPlayerProfile() == null)
                 return;
@@ -29,7 +27,10 @@ namespace ValheimGuide.Patches
 
             ProgressSaver.Load(saveName);
 
-            // Force-refresh tracker now that progress is loaded
+            // Restore any manual stage override the player had set
+            if (!string.IsNullOrEmpty(ProgressSaver.Current?.ManualStageOverride))
+                ProgressionTracker.SetManualOverride(ProgressSaver.Current.ManualStageOverride);
+
             ObjectiveTracker.ForceRefresh();
         }
     }

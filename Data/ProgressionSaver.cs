@@ -128,5 +128,14 @@ namespace ValheimGuide.Data
             _isDirty = true;
             SaveAsync();
         }
+
+        public static void SetLastStage(string stageId, string viewMode)
+        {
+            if (_current == null) return;
+            _current.LastStageId = stageId;
+            _current.LastViewMode = viewMode;
+            _isDirty = true;
+            SaveAsync();
+        }
     }
 }

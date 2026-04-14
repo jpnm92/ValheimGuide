@@ -13,8 +13,8 @@
       "PriorityMaterials": [
         "Silver",
         "Obsidian",
-        "WolfPelt",
-        "DragonEgg"
+        "Wolf Pelt",
+        "Dragon Egg"
       ],
       "Boss": {
         "Name": "Moder",
@@ -40,7 +40,7 @@
           "Frost"
         ],
         "ImmuneAgainst": [],
-        "Strategy": "",
+        "Strategy": "Dig a trench near the altar — her ice projectiles cannot angle downward into it.",
         "PrefabId": "Moder",
         "IsBonus": false,
         "ModRequired": null,
@@ -279,8 +279,8 @@
           "Id": "build_artisan_table",
           "Text": "Build the Artisan Table with Dragon Tears",
           "Type": "build",
-          "Value": null,
-          "AutoComplete": true,
+          "Value": "artisanstation",
+          "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
         }
