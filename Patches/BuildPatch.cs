@@ -34,14 +34,17 @@ namespace ValheimGuide.Patches
                     if (string.IsNullOrEmpty(obj.Value)) continue;
 
                     string objKey = "obj_" + obj.Id;
-                    if (ProgressSaver.IsChecked(objKey)) continue;
-
-                    if (pieceName.Contains(obj.Value.ToLowerInvariant()))
+                    if (!ProgressSaver.IsChecked(objKey))
                     {
                         ProgressSaver.SetChecked(objKey, true);
                         updated = true;
-                        Plugin.Log.LogInfo(
-                            $"[ValheimGuide] Build objective completed: {obj.Text}");
+                        Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed build objective: {obj.Text}");
+
+                        // --- ADD NATIVE POPUP & SOUND ---
+                        Player.m_localPlayer?.Message(
+                            MessageHud.MessageType.TopLeft,
+                            $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
+                        );
                     }
                 }
             }

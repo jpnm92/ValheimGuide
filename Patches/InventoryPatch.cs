@@ -44,7 +44,13 @@ namespace ValheimGuide.Patches
                             {
                                 ProgressSaver.SetChecked(objKey, true);
                                 updated = true;
-                                Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed gathering objective: {obj.Text}"); // FIXED HERE
+                                Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed gathering objective: {obj.Text}");
+
+                                // --- ADD NATIVE POPUP & SOUND ---
+                                Player.m_localPlayer?.Message(
+                                    MessageHud.MessageType.TopLeft,
+                                    $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
+                                );
                             }
                         }
                         else
@@ -53,6 +59,12 @@ namespace ValheimGuide.Patches
                             {
                                 ProgressSaver.SetChecked(objKey, true);
                                 updated = true;
+
+                                // --- ADD NATIVE POPUP & SOUND ---
+                                Player.m_localPlayer?.Message(
+                                    MessageHud.MessageType.TopLeft,
+                                    $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
+                                );
                             }
                         }
                     }

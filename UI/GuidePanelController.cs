@@ -972,7 +972,17 @@ namespace ValheimGuide.UI
                     markText.text = nowChecked ? "✔" : "";
                     nameText.color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : baseColor;
 
+                    // --- ADD NATIVE POPUP & SOUND ONLY WHEN CHECKING ---
+                    if (nowChecked)
+                    {
+                        Player.m_localPlayer?.Message(
+                            MessageHud.MessageType.TopLeft,
+                            $"<color=#80FF80>Tracked Gear</color>\n{displayName.Replace("★ ", "")}"
+                        );
+                    }
+
                     ObjectiveTracker.ForceRefresh();
+                    BuildSmartPanel(_selectedStage);
                 });
 
                 GuidePanel.AddSpacer(parent);

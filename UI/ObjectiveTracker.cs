@@ -45,13 +45,10 @@ namespace ValheimGuide.UI
         private Text _collapseArrow;
 
         // ── Layout constants ──────────────────────────────────────────────────
-        private const float PanelWidth = 230f;
         private const float HeaderHeight = 24f;
         private const float RowHeight = 15f;
-        private const float RowSpacing = 2f;
-        private const float PaddingV = 4f;
-        private const int MaxRows = 6;
-        private const float RefreshSecs = 3f;
+        private const float RowSpacing = 6f;
+        private const float PanelPaddingV = 8f;
 
         // Adjust Y to sit just below your minimap. Negative = down from top-right.
         private static readonly Vector2 TrackerAnchor = new Vector2(-12f, -162f);
@@ -92,7 +89,7 @@ namespace ValheimGuide.UI
             if (!_isBuilt) return;
 
             _timer += Time.unscaledDeltaTime;
-            if (_timer >= RefreshSecs)
+            if (_timer >= Plugin.TrackerRefreshRate.Value)
             {
                 _timer = 0f;
                 RefreshTracker();
@@ -113,17 +110,30 @@ namespace ValheimGuide.UI
             cv.overrideSorting = true;
             cv.sortingOrder = 19998;
 
+            // --- THE MAGIC BULLET FOR 4K / 768p SCALING ---
+            var scaler = _canvas.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080); // 1080p is our master blueprint
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+
             // Outer panel
-            _panel = MakeObject("TrackerPanel", _canvas.transform,
+            _panel = new GameObject("TrackerPanel",
                 typeof(RectTransform), typeof(Image));
+            _panel.transform.SetParent(_canvas.transform, false);
             _panel.GetComponent<Image>().color = new Color(0.04f, 0.04f, 0.04f, 0.82f);
 
             var pr = _panel.GetComponent<RectTransform>();
             pr.anchorMin = new Vector2(1, 1);
             pr.anchorMax = new Vector2(1, 1);
             pr.pivot = new Vector2(1, 1);
-            pr.anchoredPosition = TrackerAnchor;
-            pr.sizeDelta = new Vector2(PanelWidth, HeaderHeight);
+
+            // Apply our Config X/Y Offsets
+            pr.anchoredPosition = new Vector2(Plugin.TrackerOffsetX.Value, Plugin.TrackerOffsetY.Value);
+            pr.sizeDelta = new Vector2(Plugin.TrackerWidth.Value, HeaderHeight);
+
+            // Apply our Config Scale
+            pr.localScale = new Vector3(Plugin.TrackerScale.Value, Plugin.TrackerScale.Value, 1f);
 
             // ── Header ──────────────────────────────────────────────────────
             var header = MakeObject("Header", _panel.transform,
@@ -190,7 +200,7 @@ namespace ValheimGuide.UI
             _collapsed = !_collapsed;
             _contentRoot.SetActive(!_collapsed);
             _collapseArrow.text = _collapsed ? "▼" : "▲";
-            UpdatePanelHeight();
+            UpdatePanelSize();
         }
 
         // ── Refresh ───────────────────────────────────────────────────────────
@@ -233,64 +243,82 @@ namespace ValheimGuide.UI
                 int shown = 0;
                 foreach (var obj in pending)
                 {
-                    if (shown >= MaxRows) break;
+                    if (shown >= Plugin.TrackerMaxRows.Value) break;
                     AddRow(obj, false);
                     shown++;
                 }
                 foreach (var obj in done)
                 {
-                    if (shown >= MaxRows) break;
+                    if (shown >= Plugin.TrackerMaxRows.Value) break;
                     AddRow(obj, true);
                     shown++;
                 }
             }
 
             _panel.SetActive(true);
-            UpdatePanelHeight();
+            UpdatePanelSize();
         }
 
         private void AddRow(Objective obj, bool done)
         {
-            var row = MakeObject("Row_" + obj.Id, _contentRoot.transform,
+            GameObject row = new GameObject("Row",
                 typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
-            row.GetComponent<LayoutElement>().preferredHeight = RowHeight;
+            row.transform.SetParent(_contentRoot.transform, false);
+
+            // Change from preferredHeight to minHeight so it can expand!
+            var le = row.GetComponent<LayoutElement>();
+            le.minHeight = 18f;
 
             var hlg = row.GetComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 3;
+            hlg.spacing = 6;
             hlg.childForceExpandWidth = false;
-            hlg.childForceExpandHeight = true;
-            hlg.childControlWidth = false;
+            hlg.childForceExpandHeight = false; // Changed to false so text pushes the height
+            hlg.childControlWidth = true;
             hlg.childControlHeight = true;
+            hlg.childAlignment = TextAnchor.MiddleLeft; // Vertically centers the text
 
-            string tick = done
-                ? "✔"
-                : (obj.Type == "build" ? "□" : "○");
-            Color tickCol = done
-                ? new Color(0.4f, 0.8f, 0.4f)
-                : new Color(0.65f, 0.65f, 0.65f);
-            Color textCol = done
-                ? new Color(0.45f, 0.45f, 0.45f)
-                : Color.white;
+            // Tick (Clean bullet point)
+            var tick = MakeText(row.transform, "Tick",
+                done ? "✔" : "▪",
+                16, FontStyle.Normal, // BUMPED TO 16
+                done ? new Color(0.4f, 0.8f, 0.4f) : new Color(0.5f, 0.5f, 0.5f),
+                preferWidth: 16f);
+            tick.alignment = TextAnchor.MiddleCenter;
 
-            var t = MakeText(row.transform, "Tick", tick,
-                10, FontStyle.Normal, tickCol, preferWidth: 12f);
-            t.alignment = TextAnchor.UpperCenter;
+            // Create the base text
+            string fullText = obj.Text;
 
-            var lbl = MakeText(row.transform, "Label", obj.Text,
-                10, FontStyle.Normal, textCol, flexWidth: true);
-            lbl.alignment = TextAnchor.UpperLeft;
+            // If the objective isn't done yet, try to attach the live resource tracker!
+            if (!done && !string.IsNullOrEmpty(obj.Value))
+            {
+                fullText += GetMaterialProgress(obj);
+            }
+
+            // Text (More legible font size)
+            var lbl = MakeText(row.transform, "Label", fullText, // Notice we use fullText here now!
+                15, FontStyle.Normal,
+                done ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.9f, 0.9f, 0.9f),
+                flexWidth: true);
+            lbl.alignment = TextAnchor.MiddleLeft;
             lbl.horizontalOverflow = HorizontalWrapMode.Wrap;
-            lbl.verticalOverflow = VerticalWrapMode.Overflow;
+            lbl.verticalOverflow = VerticalWrapMode.Truncate;
+
+            // Add a ContentSizeFitter to the text so it calculates its own height when wrapping!
+            lbl.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
-        private void UpdatePanelHeight()
+        private void UpdatePanelSize()
         {
+            // Force layout rebuild so Unity calculates the new wrapped text heights BEFORE we read them
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_contentRoot.GetComponent<RectTransform>());
             Canvas.ForceUpdateCanvases();
+
             float contentH = _collapsed
                 ? 0f
                 : _contentRoot.GetComponent<RectTransform>().rect.height;
-            float total = HeaderHeight + (_collapsed ? 0f : contentH + PaddingV);
-            _panel.GetComponent<RectTransform>().sizeDelta = new Vector2(PanelWidth, total);
+
+            float totalH = HeaderHeight + (_collapsed ? 0f : contentH + 8f); // Added 8f padding at the bottom
+            _panel.GetComponent<RectTransform>().sizeDelta = new Vector2(Plugin.TrackerWidth.Value, totalH);
         }
 
         // ── Helpers ───────────────────────────────────────────────────────────
@@ -322,6 +350,57 @@ namespace ValheimGuide.UI
             }
         }
 
+        private string GetMaterialProgress(Objective obj)
+        {
+            if (Player.m_localPlayer == null || ObjectDB.instance == null || ZNetScene.instance == null) return "";
+
+            Piece.Requirement[] requirements = null;
+
+            // 1. Try to find the item as a Crafting Recipe (e.g., "SpearFlint")
+            GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(obj.Value);
+            if (itemPrefab != null)
+            {
+                var itemDrop = itemPrefab.GetComponent<ItemDrop>();
+                if (itemDrop != null)
+                {
+                    var recipe = ObjectDB.instance.GetRecipe(itemDrop.m_itemData);
+                    if (recipe != null) requirements = recipe.m_resources;
+                }
+            }
+            else
+            {
+                // 2. Try to find the item as a Build Piece (e.g., "piece_workbench")
+                GameObject piecePrefab = ZNetScene.instance.GetPrefab(obj.Value);
+                if (piecePrefab != null)
+                {
+                    var piece = piecePrefab.GetComponent<Piece>();
+                    if (piece != null) requirements = piece.m_resources;
+                }
+            }
+
+            // If we couldn't find any recipe or costs, return nothing
+            if (requirements == null || requirements.Length == 0) return "";
+
+            Inventory inv = Player.m_localPlayer.GetInventory();
+            List<string> reqStrings = new List<string>();
+
+            // Count the items!
+            foreach (var req in requirements)
+            {
+                if (req.m_resItem == null) continue;
+
+                string matName = req.m_resItem.m_itemData.m_shared.m_name;
+                string locName = Localization.instance.Localize(matName); // Translates $item_wood to "Wood"
+                int have = inv.CountItems(matName);
+                int need = req.m_amount;
+
+                // Color it Green if they have enough, Red if they are missing some
+                string color = have >= need ? "#80FF80" : "#FF8080";
+                reqStrings.Add($"<color={color}>{have}/{need}</color> {locName}");
+            }
+
+            return $"\n<color=#B0B0B0><size=12>Requires: {string.Join(", ", reqStrings)}</size></color>";
+        }
         // ── UI factory helpers ────────────────────────────────────────────────
 
         private static GameObject MakeObject(string name, Transform parent,

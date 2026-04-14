@@ -212,5 +212,13 @@
     <Copy SourceFiles="@(DeployGuideFiles)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
     <Copy SourceFiles="@(DeployDataFiles)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
   </Target>
+  <Target Name="CopyDataToProfile" AfterTargets="Build">
+    <ItemGroup>
+      <DataFiles Include="$(ProjectDir)resources\data\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DataFiles)" 
+          DestinationFolder="C:\Users\JPNM9\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Smooth\BepInEx\plugins\ValheimGuide\data\" 
+          SkipUnchangedFiles="false" />
+  </Target>
   <Import Project="packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
 </Project>
