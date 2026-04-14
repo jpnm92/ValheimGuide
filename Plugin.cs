@@ -16,21 +16,23 @@ namespace ValheimGuide
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
     public class Plugin : BaseUnityPlugin
     {
-        public const string PluginGuid = "com.custom.valheimguide";
+        public const string PluginGuid = "com.fafo.valheimguide";
         public const string PluginName = "ValheimGuide";
-        public const string PluginVersion = "0.1.0";
+        public const string PluginVersion = "1.0.0";
 
         public static Plugin Instance { get; private set; }
         public static ManualLogSource Log { get; private set; }
 
         private Harmony _harmony;
         private ConfigEntry<KeyboardShortcut> _toggleGuideKey;
+
         public static ConfigEntry<float> TrackerOffsetX;
         public static ConfigEntry<float> TrackerOffsetY;
         public static ConfigEntry<float> TrackerScale;
         public static ConfigEntry<float> TrackerWidth;
         public static ConfigEntry<int> TrackerMaxRows;
         public static ConfigEntry<float> TrackerRefreshRate;
+        public static ConfigEntry<int> TrackerFontSize;
 
         private void Awake()
         {
@@ -69,6 +71,9 @@ namespace ValheimGuide
             TrackerRefreshRate = Config.Bind("UI", "TrackerRefreshRate", 3f,
                 "How often (in seconds) the tracker checks your inventory for materials. Higher = better performance, lower = more responsive.");
             ObjectiveTracker.Initialise();
+
+            TrackerFontSize = Config.Bind("UI", "TrackerFontSize", 16,
+                "Base font size for the objective tracker text.");
 
             Jotunn.Managers.PrefabManager.OnVanillaPrefabsAvailable += LoadGuideData;
 

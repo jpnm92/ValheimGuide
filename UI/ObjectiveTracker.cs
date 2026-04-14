@@ -261,6 +261,8 @@ namespace ValheimGuide.UI
 
         private void AddRow(Objective obj, bool done)
         {
+            int baseFont = Plugin.TrackerFontSize.Value;
+
             GameObject row = new GameObject("Row",
                 typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
             row.transform.SetParent(_contentRoot.transform, false);
@@ -277,10 +279,10 @@ namespace ValheimGuide.UI
             hlg.childControlHeight = true;
             hlg.childAlignment = TextAnchor.MiddleLeft; // Vertically centers the text
 
-            // Tick (Clean bullet point)
+            // Tick or bullet
             var tick = MakeText(row.transform, "Tick",
                 done ? "✔" : "▪",
-                16, FontStyle.Normal, // BUMPED TO 16
+                baseFont + 1, FontStyle.Normal,
                 done ? new Color(0.4f, 0.8f, 0.4f) : new Color(0.5f, 0.5f, 0.5f),
                 preferWidth: 16f);
             tick.alignment = TextAnchor.MiddleCenter;
@@ -294,9 +296,9 @@ namespace ValheimGuide.UI
                 fullText += GetMaterialProgress(obj);
             }
 
-            // Text (More legible font size)
-            var lbl = MakeText(row.transform, "Label", fullText, // Notice we use fullText here now!
-                15, FontStyle.Normal,
+            // Main label — set to wrap and expand the row height as needed
+            var lbl = MakeText(row.transform, "Label", fullText,
+                baseFont, FontStyle.Normal, // Base font applied here
                 done ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.9f, 0.9f, 0.9f),
                 flexWidth: true);
             lbl.alignment = TextAnchor.MiddleLeft;
@@ -375,7 +377,8 @@ namespace ValheimGuide.UI
                 reqStrings.Add($"<color={color}>{have}/{need}</color> {locName}");
             }
 
-            return $"\n<color=#B0B0B0><size=12>Requires: {string.Join(", ", reqStrings)}</size></color>";
+            int smallFont = Plugin.TrackerFontSize.Value - 3; // Make requirements 3pts smaller than base text
+            return $"\n<color=#B0B0B0><size={smallFont}>Requires: {string.Join(", ", reqStrings)}</size></color>";
         }
         // ── UI factory helpers ────────────────────────────────────────────────
 
