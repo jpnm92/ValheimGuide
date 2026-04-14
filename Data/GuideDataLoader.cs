@@ -140,6 +140,8 @@ namespace ValheimGuide.Data
                         AssignBaseOrder(stage);
                         _allStages.Add(stage);
                     }
+
+                    accepted++;
                 }
 
                 _log.LogInfo($"[GuideDataLoader] {fileName} → {accepted} stage(s) accepted/merged.");

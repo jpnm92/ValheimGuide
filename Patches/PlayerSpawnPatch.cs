@@ -24,6 +24,7 @@ namespace ValheimGuide.Patches
             if (!string.IsNullOrEmpty(ProgressSaver.Current?.ManualStageOverride))
                 ProgressionTracker.SetManualOverride(ProgressSaver.Current.ManualStageOverride);
 
+            ProgressionTracker.RefreshCurrentStage();
             ObjectiveTracker.ForceRefresh();
         }
     }
