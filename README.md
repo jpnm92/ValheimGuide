@@ -38,5 +38,5 @@ An in-game progression guide for Valheim. Tracks where you are in the game, show
 
 1. Install [BepInEx for Valheim](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/) 
 2. Install [Jotunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/) 
-3. Download the latest ValheimGuide release [cite: 387, 388]
+3. Download the latest ValheimGuide release
 4. Extract `ValheimGuide.dll` into:
