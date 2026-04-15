@@ -10,6 +10,8 @@ namespace ValheimGuide.Data
 {
     public static class ProgressSaver
     {
+        public const int MaxPins = 5;
+
         private static ManualLogSource _log;
         private static string _saveFolder;
         private static GuideProgress _current;
@@ -18,14 +20,16 @@ namespace ValheimGuide.Data
         private static readonly object _fileLock = new object();
 
         public static GuideProgress Current => _current;
-
+        public static IReadOnlyList<string> PinnedRecipeIds
+            => (IReadOnlyList<string>)_current?.PinnedRecipes
+               ?? System.Array.Empty<string>();
         public static void Initialise(ManualLogSource log)
         {
             _log = log;
             _saveFolder = Path.Combine(Paths.ConfigPath, "ValheimGuide", "progress");
             Directory.CreateDirectory(_saveFolder);
         }
-
+        
         public static void Load(string characterName)
         {
             string path = GetPath(characterName);
@@ -146,5 +150,27 @@ namespace ValheimGuide.Data
             _isDirty = true;
             SaveAsync();
         }
+        public static bool SetPinned(string itemId, bool pinned)
+        {
+            if (_current == null) return false;
+
+            if (pinned)
+            {
+                if (_current.PinnedRecipes.Contains(itemId)) return true;   // already pinned — no-op
+                if (_current.PinnedRecipes.Count >= MaxPins) return false;  // cap reached
+                _current.PinnedRecipes.Add(itemId);
+            }
+            else
+            {
+                if (!_current.PinnedRecipes.Remove(itemId)) return true;    // not pinned — no-op
+            }
+
+            _isDirty = true;
+            SaveAsync();
+            return true;
+        }
+
+        public static bool IsPinned(string itemId)
+            => _current?.PinnedRecipes.Contains(itemId) ?? false;
     }
 }

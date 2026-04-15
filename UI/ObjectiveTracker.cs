@@ -210,7 +210,6 @@ namespace ValheimGuide.UI
             if (!_isBuilt || _panel == null) return;
 
             var stage = ProgressionTracker.CurrentStage;
-
             if (stage == null || !IsInGame())
             {
                 _panel.SetActive(false);
@@ -219,37 +218,53 @@ namespace ValheimGuide.UI
 
             _stageLabel.text = stage.Label.ToUpper();
 
-            // Rebuild rows
+            // Clear old rows
             foreach (Transform child in _contentRoot.transform)
                 Destroy(child.gameObject);
 
             if (!_collapsed)
             {
+                int shown = 0;
+                int maxRows = Plugin.TrackerMaxRows.Value;
+
+                // --- 1. PINNED RECIPES ---
+                var pins = ProgressSaver.PinnedRecipeIds;
+                if (pins.Count > 0)
+                {
+                    AddSectionHeader("📌 PINNED");
+                    foreach (string itemId in pins)
+                    {
+                        AddPinnedRow(itemId);
+                    }
+                }
+
+                // --- 2. REGULAR OBJECTIVES ---
                 var visible = (stage.Objectives ?? new List<Objective>())
                     .Where(o => string.IsNullOrEmpty(o.ModRequired) ||
                                 GuideDataLoader.InstalledMods.Contains(o.ModRequired))
                     .ToList();
 
-                if (visible.Count == 0)
+                if (visible.Count == 0 && pins.Count == 0)
                 {
                     _panel.SetActive(false);
                     return;
                 }
 
-                // Incomplete first, then done — cap total at MaxRows
                 var pending = visible.Where(o => !ProgressionTracker.IsObjectiveComplete(o)).ToList();
                 var done = visible.Where(o => ProgressionTracker.IsObjectiveComplete(o)).ToList();
 
-                int shown = 0;
+                if (pending.Count > 0 || done.Count > 0)
+                    AddSectionHeader("OBJECTIVES");
+
                 foreach (var obj in pending)
                 {
-                    if (shown >= Plugin.TrackerMaxRows.Value) break;
+                    if (shown >= maxRows) break;
                     AddRow(obj, false);
                     shown++;
                 }
                 foreach (var obj in done)
                 {
-                    if (shown >= Plugin.TrackerMaxRows.Value) break;
+                    if (shown >= maxRows) break;
                     AddRow(obj, true);
                     shown++;
                 }
@@ -257,6 +272,51 @@ namespace ValheimGuide.UI
 
             _panel.SetActive(true);
             UpdatePanelSize();
+        }
+
+        private void AddSectionHeader(string text)
+        {
+            var header = MakeText(_contentRoot.transform, "SectionHeader", text,
+                Plugin.TrackerFontSize.Value - 2, FontStyle.Bold, new Color(1f, 0.75f, 0.3f));
+            header.alignment = TextAnchor.MiddleLeft;
+
+            var le = header.GetComponent<LayoutElement>();
+            le.minHeight = 16f;
+        }
+
+        private void AddPinnedRow(string itemId)
+        {
+            int baseFont = Plugin.TrackerFontSize.Value;
+
+            GameObject row = new GameObject("PinnedRow_" + itemId,
+                typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+            row.transform.SetParent(_contentRoot.transform, false);
+
+            var le = row.GetComponent<LayoutElement>();
+            le.minHeight = 18f;
+
+            var hlg = row.GetComponent<HorizontalLayoutGroup>();
+            hlg.spacing = 6;
+            hlg.childForceExpandWidth = false;
+            hlg.childForceExpandHeight = false;
+            hlg.childControlWidth = true;
+            hlg.childControlHeight = true;
+            hlg.childAlignment = TextAnchor.MiddleLeft;
+
+            var pin = MakeText(row.transform, "PinIcon", "📌",
+                baseFont, FontStyle.Normal, new Color(1f, 0.75f, 0.3f), preferWidth: 16f);
+            pin.alignment = TextAnchor.MiddleCenter;
+
+            string label = ResolveItemLabel(itemId);
+            string matProg = GetMaterialProgress(itemId);
+            string full = label.ToUpper() + matProg;
+
+            var lbl = MakeText(row.transform, "Label", full,
+                baseFont, FontStyle.Normal, new Color(0.95f, 0.85f, 0.6f), flexWidth: true);
+            lbl.alignment = TextAnchor.MiddleLeft;
+            lbl.horizontalOverflow = HorizontalWrapMode.Wrap;
+            lbl.verticalOverflow = VerticalWrapMode.Truncate;
+            lbl.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
         private void AddRow(Objective obj, bool done)
@@ -328,14 +388,19 @@ namespace ValheimGuide.UI
         private static bool IsInGame() =>
             Player.m_localPlayer != null && ZNet.instance != null;
 
-        private string GetMaterialProgress(Objective obj)
+        // Wrapper for legacy objective calls
+        private string GetMaterialProgress(Objective obj) => GetMaterialProgress(obj.Value);
+
+        // Core implementation taking string itemId
+        private string GetMaterialProgress(string itemId)
         {
+            if (string.IsNullOrEmpty(itemId)) return "";
             if (Player.m_localPlayer == null || ObjectDB.instance == null || ZNetScene.instance == null) return "";
 
             Piece.Requirement[] requirements = null;
 
-            // 1. Try to find the item as a Crafting Recipe (e.g., "SpearFlint")
-            GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(obj.Value);
+            // 1. Try to find the item as a Crafting Recipe
+            GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(itemId);
             if (itemPrefab != null)
             {
                 var itemDrop = itemPrefab.GetComponent<ItemDrop>();
@@ -347,8 +412,8 @@ namespace ValheimGuide.UI
             }
             else
             {
-                // 2. Try to find the item as a Build Piece (e.g., "piece_workbench")
-                GameObject piecePrefab = ZNetScene.instance.GetPrefab(obj.Value);
+                // 2. Try to find the item as a Build Piece
+                GameObject piecePrefab = ZNetScene.instance.GetPrefab(itemId);
                 if (piecePrefab != null)
                 {
                     var piece = piecePrefab.GetComponent<Piece>();
@@ -356,13 +421,11 @@ namespace ValheimGuide.UI
                 }
             }
 
-            // If we couldn't find any recipe or costs, return nothing
             if (requirements == null || requirements.Length == 0) return "";
 
             Inventory inv = Player.m_localPlayer.GetInventory();
             List<string> reqStrings = new List<string>();
 
-            // Count the items!
             foreach (var req in requirements)
             {
                 if (req.m_resItem == null) continue;
@@ -372,12 +435,11 @@ namespace ValheimGuide.UI
                 int have = inv.CountItems(matName);
                 int need = req.m_amount;
 
-                // Color it Green if they have enough, Red if they are missing some
                 string color = have >= need ? "#80FF80" : "#FF8080";
                 reqStrings.Add($"<color={color}>{have}/{need}</color> {locName}");
             }
 
-            int smallFont = Plugin.TrackerFontSize.Value - 3; // Make requirements 3pts smaller than base text
+            int smallFont = Plugin.TrackerFontSize.Value - 3;
             return $"\n<color=#B0B0B0><size={smallFont}>Requires: {string.Join(", ", reqStrings)}</size></color>";
         }
         // ── UI factory helpers ────────────────────────────────────────────────
@@ -410,6 +472,36 @@ namespace ValheimGuide.UI
             if (preferWidth > 0) le.preferredWidth = preferWidth;
 
             return t;
+        }
+
+        private string ResolveItemLabel(string itemId)
+        {
+            foreach (Stage stage in GuideDataLoader.AllStages)
+            {
+                if (stage.Gear != null)
+                {
+                    var gear = stage.Gear.Find(g => g.ItemId == itemId);
+                    if (gear != null) return gear.Label;
+                }
+                if (stage.Recipes != null)
+                {
+                    var recipe = stage.Recipes.Find(r => r.ItemId == itemId);
+                    if (recipe != null) return recipe.Label;
+                }
+            }
+
+            // Fallback to ObjectDB localization
+            GameObject prefab = ObjectDB.instance?.GetItemPrefab(itemId);
+            if (prefab != null)
+            {
+                string locKey = prefab.GetComponent<ItemDrop>()?.m_itemData?.m_shared?.m_name;
+                if (!string.IsNullOrEmpty(locKey))
+                {
+                    string loc = global::Localization.instance?.Localize(locKey);
+                    if (!string.IsNullOrEmpty(loc) && loc != locKey) return loc;
+                }
+            }
+            return itemId;
         }
     }
 }

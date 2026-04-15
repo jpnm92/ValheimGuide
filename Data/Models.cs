@@ -234,6 +234,7 @@ namespace ValheimGuide.Data
         public string CharacterName { get; set; }
         public string ManualStageOverride { get; set; }
         public HashSet<string> CheckedItems { get; set; } = new HashSet<string>();
+        public List<string> PinnedRecipes { get; set; } = new List<string>();
 
         // First-launch prompt answers
         public bool? ShowFutureStages { get; set; }     // null = not answered yet
