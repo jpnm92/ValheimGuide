@@ -580,17 +580,6 @@ namespace ValheimGuide.UI
                 PopulateActiveTab(stage);
             });
 
-            GameObject settingsBtn = CreateButton(_panel.transform, "SettingsBtn", "⚙");
-            RectTransform settingsBtnRect = settingsBtn.GetComponent<RectTransform>();
-            settingsBtnRect.anchorMin = new Vector2(0, 1);
-            settingsBtnRect.anchorMax = new Vector2(0, 1);
-            settingsBtnRect.pivot = new Vector2(0, 1);
-            settingsBtnRect.offsetMin = new Vector2(10, -60);
-            settingsBtnRect.offsetMax = new Vector2(50, -30);
-            settingsBtn.GetComponent<Text>(); // just for ref
-            settingsBtn.GetComponent<Button>().onClick.AddListener(() =>
-                FirstLaunchOverlay.ShowSettings(_panel, () => _controller.RefreshContent()));
-
             _tabButtonImages.Clear();
             string[] tabNames = { "GEAR", "DROPS", "RECIPES" };
             for (int i = 0; i < tabNames.Length; i++)

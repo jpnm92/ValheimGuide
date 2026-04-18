@@ -5,6 +5,7 @@ using BepInEx;
 using BepInEx.Logging;
 using Newtonsoft.Json;
 using ValheimGuide.Data;
+using ValheimGuide;
 
 namespace ValheimGuide.Data
 {

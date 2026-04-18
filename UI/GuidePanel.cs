@@ -96,6 +96,16 @@ namespace ValheimGuide.UI
             closeRect.sizeDelta = new Vector2(40, 40);
             closeBtn.GetComponent<Button>().onClick.AddListener(Hide);
 
+            GameObject settingsBtn = CreateButton(_panel.transform, "SettingsBtn", "⚙");
+            RectTransform settingsRect = settingsBtn.GetComponent<RectTransform>();
+            settingsRect.anchorMin = new Vector2(1, 1);
+            settingsRect.anchorMax = new Vector2(1, 1);
+            settingsRect.pivot = new Vector2(1, 1);
+            settingsRect.anchoredPosition = new Vector2(-58, -10);
+            settingsRect.sizeDelta = new Vector2(40, 40);
+            settingsBtn.GetComponent<Button>().onClick.AddListener(() =>
+                FirstLaunchOverlay.ShowSettings(_panel, () => _controller.RefreshContent()));
+
             GameObject title = CreateText(_panel.transform, "Title", "VALHEIM GUIDE");
             RectTransform titleRect = title.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0, 1);

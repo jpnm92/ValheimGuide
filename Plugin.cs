@@ -25,8 +25,6 @@ namespace ValheimGuide
 
         private Harmony _harmony;
         private ConfigEntry<KeyboardShortcut> _toggleGuideKey;
-
-        private float _savedTimeScale = 1f;
         private bool _wasGuideOpen = false;
 
         public static ConfigEntry<float> TrackerOffsetX;
@@ -61,7 +59,10 @@ namespace ValheimGuide
             PauseOnGuideOpen = Config.Bind("General", "PauseOnGuideOpen", true,
                 "Pause the game when the guide is opened. Recommended to disable in multiplayer.");
 
-            // UPDATED OFFSETS AND NEW SCALE CONFIG
+            TrackerMaxPins = Config.Bind("UI", "TrackerMaxPins", 5,
+                new ConfigDescription("Maximum number of recipes that can be pinned to the tracker.",
+                new AcceptableValueRange<int>(1, 10)));
+
             TrackerOffsetX = Config.Bind("UI", "TrackerOffsetX", -20f,
                 "X offset for the on-screen objective tracker (from the top-right corner).");
 
