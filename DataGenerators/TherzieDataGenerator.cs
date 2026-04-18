@@ -12,12 +12,8 @@ namespace ValheimGuide.DataGenerators
 {
     public static class TherzieDataGenerator
     {
-        private static bool _hasRun = false;
-
         public static void GenerateIfPresent()
         {
-            if (_hasRun) return;
-            _hasRun = true;
 
             // Always regenerate — ensures tier fixes and new items are picked up
             string dataFolder = Path.Combine(Paths.PluginPath, "ValheimGuide", "data");

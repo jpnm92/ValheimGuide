@@ -16,7 +16,7 @@ namespace ValheimGuide.Data
         private static string _saveFolder;
         private static GuideProgress _current;
         private static bool _isDirty;
-        private static int _saveGeneration;
+        private static volatile int _saveGeneration;
         private static readonly object _fileLock = new object();
 
         public static GuideProgress Current => _current;

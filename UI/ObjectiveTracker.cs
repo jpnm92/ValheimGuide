@@ -52,21 +52,21 @@ namespace ValheimGuide.UI
         }
 
         // ── State ─────────────────────────────────────────────────────────────
-        private bool _isBuilt = false;
-        private bool _collapsed = false;
-        private bool _forcedHidden = false;  // true while inventory / guide is open
-        private float _timer = 0f;
+        private bool   _isBuilt      = false;
+        private bool   _collapsed    = false;
+        private bool   _forcedHidden = false;  // true while inventory / guide is open
+        private float  _timer        = 0f;
 
         // ── UI refs ───────────────────────────────────────────────────────────
         private GameObject _canvas;
         private GameObject _panel;
         private GameObject _contentRoot;
-        private Text _stageLabel;
-        private Text _collapseArrow;
+        private Text        _stageLabel;
+        private Text        _collapseArrow;
 
         // ── Layout constants ──────────────────────────────────────────────────
-        private const float HeaderHeight = 24f;
-        private const float RowSpacing = 6f;
+        private const float HeaderHeight  = 24f;
+        private const float RowSpacing    = 6f;
 
         // ── Label cache — rebuilt once per LoadGuideData call ─────────────────
         // Key: ItemId   Value: human-readable label
@@ -84,13 +84,13 @@ namespace ValheimGuide.UI
 
         private void Awake()
         {
-            GUIManager.OnCustomGUIAvailable += OnGUIReady;
+            GUIManager.OnCustomGUIAvailable  += OnGUIReady;
             ProgressionTracker.OnStageChanged += OnStageChanged;
         }
 
         private void OnDestroy()
         {
-            GUIManager.OnCustomGUIAvailable -= OnGUIReady;
+            GUIManager.OnCustomGUIAvailable  -= OnGUIReady;
             ProgressionTracker.OnStageChanged -= OnStageChanged;
         }
 
@@ -126,15 +126,15 @@ namespace ValheimGuide.UI
             DontDestroyOnLoad(_canvas);
 
             var cv = _canvas.GetComponent<Canvas>();
-            cv.renderMode = RenderMode.ScreenSpaceOverlay;
+            cv.renderMode      = RenderMode.ScreenSpaceOverlay;
             cv.overrideSorting = true;
-            cv.sortingOrder = 19998;
+            cv.sortingOrder    = 19998;
 
             var scaler = _canvas.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.uiScaleMode         = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080);
-            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            scaler.matchWidthOrHeight = 0.5f;
+            scaler.screenMatchMode     = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight  = 0.5f;
 
             // Outer panel
             _panel = new GameObject("TrackerPanel", typeof(RectTransform), typeof(Image));
@@ -144,10 +144,10 @@ namespace ValheimGuide.UI
             var pr = _panel.GetComponent<RectTransform>();
             pr.anchorMin = new Vector2(1, 1);
             pr.anchorMax = new Vector2(1, 1);
-            pr.pivot = new Vector2(1, 1);
+            pr.pivot     = new Vector2(1, 1);
             pr.anchoredPosition = new Vector2(Plugin.TrackerOffsetX.Value, Plugin.TrackerOffsetY.Value);
-            pr.sizeDelta = new Vector2(Plugin.TrackerWidth.Value, HeaderHeight);
-            pr.localScale = new Vector3(Plugin.TrackerScale.Value, Plugin.TrackerScale.Value, 1f);
+            pr.sizeDelta        = new Vector2(Plugin.TrackerWidth.Value, HeaderHeight);
+            pr.localScale       = new Vector3(Plugin.TrackerScale.Value, Plugin.TrackerScale.Value, 1f);
 
             // ── Header ────────────────────────────────────────────────────────
             var header = MakeObject("Header", _panel.transform,
@@ -155,16 +155,16 @@ namespace ValheimGuide.UI
             var hr = header.GetComponent<RectTransform>();
             hr.anchorMin = new Vector2(0, 1);
             hr.anchorMax = new Vector2(1, 1);
-            hr.pivot = new Vector2(0.5f, 1);
+            hr.pivot     = new Vector2(0.5f, 1);
             hr.offsetMin = new Vector2(6, -HeaderHeight);
             hr.offsetMax = new Vector2(-4, 0);
 
             var hlg = header.GetComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 4;
-            hlg.childForceExpandWidth = false;
+            hlg.spacing             = 4;
+            hlg.childForceExpandWidth  = false;
             hlg.childForceExpandHeight = true;
-            hlg.childControlWidth = false;
-            hlg.childControlHeight = true;
+            hlg.childControlWidth   = false;
+            hlg.childControlHeight  = true;
 
             _stageLabel = MakeText(header.transform, "StageLabel", "—",
                 Plugin.TrackerFontSize.Value, FontStyle.Bold,
@@ -190,17 +190,17 @@ namespace ValheimGuide.UI
             var cr = _contentRoot.GetComponent<RectTransform>();
             cr.anchorMin = new Vector2(0, 1);
             cr.anchorMax = new Vector2(1, 1);
-            cr.pivot = new Vector2(0.5f, 1);
+            cr.pivot     = new Vector2(0.5f, 1);
             cr.offsetMin = new Vector2(6, -400);
             cr.offsetMax = new Vector2(-4, -HeaderHeight - 2);
 
             var vlg = _contentRoot.GetComponent<VerticalLayoutGroup>();
-            vlg.spacing = RowSpacing;
-            vlg.padding = new RectOffset(0, 0, 2, 2);
-            vlg.childForceExpandWidth = true;
+            vlg.spacing             = RowSpacing;
+            vlg.padding             = new RectOffset(0, 0, 2, 2);
+            vlg.childForceExpandWidth  = true;
             vlg.childForceExpandHeight = false;
-            vlg.childControlWidth = true;
-            vlg.childControlHeight = true;
+            vlg.childControlWidth   = true;
+            vlg.childControlHeight  = true;
 
             _contentRoot.GetComponent<ContentSizeFitter>().verticalFit =
                 ContentSizeFitter.FitMode.PreferredSize;
@@ -246,7 +246,7 @@ namespace ValheimGuide.UI
 
             if (!_collapsed)
             {
-                int shown = 0;
+                int shown   = 0;
                 int maxRows = Plugin.TrackerMaxRows.Value;
 
                 // ── 1. PINNED RECIPES ──────────────────────────────────────────
@@ -275,7 +275,7 @@ namespace ValheimGuide.UI
                 }
 
                 var pending = visible.Where(o => !ProgressionTracker.IsObjectiveComplete(o)).ToList();
-                var done = visible.Where(o => ProgressionTracker.IsObjectiveComplete(o)).ToList();
+                var done    = visible.Where(o =>  ProgressionTracker.IsObjectiveComplete(o)).ToList();
 
                 if (pending.Count > 0 || done.Count > 0)
                     AddSectionHeader("OBJECTIVES");
@@ -327,12 +327,12 @@ namespace ValheimGuide.UI
             row.GetComponent<LayoutElement>().minHeight = 18f;
 
             var hlg = row.GetComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 6;
-            hlg.childForceExpandWidth = false;
+            hlg.spacing             = 6;
+            hlg.childForceExpandWidth  = false;
             hlg.childForceExpandHeight = false;
-            hlg.childControlWidth = true;
-            hlg.childControlHeight = true;
-            hlg.childAlignment = TextAnchor.MiddleLeft;
+            hlg.childControlWidth   = true;
+            hlg.childControlHeight  = true;
+            hlg.childAlignment      = TextAnchor.MiddleLeft;
 
             // ◆ icon — filled = pinned (greyed when done)
             var pinIcon = MakeText(row.transform, "PinIcon",
@@ -342,29 +342,26 @@ namespace ValheimGuide.UI
                 preferWidth: 16f);
             pinIcon.alignment = TextAnchor.MiddleCenter;
 
-            string label = ResolveItemLabel(itemId);
+            string label   = ResolveItemLabel(itemId);
             string matProg = isCompleted ? "" : GetMaterialProgress(itemId);
-            string full = label.ToUpper() + matProg;
+            string full    = label.ToUpper() + matProg;
 
             var lbl = MakeText(row.transform, "Label", full,
                 baseFont, FontStyle.Normal, labelColor, flexWidth: true);
-            lbl.alignment = TextAnchor.MiddleLeft;
+            lbl.alignment          = TextAnchor.MiddleLeft;
             lbl.horizontalOverflow = HorizontalWrapMode.Wrap;
-            lbl.verticalOverflow = VerticalWrapMode.Truncate;
+            lbl.verticalOverflow   = VerticalWrapMode.Truncate;
             lbl.gameObject.AddComponent<ContentSizeFitter>().verticalFit =
                 ContentSizeFitter.FitMode.PreferredSize;
         }
 
-        // ── Objective row ─────────────────────────────────────────────────────
-
-        private void AddRow(Objective obj, bool done)
+        // ── Make row ─────────────────────────────────────────────────────
+        private GameObject MakeRowContainer(string name, float minHeight = 18f)
         {
-            int baseFont = Plugin.TrackerFontSize.Value;
-
-            GameObject row = new GameObject("Row",
+            GameObject row = new GameObject(name,
                 typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
             row.transform.SetParent(_contentRoot.transform, false);
-            row.GetComponent<LayoutElement>().minHeight = 18f;
+            row.GetComponent<LayoutElement>().minHeight = minHeight;
 
             var hlg = row.GetComponent<HorizontalLayoutGroup>();
             hlg.spacing = 6;
@@ -373,6 +370,42 @@ namespace ValheimGuide.UI
             hlg.childControlWidth = true;
             hlg.childControlHeight = true;
             hlg.childAlignment = TextAnchor.MiddleLeft;
+
+            return row;
+        }
+
+        // ── Make Wrapping Label ─────────────────────────────────────────────────────
+        private Text MakeWrappingLabel(Transform parent, string name, string content,
+            int fontSize, FontStyle style, Color color)
+        {
+            Text lbl = MakeText(parent, name, content,
+                fontSize, style, color, flexWidth: true);
+            lbl.alignment = TextAnchor.MiddleLeft;
+            lbl.horizontalOverflow = HorizontalWrapMode.Wrap;
+            lbl.verticalOverflow = VerticalWrapMode.Truncate;
+            lbl.gameObject.AddComponent<ContentSizeFitter>().verticalFit =
+                ContentSizeFitter.FitMode.PreferredSize;
+            return lbl;
+        }
+
+        // ── Add section header ─────────────────────────────────────────────────────
+        private void AddHeaderRow(string text)
+        {
+            int baseFont = Plugin.TrackerFontSize.Value;
+
+            GameObject row = MakeRowContainer("Header");
+
+            MakeWrappingLabel(row.transform, "HeaderLabel", text,
+                baseFont + 1, FontStyle.Bold,
+                new Color(1f, 0.84f, 0.4f)); // gold-ish header color
+        }
+        // ── Add objective row ─────────────────────────────────────────────────────
+
+        private void AddRow(Objective obj, bool done)
+        {
+            int baseFont = Plugin.TrackerFontSize.Value;
+
+            GameObject row = MakeRowContainer("Row");
 
             var tick = MakeText(row.transform, "Tick",
                 done ? "✔" : "▪",
@@ -385,15 +418,9 @@ namespace ValheimGuide.UI
             if (!done && !string.IsNullOrEmpty(obj.Value))
                 fullText += GetMaterialProgress(obj);
 
-            var lbl = MakeText(row.transform, "Label", fullText,
+            MakeWrappingLabel(row.transform, "Label", fullText,
                 baseFont, FontStyle.Normal,
-                done ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.9f, 0.9f, 0.9f),
-                flexWidth: true);
-            lbl.alignment = TextAnchor.MiddleLeft;
-            lbl.horizontalOverflow = HorizontalWrapMode.Wrap;
-            lbl.verticalOverflow = VerticalWrapMode.Truncate;
-            lbl.gameObject.AddComponent<ContentSizeFitter>().verticalFit =
-                ContentSizeFitter.FitMode.PreferredSize;
+                done ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.9f, 0.9f, 0.9f));
         }
 
         // ── Panel sizing ──────────────────────────────────────────────────────
@@ -424,8 +451,8 @@ namespace ValheimGuide.UI
         {
             if (string.IsNullOrEmpty(itemId)) return "";
             if (Player.m_localPlayer == null ||
-                ObjectDB.instance == null ||
-                ZNetScene.instance == null) return "";
+                ObjectDB.instance    == null ||
+                ZNetScene.instance   == null) return "";
 
             Piece.Requirement[] requirements = null;
 
@@ -459,9 +486,9 @@ namespace ValheimGuide.UI
                 if (req.m_resItem == null) continue;
                 string matName = req.m_resItem.m_itemData.m_shared.m_name;
                 string locName = global::Localization.instance.Localize(matName);
-                int have = inv.CountItems(matName);
-                int need = req.m_amount;
-                string color = have >= need ? "#80FF80" : "#FF8080";
+                int    have    = inv.CountItems(matName);
+                int    need    = req.m_amount;
+                string color   = have >= need ? "#80FF80" : "#FF8080";
                 reqStrings.Add($"<color={color}>{have}/{need}</color> {locName}");
             }
 
@@ -534,15 +561,15 @@ namespace ValheimGuide.UI
                 typeof(RectTransform), typeof(Text), typeof(LayoutElement));
 
             var t = go.GetComponent<Text>();
-            t.text = content;
-            t.font = GUIManager.Instance.AveriaSerifBold;
-            t.fontSize = size;
+            t.text      = content;
+            t.font      = GUIManager.Instance.AveriaSerifBold;
+            t.fontSize  = size;
             t.fontStyle = style;
-            t.color = color;
+            t.color     = color;
             t.raycastTarget = false;
 
             var le = go.GetComponent<LayoutElement>();
-            if (flexWidth) le.flexibleWidth = 1f;
+            if (flexWidth)       le.flexibleWidth  = 1f;
             if (preferWidth > 0) le.preferredWidth = preferWidth;
 
             return t;

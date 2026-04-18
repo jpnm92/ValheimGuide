@@ -47,6 +47,9 @@ namespace ValheimGuide.Data
                 LoadFile(filePath);
 
             _allStages.Sort((a, b) => a.Order.CompareTo(b.Order));
+            System.Diagnostics.Debug.Assert(
+                _allStages.SequenceEqual(_allStages.OrderBy(s => s.Order)),
+                "AllStages must be sorted by Order");
             _log.LogInfo($"[GuideDataLoader] Loaded {_allStages.Count} stages, {_playstyles.Count} playstyles.");
         }
 
@@ -124,7 +127,12 @@ namespace ValheimGuide.Data
                         // Safely merge text and boss data if the existing stage is a generated shell
                         if (string.IsNullOrEmpty(existing.Article) && !string.IsNullOrEmpty(stage.Article)) existing.Article = stage.Article;
                         if (string.IsNullOrEmpty(existing.BiomeDescription) && !string.IsNullOrEmpty(stage.BiomeDescription)) existing.BiomeDescription = stage.BiomeDescription;
-                        if (existing.Boss == null && stage.Boss != null) existing.Boss = stage.Boss;
+
+                        if (existing.Boss == null && stage.Boss != null) 
+                            existing.Boss = stage.Boss;
+                        else if (existing.Boss != null && stage.Boss != null)
+                            _log.LogWarning($"[GuideDataLoader] Stage '{stage.Id}' from '{fileName}' has a Boss conflict — keeping first loaded.");
+
                         if (existing.UnlockTrigger == null || existing.UnlockTrigger.Type == "none") existing.UnlockTrigger = stage.UnlockTrigger;
 
                         // Merge lists safely

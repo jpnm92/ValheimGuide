@@ -17,10 +17,6 @@ namespace ValheimGuide.Data
         private static readonly FieldInfo _knownRecipesField =
             typeof(Player).GetField("m_knownRecipes", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        private static readonly FieldInfo _objKnownRecipesField =
-            typeof(Player).GetField("m_knownRecipes",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-
         public static Stage CurrentStage { get; private set; }
         public static Stage ManualOverrideStage { get; set; }
         public static event Action<Stage> OnStageChanged;
@@ -134,7 +130,7 @@ namespace ValheimGuide.Data
                 case "knownrecipe":
                     Player p = Player.m_localPlayer;
                     if (p == null) return false;
-                    var recipes = _objKnownRecipesField?.GetValue(p) as HashSet<string>;
+                    var recipes = _knownRecipesField?.GetValue(p) as HashSet<string>;
                     return recipes?.Contains(obj.Value) ?? false;
 
                 case "hasitem":

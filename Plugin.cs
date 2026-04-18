@@ -26,6 +26,8 @@ namespace ValheimGuide
         private Harmony _harmony;
         private ConfigEntry<KeyboardShortcut> _toggleGuideKey;
 
+        private float _savedTimeScale = 1f;
+
         public static ConfigEntry<float> TrackerOffsetX;
         public static ConfigEntry<float> TrackerOffsetY;
         public static ConfigEntry<float> TrackerScale;
@@ -114,16 +116,21 @@ namespace ValheimGuide
                  Input.GetKeyDown(KeyCode.Tab)))
                 GuidePanel.Hide();
 
-            // Sync tracker visibility with guide panel state.
-            // (timeScale is handled inside GuidePanel.Show/Hide instead of here)
+            // Manage objective tracker visibility and time pause when guide is opened/closed
             bool guideOpen = GuidePanel.IsVisible;
+
             if (guideOpen != _wasGuideOpen)
             {
                 _wasGuideOpen = guideOpen;
                 ObjectiveTracker.SetVisible(!guideOpen);
 
                 // Manage time pause — only while guide is open
-                Time.timeScale = guideOpen ? 0f : 1f;
+                // When opening:
+                _savedTimeScale = Time.timeScale;
+                Time.timeScale = 0f;
+
+                // When closing:
+                Time.timeScale = _savedTimeScale;
             }
         }
     }
