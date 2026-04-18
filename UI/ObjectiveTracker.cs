@@ -135,7 +135,7 @@ namespace ValheimGuide.UI
             // Outer panel
             _panel = new GameObject("TrackerPanel", typeof(RectTransform), typeof(Image));
             _panel.transform.SetParent(_canvas.transform, false);
-            _panel.GetComponent<Image>().color = new Color(0.04f, 0.04f, 0.04f, 0.82f);
+            _panel.GetComponent<Image>().color = new Color(0.04f, 0.04f, 0.04f, Plugin.TrackerOpacity.Value);
 
             var pr = _panel.GetComponent<RectTransform>();
             pr.anchorMin = new Vector2(1, 1);

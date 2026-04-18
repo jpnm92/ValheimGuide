@@ -29,7 +29,9 @@ namespace ValheimGuide.UI
 
             // SAFELY FREEZE TIME
             _originalTimeScale = Time.timeScale;
-            Time.timeScale = 0f;
+            bool isMultiplayer = ZNet.instance != null && ZNet.instance.GetNrOfPlayers() > 1;
+            if (Plugin.PauseOnGuideOpen.Value && !isMultiplayer)
+                Time.timeScale = 0f;
 
             GUIManager.BlockInput(true);
 

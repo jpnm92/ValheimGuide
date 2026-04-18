@@ -10,8 +10,6 @@ namespace ValheimGuide.Data
 {
     public static class ProgressSaver
     {
-        public const int MaxPins = 5;
-
         private static ManualLogSource _log;
         private static string _saveFolder;
         private static GuideProgress _current;
@@ -157,7 +155,7 @@ namespace ValheimGuide.Data
             if (pinned)
             {
                 if (_current.PinnedRecipes.Contains(itemId)) return true;  // already pinned
-                if (_current.PinnedRecipes.Count >= MaxPins) return false; // cap reached
+                if (_current.PinnedRecipes.Count >= Plugin.TrackerMaxPins.Value) return false; // cap reached
                 _current.PinnedRecipes.Add(itemId);
             }
             else

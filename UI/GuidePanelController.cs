@@ -25,11 +25,6 @@ namespace ValheimGuide.UI
         private readonly HashSet<string> _activeSourceFilters = new HashSet<string>();
         private readonly List<Image> _tabButtonImages = new List<Image>();
 
-        private static readonly System.Reflection.FieldInfo KnownRecipesField =
-            typeof(Player).GetField("m_knownRecipes",
-                System.Reflection.BindingFlags.NonPublic |
-                System.Reflection.BindingFlags.Instance);
-
         public GuidePanelController(GameObject stageListContainer, GameObject smartPanelContainer, GameObject referenceAreaContainer)
         {
             _stageListContainer = stageListContainer;
@@ -503,6 +498,7 @@ namespace ValheimGuide.UI
                     Color tipColor;
                     switch (tip.Category)
                     {
+                        case "general": prefix = ""; tipColor = new Color(0.85f, 0.85f, 0.85f); break;
                         case "combat": prefix = "[Combat] "; tipColor = new Color(1f, 0.6f, 0.6f); break;
                         case "gathering": prefix = "[Gather] "; tipColor = new Color(0.6f, 1f, 0.6f); break;
                         case "secret": prefix = "[Secret] "; tipColor = new Color(1f, 0.9f, 0.4f); break;
@@ -583,6 +579,17 @@ namespace ValheimGuide.UI
                 _searchQuery = "";
                 PopulateActiveTab(stage);
             });
+
+            GameObject settingsBtn = CreateButton(_panel.transform, "SettingsBtn", "⚙");
+            RectTransform settingsBtnRect = settingsBtn.GetComponent<RectTransform>();
+            settingsBtnRect.anchorMin = new Vector2(0, 1);
+            settingsBtnRect.anchorMax = new Vector2(0, 1);
+            settingsBtnRect.pivot = new Vector2(0, 1);
+            settingsBtnRect.offsetMin = new Vector2(10, -60);
+            settingsBtnRect.offsetMax = new Vector2(50, -30);
+            settingsBtn.GetComponent<Text>(); // just for ref
+            settingsBtn.GetComponent<Button>().onClick.AddListener(() =>
+                FirstLaunchOverlay.ShowSettings(_panel, () => _controller.RefreshContent()));
 
             _tabButtonImages.Clear();
             string[] tabNames = { "GEAR", "DROPS", "RECIPES" };
@@ -1030,7 +1037,7 @@ namespace ValheimGuide.UI
                             Player.m_localPlayer?.Message(
                                 MessageHud.MessageType.TopLeft,
                                 $"<color=#FF8080>Pin limit reached</color>\n" +
-                                $"Unpin something first (max {ProgressSaver.MaxPins})");
+                                $"Unpin something first (max {ProgressSaver.Plugin.TrackerMaxPins.Value})");
                             return;
                         }
 
@@ -1220,7 +1227,7 @@ namespace ValheimGuide.UI
                             Player.m_localPlayer?.Message(
                                 MessageHud.MessageType.TopLeft,
                                 $"<color=#FF8080>Pin limit reached</color>\n" +
-                                $"Unpin something first (max {ProgressSaver.MaxPins})");
+                                $"Unpin something first (max {ProgressSaver.Plugin.TrackerMaxPins.Value})");
                             return;
                         }
 

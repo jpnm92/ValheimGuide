@@ -42,7 +42,75 @@ namespace ValheimGuide.UI
             else
                 ShowPlaystyleScreen(onComplete);
         }
+        public static void ShowSettings(GameObject parent, Action onComplete)
+        {
+            if (_overlay != null)
+                UnityEngine.Object.Destroy(_overlay);
 
+            _overlay = new GameObject("SettingsOverlay",
+                typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
+            _overlay.transform.SetParent(parent.transform, false);
+
+            RectTransform rt = _overlay.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+            _overlay.GetComponent<Image>().color = new Color(0.05f, 0.05f, 0.05f, 0.97f);
+
+            ShowSettingsScreen(onComplete);
+        }
+
+        private static void ShowSettingsScreen(Action onComplete)
+        {
+            ClearOverlayContent();
+
+            AddLabel("SETTINGS", 26, TMPro.FontStyles.Bold, Color.white);
+            AddSpacer(20);
+            AddLabel("SPOILERS", 16, TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+            AddSpacer(8);
+
+            AddButton("SHOW ALL BIOMES", new Color(0.25f, 0.45f, 0.25f), () =>
+            {
+                ProgressSaver.SetSpoilersPreference(true);
+                ShowSettingsScreen(onComplete); // refresh to show current state
+            });
+            AddSpacer(4);
+            AddButton("KEEP IT MYSTERIOUS", new Color(0.35f, 0.25f, 0.15f), () =>
+            {
+                ProgressSaver.SetSpoilersPreference(false);
+                ShowSettingsScreen(onComplete);
+            });
+
+            AddSpacer(20);
+            AddLabel("PLAYSTYLE", 16, TMPro.FontStyles.Bold, new Color(1f, 0.75f, 0.3f));
+            AddSpacer(8);
+
+            foreach (var playstyle in GuideDataLoader.Playstyles)
+            {
+                string pid = playstyle.Id;
+                bool isCurrent = ProgressSaver.Current?.PlaystyleId == pid;
+                string label = (isCurrent ? "► " : "     ") +
+                               $"{playstyle.Label.ToUpper()}  —  {playstyle.Description}";
+                AddButton(label, isCurrent
+                    ? new Color(0.35f, 0.28f, 0.15f)
+                    : new Color(0.22f, 0.22f, 0.28f), () =>
+                    {
+                        ProgressSaver.SetPlaystylePreference(pid);
+                        ShowSettingsScreen(onComplete);
+                    });
+                AddSpacer(4);
+            }
+
+            AddButton("SHOW ALL / UNSURE", new Color(0.18f, 0.18f, 0.18f), () =>
+            {
+                ProgressSaver.SetPlaystylePreference("all");
+                ShowSettingsScreen(onComplete);
+            });
+
+            AddSpacer(16);
+            AddButton("CLOSE", new Color(0.3f, 0.1f, 0.1f), () => Dismiss(onComplete));
+        }
         private static void ShowSpoilersScreen(Action onComplete)
         {
             ClearOverlayContent();
@@ -77,7 +145,7 @@ namespace ValheimGuide.UI
             });
 
             AddSpacer(16);
-            AddLabel("You can change this later in the BepInEx config.", 12, TMPro.FontStyles.Italic, new Color(0.5f, 0.5f, 0.5f));
+            AddLabel("You can change this later in the Settings tab.", 12, TMPro.FontStyles.Italic, new Color(0.5f, 0.5f, 0.5f));
         }
 
         private static void ShowPlaystyleScreen(Action onComplete)

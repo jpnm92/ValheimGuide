@@ -36,6 +36,9 @@ namespace ValheimGuide
         public static ConfigEntry<int> TrackerMaxRows;
         public static ConfigEntry<float> TrackerRefreshRate;
         public static ConfigEntry<int> TrackerFontSize;
+        public static ConfigEntry<int> TrackerMaxPins;
+        public static ConfigEntry<float> TrackerOpacity;
+        public static ConfigEntry<bool> PauseOnGuideOpen;
 
         private void Awake()
         {
@@ -55,6 +58,9 @@ namespace ValheimGuide
             _toggleGuideKey = Config.Bind("General", "ToggleGuide",
                 new KeyboardShortcut(KeyCode.F8), "Key to open/close the guide.");
 
+            PauseOnGuideOpen = Config.Bind("General", "PauseOnGuideOpen", true,
+                "Pause the game when the guide is opened. Recommended to disable in multiplayer.");
+
             // UPDATED OFFSETS AND NEW SCALE CONFIG
             TrackerOffsetX = Config.Bind("UI", "TrackerOffsetX", -20f,
                 "X offset for the on-screen objective tracker (from the top-right corner).");
@@ -71,7 +77,7 @@ namespace ValheimGuide
             TrackerMaxRows = Config.Bind("UI", "TrackerMaxRows", 6,
                 "The maximum number of objectives to show on screen at once.");
 
-            TrackerRefreshRate = Config.Bind("UI", "TrackerRefreshRate", 3f,
+            TrackerRefreshRate = Config.Bind("UI", "TrackerRefreshRate", 1.5f,
                 "How often (in seconds) the tracker checks your inventory for materials. Higher = better performance, lower = more responsive.");
             ObjectiveTracker.Initialise();
 
@@ -80,6 +86,9 @@ namespace ValheimGuide
                     "Font size for text in the on-screen objective tracker.",
                 new AcceptableValueRange<int>(10, 22)));
 
+            TrackerOpacity = Config.Bind("UI", "TrackerOpacity", 0.82f,
+                new ConfigDescription("Background opacity of the on-screen objective tracker.",
+                new AcceptableValueRange<float>(0.1f, 1.0f)));
             Jotunn.Managers.PrefabManager.OnVanillaPrefabsAvailable += LoadGuideData;
 
             Log.LogInfo($"{PluginName} loaded.");
@@ -88,6 +97,10 @@ namespace ValheimGuide
         {
             _harmony?.UnpatchSelf();
             Jotunn.Managers.PrefabManager.OnVanillaPrefabsAvailable -= LoadGuideData;
+
+            // Restore timescale if guide was open when plugin was destroyed
+            if (GuidePanel.IsVisible)
+                GuidePanel.Hide();
         }
 
         public static void LoadGuideData()
