@@ -891,7 +891,7 @@ namespace ValheimGuide.UI
                 Image checkImg = checkBox.GetComponent<Image>();
                 checkImg.color = isChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.15f, 0.15f, 0.15f);
 
-                GameObject checkMark = GuidePanel.CreateText(checkBox.transform, "Mark", isChecked ? "✔" : "");
+                GameObject checkMark = GuidePanel.CreateText(checkBox.transform, "Mark", isChecked ? "✔" : "□");
                 RectTransform markRect = checkMark.GetComponent<RectTransform>();
                 markRect.anchorMin = Vector2.zero; markRect.anchorMax = Vector2.one;
                 markRect.offsetMin = markRect.offsetMax = Vector2.zero;
@@ -969,8 +969,8 @@ namespace ValheimGuide.UI
                     ProgressSaver.SetChecked(itemId, nowChecked);
 
                     checkImg.color = nowChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.15f, 0.15f, 0.15f);
-                    markText.text = nowChecked ? "✔" : "";
-                    nameText.color = nowChecked ? new Color(0.5f, 0.5f, 0.5f) : baseColor;
+                    markText.text = nowChecked ? "✔" : "□";
+                    nameText.color = nowChecked ? new Color(0f, 0f, 0f) : baseColor;
 
                     // --- ADD NATIVE POPUP & SOUND ONLY WHEN CHECKING ---
                     if (nowChecked)
@@ -994,26 +994,38 @@ namespace ValheimGuide.UI
                         typeof(Button), typeof(LayoutElement));
                     pinBtn.transform.SetParent(row.transform, false);
 
-                    // Only set preferred width — let the row control height naturally
                     var pinLe = pinBtn.GetComponent<LayoutElement>();
+                    pinLe.preferredWidth = 42;   // was missing — this is why it was invisible
                     pinLe.preferredHeight = 20;
 
                     bool gearIsPinned = ProgressSaver.IsPinned(pinnedItemId);
                     Image pinImg = pinBtn.GetComponent<Image>();
                     pinImg.color = gearIsPinned
-                        ? new Color(0.6f, 0.45f, 0.1f, 1f)    // amber = pinned
-                        : new Color(0.15f, 0.15f, 0.15f, 1f); // dark  = unpinned
+                        ? new Color(0.6f, 0.45f, 0.1f, 1f)
+                        : new Color(0.25f, 0.25f, 0.25f, 1f);
 
-                    Text pinText = MakePinIconText(pinBtn.transform, gearIsPinned);
+                    // Label instead of bare diamond icon
+                    GameObject pinLabelObj = GuidePanel.CreateText(pinBtn.transform, "PinLabel",
+                        gearIsPinned ? "◆ PIN" : "◇ PIN");
+                    var pinLabelRect = pinLabelObj.GetComponent<RectTransform>();
+                    pinLabelRect.anchorMin = Vector2.zero;
+                    pinLabelRect.anchorMax = Vector2.one;
+                    pinLabelRect.offsetMin = pinLabelRect.offsetMax = Vector2.zero;
+                    Text pinText = pinLabelObj.GetComponent<Text>();
+                    pinText.alignment = TextAnchor.MiddleCenter;
+                    pinText.fontSize = 11;
+                    pinText.color = gearIsPinned
+                        ? new Color(1f, 0.85f, 0.4f)
+                        : new Color(0.65f, 0.65f, 0.65f);
 
                     pinBtn.GetComponent<Button>().onClick.AddListener(() =>
                     {
-                        if (ProgressSaver.Current == null) return; // save not loaded yet
+                        if (ProgressSaver.Current == null) return;
 
                         bool nowPinned = !ProgressSaver.IsPinned(pinnedItemId);
                         bool success = ProgressSaver.SetPinned(pinnedItemId, nowPinned);
 
-                        if (!success) // only false when cap is reached
+                        if (!success)
                         {
                             Player.m_localPlayer?.Message(
                                 MessageHud.MessageType.TopLeft,
@@ -1024,10 +1036,11 @@ namespace ValheimGuide.UI
 
                         pinImg.color = nowPinned
                             ? new Color(0.6f, 0.45f, 0.1f, 1f)
-                            : new Color(0.15f, 0.15f, 0.15f, 1f);
-                        UpdatePinIconText(pinText, nowPinned);
-
-                        ObjectiveTracker.ForceRefresh();
+                            : new Color(0.25f, 0.25f, 0.25f, 1f);
+                        pinText.text = nowPinned ? "◆ PIN" : "◇ PIN";
+                        pinText.color = nowPinned
+                            ? new Color(1f, 0.85f, 0.4f)
+                            : new Color(0.65f, 0.65f, 0.65f);
                     });
                 }
 
@@ -1174,16 +1187,26 @@ namespace ValheimGuide.UI
                         typeof(Button));
                     pinBtn.transform.SetParent(row.transform, false);
 
-                    // childControlWidth=false: sizeDelta controls the width, NOT LayoutElement
-                    pinBtn.GetComponent<RectTransform>().sizeDelta = new Vector2(20f, 20f);
+                    pinBtn.GetComponent<RectTransform>().sizeDelta = new Vector2(44f, 20f);
 
                     bool recipeIsPinned = ProgressSaver.IsPinned(pinnedItemId);
                     Image pinImg = pinBtn.GetComponent<Image>();
                     pinImg.color = recipeIsPinned
                         ? new Color(0.6f, 0.45f, 0.1f, 1f)
-                        : new Color(0.15f, 0.15f, 0.15f, 1f);
+                        : new Color(0.25f, 0.25f, 0.25f, 1f);
 
-                    Text pinText = MakePinIconText(pinBtn.transform, recipeIsPinned);
+                    GameObject pinLabelObj = GuidePanel.CreateText(pinBtn.transform, "PinLabel",
+                        recipeIsPinned ? "◆ PIN" : "◇ PIN");
+                    var pinLabelRect = pinLabelObj.GetComponent<RectTransform>();
+                    pinLabelRect.anchorMin = Vector2.zero;
+                    pinLabelRect.anchorMax = Vector2.one;
+                    pinLabelRect.offsetMin = pinLabelRect.offsetMax = Vector2.zero;
+                    Text pinText = pinLabelObj.GetComponent<Text>();
+                    pinText.alignment = TextAnchor.MiddleCenter;
+                    pinText.fontSize = 11;
+                    pinText.color = recipeIsPinned
+                        ? new Color(1f, 0.85f, 0.4f)
+                        : new Color(0.65f, 0.65f, 0.65f);
 
                     pinBtn.GetComponent<Button>().onClick.AddListener(() =>
                     {
@@ -1203,8 +1226,11 @@ namespace ValheimGuide.UI
 
                         pinImg.color = nowPinned
                             ? new Color(0.6f, 0.45f, 0.1f, 1f)
-                            : new Color(0.15f, 0.15f, 0.15f, 1f);
-                        UpdatePinIconText(pinText, nowPinned);
+                            : new Color(0.25f, 0.25f, 0.25f, 1f);
+                        pinText.text = nowPinned ? "◆ PIN" : "◇ PIN";
+                        pinText.color = nowPinned
+                            ? new Color(1f, 0.85f, 0.4f)
+                            : new Color(0.65f, 0.65f, 0.65f);
 
                         ObjectiveTracker.ForceRefresh();
                     });
@@ -1343,31 +1369,6 @@ namespace ValheimGuide.UI
                 labelText.fontSize = 13;
                 labelText.color = textColor;
             }
-        }
-        private static Text MakePinIconText(Transform parent, bool isPinned)
-        {
-            GameObject go = GuidePanel.CreateText(parent, "PinIcon", isPinned ? "◆" : "◇");
-            var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = rt.offsetMax = Vector2.zero;
-
-            Text t = go.GetComponent<Text>();
-            t.alignment = TextAnchor.MiddleCenter;
-            t.fontSize = 12;
-            t.color = isPinned
-                ? new Color(1f, 0.8f, 0.3f)    // gold when pinned
-                : new Color(0.5f, 0.5f, 0.5f); // grey when unpinned
-            return t;
-        }
-
-        private static void UpdatePinIconText(Text t, bool isPinned)
-        {
-            if (t == null) return;
-            t.text = isPinned ? "◆" : "◇";
-            t.color = isPinned
-                ? new Color(1f, 0.8f, 0.3f)
-                : new Color(0.5f, 0.5f, 0.5f);
         }
     }
 }

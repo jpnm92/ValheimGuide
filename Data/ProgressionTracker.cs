@@ -13,7 +13,7 @@ namespace ValheimGuide.Data
         private static ManualLogSource _log;
         private static float _lastRefreshTime;
 
-        // Cached reflection field
+        // Reflection cache for Player.m_knownRecipes (HashSet<string>)
         private static readonly FieldInfo _knownRecipesField =
             typeof(Player).GetField("m_knownRecipes", BindingFlags.NonPublic | BindingFlags.Instance);
 

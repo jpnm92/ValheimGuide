@@ -27,6 +27,7 @@ namespace ValheimGuide
         private ConfigEntry<KeyboardShortcut> _toggleGuideKey;
 
         private float _savedTimeScale = 1f;
+        private bool _wasGuideOpen = false;
 
         public static ConfigEntry<float> TrackerOffsetX;
         public static ConfigEntry<float> TrackerOffsetY;
@@ -36,7 +37,6 @@ namespace ValheimGuide
         public static ConfigEntry<float> TrackerRefreshRate;
         public static ConfigEntry<int> TrackerFontSize;
 
-        private bool _wasGuideOpen = false;
         private void Awake()
         {
             Instance = this;
@@ -116,21 +116,11 @@ namespace ValheimGuide
                  Input.GetKeyDown(KeyCode.Tab)))
                 GuidePanel.Hide();
 
-            // Manage objective tracker visibility and time pause when guide is opened/closed
             bool guideOpen = GuidePanel.IsVisible;
-
             if (guideOpen != _wasGuideOpen)
             {
                 _wasGuideOpen = guideOpen;
                 ObjectiveTracker.SetVisible(!guideOpen);
-
-                // Manage time pause — only while guide is open
-                // When opening:
-                _savedTimeScale = Time.timeScale;
-                Time.timeScale = 0f;
-
-                // When closing:
-                Time.timeScale = _savedTimeScale;
             }
         }
     }

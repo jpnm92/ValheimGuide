@@ -124,6 +124,7 @@ namespace ValheimGuide.UI
             cv.renderMode      = RenderMode.ScreenSpaceOverlay;
             cv.overrideSorting = true;
             cv.sortingOrder    = 19998;
+            cv.pixelPerfect = true;
 
             var scaler = _canvas.GetComponent<CanvasScaler>();
             scaler.uiScaleMode         = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -219,7 +220,6 @@ namespace ValheimGuide.UI
         {
             if (!_isBuilt || _panel == null) return;
 
-            // Hide entirely when another UI has priority
             if (_forcedHidden)
             {
                 _panel.SetActive(false);
@@ -235,25 +235,26 @@ namespace ValheimGuide.UI
 
             _stageLabel.text = stage.Label.ToUpper();
 
-            // Clear old rows
             foreach (Transform child in _contentRoot.transform)
                 Destroy(child.gameObject);
 
             if (!_collapsed)
             {
-                int shown   = 0;
+                int shown = 0;
                 int maxRows = Plugin.TrackerMaxRows.Value;
 
-                // ── 1. PINNED RECIPES ──────────────────────────────────────────
                 var pins = ProgressSaver.PinnedRecipeIds;
                 if (pins.Count > 0)
                 {
                     AddSectionHeader("◆ PINNED");
                     foreach (string itemId in pins)
+                    {
+                        if (shown >= maxRows) break;
                         AddPinnedRow(itemId);
+                        shown++;
+                    }
                 }
 
-                // ── 2. OBJECTIVES ──────────────────────────────────────────────
                 var visible = (stage.Objectives ?? new List<Objective>())
                     .Where(o =>
                         (string.IsNullOrEmpty(o.ModRequired) ||
@@ -270,9 +271,19 @@ namespace ValheimGuide.UI
                 }
 
                 var pending = visible.Where(o => !ProgressionTracker.IsObjectiveComplete(o)).ToList();
-                var done    = visible.Where(o =>  ProgressionTracker.IsObjectiveComplete(o)).ToList();
+                var done = visible.Where(o => ProgressionTracker.IsObjectiveComplete(o)).ToList();
 
-                if (pending.Count > 0 || done.Count > 0)
+                bool hasObjectives = pending.Count > 0 || done.Count > 0;
+                bool hasRoomForObjectives = shown < maxRows;
+
+                if (pins.Count > 0 && hasObjectives && hasRoomForObjectives)
+                {
+                    GameObject spacer = new GameObject("Spacer", typeof(RectTransform), typeof(LayoutElement));
+                    spacer.transform.SetParent(_contentRoot.transform, false);
+                    spacer.GetComponent<LayoutElement>().preferredHeight = 6f;
+                }
+
+                if (hasObjectives && hasRoomForObjectives)
                     AddSectionHeader("OBJECTIVES");
 
                 foreach (var obj in pending)
@@ -422,14 +433,15 @@ namespace ValheimGuide.UI
 
         private void UpdatePanelSize()
         {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(_contentRoot.GetComponent<RectTransform>());
             Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_contentRoot.GetComponent<RectTransform>());
+            Canvas.ForceUpdateCanvases(); // second pass after rebuild
 
             float contentH = _collapsed
                 ? 0f
                 : _contentRoot.GetComponent<RectTransform>().rect.height;
 
-            float totalH = HeaderHeight + (_collapsed ? 0f : contentH + 8f);
+            float totalH = HeaderHeight + (_collapsed ? 0f : contentH + 4f);
             _panel.GetComponent<RectTransform>().sizeDelta =
                 new Vector2(Plugin.TrackerWidth.Value, totalH);
         }
