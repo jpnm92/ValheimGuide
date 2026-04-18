@@ -43,7 +43,7 @@ namespace ValheimGuide
             Instance = this;
             Log = base.Logger;
 
-            GuideDataLoader.InstalledMods = new HashSet<string>();
+            GuideDataLoader.InstalledMods.Clear();
             foreach (var plugin in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
                 GuideDataLoader.InstalledMods.Add(plugin.Metadata.GUID);
 
@@ -80,7 +80,6 @@ namespace ValheimGuide
 
             TrackerRefreshRate = Config.Bind("UI", "TrackerRefreshRate", 1.5f,
                 "How often (in seconds) the tracker checks your inventory for materials. Higher = better performance, lower = more responsive.");
-            ObjectiveTracker.Initialise();
 
             TrackerFontSize = Config.Bind("UI", "TrackerFontSize", 15,
                 new ConfigDescription(
@@ -92,6 +91,7 @@ namespace ValheimGuide
                 new AcceptableValueRange<float>(0.1f, 1.0f)));
             Jotunn.Managers.PrefabManager.OnVanillaPrefabsAvailable += LoadGuideData;
 
+            ObjectiveTracker.Initialise();
             Log.LogInfo($"{PluginName} loaded.");
         }
         private void OnDestroy()
@@ -106,6 +106,12 @@ namespace ValheimGuide
 
         public static void LoadGuideData()
         {
+            if (GuideDataLoader.AllStages.Count > 0)
+            {
+                Log.LogWarning($"[{PluginName}] LoadGuideData called again — skipping to prevent reload.");
+                return;
+            }
+
             string dataFolder = System.IO.Path.Combine(
                 Paths.PluginPath, PluginName, "data");
 

@@ -18,7 +18,7 @@ namespace ValheimGuide.Data
             typeof(Player).GetField("m_knownRecipes", BindingFlags.NonPublic | BindingFlags.Instance);
 
         public static Stage CurrentStage { get; private set; }
-        public static Stage ManualOverrideStage { get; set; }
+        public static Stage ManualOverrideStage { get; private set; }
         public static event Action<Stage> OnStageChanged;
 
         public static void Initialise(ManualLogSource logger)

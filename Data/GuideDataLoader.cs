@@ -14,7 +14,7 @@ namespace ValheimGuide.Data
 
         private static readonly List<Stage> _allStages = new List<Stage>();
         public static IReadOnlyList<Stage> AllStages => _allStages;
-        public static HashSet<string> InstalledMods { get; set; } = new HashSet<string>();
+        public static HashSet<string> InstalledMods { get; private set; } = new HashSet<string>();
 
         // Playstyles loaded separately from playstyles.json
         private static readonly List<PlaystyleDefinition> _playstyles = new List<PlaystyleDefinition>();
@@ -158,6 +158,9 @@ namespace ValheimGuide.Data
             catch (IOException ex) { _log.LogError($"[GuideDataLoader] File read error for {fileName}: {ex.Message}"); }
         }
 
+        // Within a biome, Armory (armor) stages sort before Warfare (weapons) stages,
+        // which in turn sort before vanilla stages. Offsets must stay within 0–9
+        // to avoid colliding with the next biome's base order.
         private static void AssignBaseOrder(Stage stage)
         {
             int baseOrder = BiomeOrder.FromStageId(stage.Id);
@@ -185,7 +188,12 @@ namespace ValheimGuide.Data
         }
 
         public static Stage GetStageById(string id)
-            => _allStages.FirstOrDefault(s => s.Id == id);
+        {
+            var stage = _allStages.FirstOrDefault(s => s.Id == id);
+            if (stage == null)
+                _log?.LogWarning($"[GuideDataLoader] GetStageById: no stage found for id '{id}'");
+            return stage;
+        }
 
         public static Stage GetNextStage(string currentId)
         {
@@ -193,7 +201,13 @@ namespace ValheimGuide.Data
             if (index < 0 || index >= _allStages.Count - 1) return null;
             return _allStages[index + 1];
         }
-
+        public static IEnumerable<Stage> GetStagesToScan()
+        {
+            Stage current = ProgressionTracker.CurrentStage;
+            return current != null
+                ? (IEnumerable<Stage>)new[] { current }
+                : AllStages;
+        }
         public static PlaystyleDefinition GetPlaystyle(string id)
             => _playstyles.FirstOrDefault(p => p.Id == id);
     }

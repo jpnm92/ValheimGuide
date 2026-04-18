@@ -21,17 +21,17 @@ namespace ValheimGuide.DataGenerators
             string warfarePath = Path.Combine(dataFolder, "warfare_generated.guide");
             if (File.Exists(armoryPath)) File.Delete(armoryPath);
             if (File.Exists(warfarePath)) File.Delete(warfarePath);
-            Debug.Log("[TherzieDataGenerator] Generation starting.");
+            Plugin.Log.LogInfo("[TherzieDataGenerator] Generation starting.");
 
             try
             {
                 GenerateArmoryData();
                 GenerateWarfareData();
-                Debug.Log("[TherzieDataGenerator] Generation complete.");
+                Plugin.Log.LogInfo("[TherzieDataGenerator] Generation complete.");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[TherzieDataGenerator] CRASH: {ex}");
+                Plugin.Log.LogError($"[TherzieDataGenerator] CRASH: {ex}");
             }
         }
 
@@ -40,7 +40,7 @@ namespace ValheimGuide.DataGenerators
             const string modGuid = "Therzie.Armory";
             if (!BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid))
             {
-                Debug.LogWarning("[TherzieDataGenerator] Armory not detected, skipping.");
+                Plugin.Log.LogWarning("[TherzieDataGenerator] Armory not detected, skipping.");
                 return;
             }
 
@@ -51,7 +51,7 @@ namespace ValheimGuide.DataGenerators
                             IsArmorPiece(i))
                 .ToList();
 
-            Debug.Log($"[TherzieDataGenerator] Found {items.Count} Armory items.");
+            Plugin.Log.LogInfo($"[TherzieDataGenerator] Found {items.Count} Armory items.");
             SaveToFile(GroupByTier(items, "Armory", modGuid, GetTierFromRecipe), "armory_generated.guide");
         }
 
@@ -60,7 +60,7 @@ namespace ValheimGuide.DataGenerators
             const string modGuid = "Therzie.Warfare";
             if (!BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid))
             {
-                Debug.LogWarning("[TherzieDataGenerator] Warfare not detected, skipping.");
+                Plugin.Log.LogWarning("[TherzieDataGenerator] Warfare not detected, skipping.");
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace ValheimGuide.DataGenerators
                             IsWeaponOrTool(i))
                 .ToList();
 
-            Debug.Log($"[TherzieDataGenerator] Found {items.Count} Warfare items.");
+            Plugin.Log.LogInfo($"[TherzieDataGenerator] Found {items.Count} Warfare items.");
             SaveToFile(GroupByTier(items, "Warfare", modGuid, GetTierFromRecipe), "warfare_generated.guide");
         }
 
@@ -319,7 +319,7 @@ namespace ValheimGuide.DataGenerators
             }
 
             // 3. FALLBACK: Name-based matching
-            Debug.LogWarning($"[TherzieDataGenerator] No defining recipe features for {prefab.name} — falling back to name-based tier detection.");
+            Plugin.Log.LogWarning($"[TherzieDataGenerator] No defining recipe features for {prefab.name} — falling back to name-based tier detection.");
             return GetTierFromName(prefab.name.ToLower());
         }
 
@@ -400,7 +400,7 @@ namespace ValheimGuide.DataGenerators
                 name.Contains("sledge") || name.Contains("buckler") || name.Contains("tower"))
                 return "Meadows";
 
-            Debug.LogWarning($"[TherzieDataGenerator] Could not determine tier from name '{name}', assigning Other.");
+            Plugin.Log.LogWarning($"[TherzieDataGenerator] Could not determine tier from name '{name}', assigning Other.");
             return "Other";
         }
 
@@ -411,7 +411,7 @@ namespace ValheimGuide.DataGenerators
             string filePath = Path.Combine(dataFolder, fileName);
             File.WriteAllText(filePath,
                 JsonConvert.SerializeObject(new GuideData { Stages = stages }, Formatting.Indented));
-            Debug.Log($"[TherzieDataGenerator] Saved {stages.Sum(s => s.Gear.Count)} items to {filePath}");
+            Plugin.Log.LogInfo($"[TherzieDataGenerator] Saved {stages.Sum(s => s.Gear.Count)} items to {filePath}");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using System.Linq;
 using UnityEngine;
 using ValheimGuide.Data;
 using ValheimGuide.UI;
@@ -16,8 +15,7 @@ namespace ValheimGuide.Patches
             if (Player.m_localPlayer == null || ZNet.instance == null) return;
 
             bool updated = false;
-            Stage current = ProgressionTracker.CurrentStage;
-            var stagesToCheck = current != null ? new[] { current } : GuideDataLoader.AllStages.ToArray();
+            var stagesToCheck = GuideDataLoader.GetStagesToScan();
 
             string prefabName = item.m_dropPrefab ? item.m_dropPrefab.name : "";
 

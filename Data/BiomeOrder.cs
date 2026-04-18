@@ -6,16 +6,18 @@ namespace ValheimGuide.Data
         {
             if (string.IsNullOrEmpty(stageId)) return 80;
 
-            string id = stageId.ToLowerInvariant();
-            if (id.Contains("meadows")) return 0;
-            if (id.Contains("blackforest")) return 10;
-            if (id.Contains("swamp")) return 20;
-            if (id.Contains("mountain")) return 30;
-            if (id.Contains("plains")) return 40;
-            if (id.Contains("mistlands")) return 50;
-            if (id.Contains("ashlands")) return 60;
-            if (id.Contains("deepnorth")) return 70;
-            return 80;
+            switch (stageId.ToLowerInvariant())
+            {
+                case "meadows": return 0;
+                case "blackforest": return 10;
+                case "swamp": return 20;
+                case "mountain": return 30;
+                case "plains": return 40;
+                case "mistlands": return 50;
+                case "ashlands": return 60;
+                case "deepnorth": return 70;
+                default: return 80;
+            }
         }
 
         public static int FromTier(string tier)

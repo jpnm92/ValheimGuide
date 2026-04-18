@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using System.Linq;
 using ValheimGuide.Data;
 using ValheimGuide.UI;
 
@@ -13,8 +12,7 @@ namespace ValheimGuide.Patches
             if (piece == null || __instance != Player.m_localPlayer) return;
 
             bool updated = false;
-            Stage current = ProgressionTracker.CurrentStage;
-            var stagesToCheck = current != null ? new[] { current } : GuideDataLoader.AllStages.ToArray();
+            var stagesToCheck = GuideDataLoader.GetStagesToScan();
 
             string pieceName = piece.gameObject.name.Replace("(Clone)", "").Trim();
 
