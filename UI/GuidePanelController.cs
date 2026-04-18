@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using ValheimGuide.Data;
+using ValheimGuide;
 
 namespace ValheimGuide.UI
 {
@@ -1026,7 +1027,7 @@ namespace ValheimGuide.UI
                             Player.m_localPlayer?.Message(
                                 MessageHud.MessageType.TopLeft,
                                 $"<color=#FF8080>Pin limit reached</color>\n" +
-                                $"Unpin something first (max {ProgressSaver.Plugin.TrackerMaxPins.Value})");
+                                $"Unpin something first (max {Plugin.TrackerMaxPins.Value})");
                             return;
                         }
 
@@ -1216,7 +1217,7 @@ namespace ValheimGuide.UI
                             Player.m_localPlayer?.Message(
                                 MessageHud.MessageType.TopLeft,
                                 $"<color=#FF8080>Pin limit reached</color>\n" +
-                                $"Unpin something first (max {ProgressSaver.Plugin.TrackerMaxPins.Value})");
+                                $"Unpin something first (max {Plugin.TrackerMaxPins.Value})");
                             return;
                         }
 
