@@ -34,6 +34,7 @@ namespace ValheimGuide
         public static ConfigEntry<float> TrackerRefreshRate;
         public static ConfigEntry<int> TrackerFontSize;
 
+        private bool _wasGuideOpen = false;
         private void Awake()
         {
             Instance = this;
@@ -72,8 +73,10 @@ namespace ValheimGuide
                 "How often (in seconds) the tracker checks your inventory for materials. Higher = better performance, lower = more responsive.");
             ObjectiveTracker.Initialise();
 
-            TrackerFontSize = Config.Bind("UI", "TrackerFontSize", 16,
-                "Base font size for the objective tracker text.");
+            TrackerFontSize = Config.Bind("UI", "TrackerFontSize", 15,
+                new ConfigDescription(
+                    "Font size for text in the on-screen objective tracker.",
+                new AcceptableValueRange<int>(10, 22)));
 
             Jotunn.Managers.PrefabManager.OnVanillaPrefabsAvailable += LoadGuideData;
 
@@ -93,11 +96,35 @@ namespace ValheimGuide
             TherzieDataGenerator.GenerateIfPresent();
             GuideDataLoader.Load(dataFolder, Log);
             GuideDataEnricher.Run();
+            ObjectiveTracker.InvalidateLabelCache();
             ProgressionTracker.RefreshCurrentStage();
 
             Log.LogInfo($"{PluginName} ready. " +
                         $"Stages: {GuideDataLoader.AllStages.Count}, " +
                         $"Playstyles: {GuideDataLoader.Playstyles.Count}");
+        }
+
+        private void Update()
+        {
+            if (_toggleGuideKey.Value.IsDown())
+                GuidePanel.Toggle();
+
+            if (GuidePanel.IsVisible &&
+                (Input.GetKeyDown(KeyCode.Escape) ||
+                 Input.GetKeyDown(KeyCode.Tab)))
+                GuidePanel.Hide();
+
+            // Sync tracker visibility with guide panel state.
+            // (timeScale is handled inside GuidePanel.Show/Hide instead of here)
+            bool guideOpen = GuidePanel.IsVisible;
+            if (guideOpen != _wasGuideOpen)
+            {
+                _wasGuideOpen = guideOpen;
+                ObjectiveTracker.SetVisible(!guideOpen);
+
+                // Manage time pause — only while guide is open
+                Time.timeScale = guideOpen ? 0f : 1f;
+            }
         }
     }
 }

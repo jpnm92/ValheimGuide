@@ -152,17 +152,17 @@ namespace ValheimGuide.Data
         }
         public static bool SetPinned(string itemId, bool pinned)
         {
-            if (_current == null) return false;
+            if (_current == null) return true; // no save loaded — silently ignore
 
             if (pinned)
             {
-                if (_current.PinnedRecipes.Contains(itemId)) return true;   // already pinned — no-op
-                if (_current.PinnedRecipes.Count >= MaxPins) return false;  // cap reached
+                if (_current.PinnedRecipes.Contains(itemId)) return true;  // already pinned
+                if (_current.PinnedRecipes.Count >= MaxPins) return false; // cap reached
                 _current.PinnedRecipes.Add(itemId);
             }
             else
             {
-                if (!_current.PinnedRecipes.Remove(itemId)) return true;    // not pinned — no-op
+                if (!_current.PinnedRecipes.Remove(itemId)) return true;   // wasn't pinned
             }
 
             _isDirty = true;

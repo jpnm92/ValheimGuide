@@ -985,6 +985,52 @@ namespace ValheimGuide.UI
                     BuildSmartPanel(_selectedStage);
                 });
 
+                // ── Pin button ────────────────────────────────────────────────
+                {
+                    string pinnedItemId = itemId; // capture for closure
+
+                    GameObject pinBtn = new GameObject("PinBtn",
+                        typeof(RectTransform), typeof(Image),
+                        typeof(Button), typeof(LayoutElement));
+                    pinBtn.transform.SetParent(row.transform, false);
+
+                    // Only set preferred width — let the row control height naturally
+                    var pinLe = pinBtn.GetComponent<LayoutElement>();
+                    pinLe.preferredHeight = 20;
+
+                    bool gearIsPinned = ProgressSaver.IsPinned(pinnedItemId);
+                    Image pinImg = pinBtn.GetComponent<Image>();
+                    pinImg.color = gearIsPinned
+                        ? new Color(0.6f, 0.45f, 0.1f, 1f)    // amber = pinned
+                        : new Color(0.15f, 0.15f, 0.15f, 1f); // dark  = unpinned
+
+                    Text pinText = MakePinIconText(pinBtn.transform, gearIsPinned);
+
+                    pinBtn.GetComponent<Button>().onClick.AddListener(() =>
+                    {
+                        if (ProgressSaver.Current == null) return; // save not loaded yet
+
+                        bool nowPinned = !ProgressSaver.IsPinned(pinnedItemId);
+                        bool success = ProgressSaver.SetPinned(pinnedItemId, nowPinned);
+
+                        if (!success) // only false when cap is reached
+                        {
+                            Player.m_localPlayer?.Message(
+                                MessageHud.MessageType.TopLeft,
+                                $"<color=#FF8080>Pin limit reached</color>\n" +
+                                $"Unpin something first (max {ProgressSaver.MaxPins})");
+                            return;
+                        }
+
+                        pinImg.color = nowPinned
+                            ? new Color(0.6f, 0.45f, 0.1f, 1f)
+                            : new Color(0.15f, 0.15f, 0.15f, 1f);
+                        UpdatePinIconText(pinText, nowPinned);
+
+                        ObjectiveTracker.ForceRefresh();
+                    });
+                }
+
                 GuidePanel.AddSpacer(parent);
                 GuidePanel.AddSpacer(parent); // Double spacer for breathing room between items
             }
@@ -1119,6 +1165,56 @@ namespace ValheimGuide.UI
                     ObjectiveTracker.ForceRefresh();
                 });
 
+                // ── Pin button ────────────────────────────────────────────────
+                {
+                    string pinnedItemId = itemId; // capture for closure
+
+                    GameObject pinBtn = new GameObject("PinBtn",
+                        typeof(RectTransform), typeof(Image),
+                        typeof(Button));
+                    pinBtn.transform.SetParent(row.transform, false);
+
+                    // childControlWidth=false: sizeDelta controls the width, NOT LayoutElement
+                    pinBtn.GetComponent<RectTransform>().sizeDelta = new Vector2(20f, 20f);
+
+                    bool recipeIsPinned = ProgressSaver.IsPinned(pinnedItemId);
+                    Image pinImg = pinBtn.GetComponent<Image>();
+                    pinImg.color = recipeIsPinned
+                        ? new Color(0.6f, 0.45f, 0.1f, 1f)
+                        : new Color(0.15f, 0.15f, 0.15f, 1f);
+
+                    Text pinText = MakePinIconText(pinBtn.transform, recipeIsPinned);
+
+                    pinBtn.GetComponent<Button>().onClick.AddListener(() =>
+                    {
+                        if (ProgressSaver.Current == null) return;
+
+                        bool nowPinned = !ProgressSaver.IsPinned(pinnedItemId);
+                        bool success = ProgressSaver.SetPinned(pinnedItemId, nowPinned);
+
+                        if (!success)
+                        {
+                            Player.m_localPlayer?.Message(
+                                MessageHud.MessageType.TopLeft,
+                                $"<color=#FF8080>Pin limit reached</color>\n" +
+                                $"Unpin something first (max {ProgressSaver.MaxPins})");
+                            return;
+                        }
+
+                        pinImg.color = nowPinned
+                            ? new Color(0.6f, 0.45f, 0.1f, 1f)
+                            : new Color(0.15f, 0.15f, 0.15f, 1f);
+                        UpdatePinIconText(pinText, nowPinned);
+
+                        ObjectiveTracker.ForceRefresh();
+                    });
+                }
+
+                // Add a flexible spacer to push the rest of the text left
+                GameObject flexSpace = new GameObject("FlexSpace", typeof(RectTransform), typeof(LayoutElement));
+                flexSpace.transform.SetParent(row.transform, false);
+                flexSpace.GetComponent<LayoutElement>().flexibleWidth = 1f;
+
                 string station = recipe.Station;
                 if (recipe.StationLevel > 1) station += " (Lv " + recipe.StationLevel + ")";
                 GuidePanel.AddLabel(parent, station, 13, TMPro.FontStyles.Normal, new Color(0.7f, 0.7f, 0.7f));
@@ -1247,6 +1343,31 @@ namespace ValheimGuide.UI
                 labelText.fontSize = 13;
                 labelText.color = textColor;
             }
+        }
+        private static Text MakePinIconText(Transform parent, bool isPinned)
+        {
+            GameObject go = GuidePanel.CreateText(parent, "PinIcon", isPinned ? "◆" : "◇");
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = rt.offsetMax = Vector2.zero;
+
+            Text t = go.GetComponent<Text>();
+            t.alignment = TextAnchor.MiddleCenter;
+            t.fontSize = 12;
+            t.color = isPinned
+                ? new Color(1f, 0.8f, 0.3f)    // gold when pinned
+                : new Color(0.5f, 0.5f, 0.5f); // grey when unpinned
+            return t;
+        }
+
+        private static void UpdatePinIconText(Text t, bool isPinned)
+        {
+            if (t == null) return;
+            t.text = isPinned ? "◆" : "◇";
+            t.color = isPinned
+                ? new Color(1f, 0.8f, 0.3f)
+                : new Color(0.5f, 0.5f, 0.5f);
         }
     }
 }

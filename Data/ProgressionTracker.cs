@@ -17,6 +17,10 @@ namespace ValheimGuide.Data
         private static readonly FieldInfo _knownRecipesField =
             typeof(Player).GetField("m_knownRecipes", BindingFlags.NonPublic | BindingFlags.Instance);
 
+        private static readonly FieldInfo _objKnownRecipesField =
+            typeof(Player).GetField("m_knownRecipes",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+
         public static Stage CurrentStage { get; private set; }
         public static Stage ManualOverrideStage { get; set; }
         public static event Action<Stage> OnStageChanged;
@@ -109,29 +113,36 @@ namespace ValheimGuide.Data
 
         public static bool IsObjectiveComplete(Objective obj)
         {
-            // 1. If it was permanently checked off (either by auto-complete or clicking), return true immediately!
-            if (ProgressSaver.IsChecked("obj_" + obj.Id)) return true;
+            if (obj == null) return false;
 
-            // 2. If it has no value, it is a purely manual objective.
-            if (string.IsNullOrEmpty(obj.Value)) return false;
+            // Manual-tick objectives
+            if (!obj.AutoComplete)
+                return ProgressSaver.IsChecked("obj_" + obj.Id);
 
-            // 3. Dynamic fallbacks (in case the player did something before installing the mod)
+            // MAGIC LINK: if the player ticked the matching gear/recipe entry,
+            // count the objective as done too.
+            if (!string.IsNullOrEmpty(obj.Value) && ProgressSaver.IsChecked(obj.Value))
+                return true;
+
             switch (obj.Type.ToLowerInvariant())
             {
                 case "globalkey":
                 case "boss":
                     return ZoneSystem.instance?.GetGlobalKey(obj.Value) ?? false;
+
                 case "craftitem":
                 case "knownrecipe":
-                    var p = Player.m_localPlayer;
+                    Player p = Player.m_localPlayer;
                     if (p == null) return false;
-                    var recipes = _knownRecipesField?.GetValue(p) as HashSet<string>;
+                    var recipes = _objKnownRecipesField?.GetValue(p) as HashSet<string>;
                     return recipes?.Contains(obj.Value) ?? false;
+
                 case "hasitem":
-                    var pl = Player.m_localPlayer;
+                    Player pl = Player.m_localPlayer;
                     return pl != null && pl.GetInventory().CountItems(obj.Value) > 0;
+
                 default:
-                    return false;
+                    return ProgressSaver.IsChecked("obj_" + obj.Id);
             }
         }
     }
