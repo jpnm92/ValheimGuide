@@ -75,11 +75,6 @@ namespace ValheimGuide.UI
         /// <summary>Call after every GuideDataLoader.Load to invalidate stale labels.</summary>
         public static void InvalidateLabelCache() => _labelCache.Clear();
 
-        // ── Reflection ────────────────────────────────────────────────────────
-        private static readonly FieldInfo KnownRecipesField =
-            typeof(Player).GetField("m_knownRecipes",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-
         // ── Unity lifecycle ───────────────────────────────────────────────────
 
         private void Awake()
