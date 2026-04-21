@@ -17,7 +17,10 @@ namespace ValheimGuide.UI
         private static GameObject _stageListContainer;
         private static GameObject _smartPanelContainer;
         private static GameObject _referenceAreaContainer;
+        private static GameObject _encyclopediaContainer;
         private static GuidePanelController _controller;
+        private static EncyclopediaView _encyclopediaView;
+        private static bool _encyclopediaMode = false;
 
         private static float _originalTimeScale = 1f;
 
@@ -60,6 +63,24 @@ namespace ValheimGuide.UI
         {
             if (_isVisible) Hide();
             else Show();
+        }
+        public static void ShowEncyclopedia()
+        {
+            if (!_isVisible) Show();
+            if (!_encyclopediaMode) ToggleEncyclopedia();
+        }
+
+        private static void ToggleEncyclopedia()
+        {
+            _encyclopediaMode = !_encyclopediaMode;
+
+            bool enc = _encyclopediaMode;
+            _stageListContainer.SetActive(!enc);
+            _smartPanelContainer.SetActive(!enc);
+            _referenceAreaContainer.SetActive(!enc);
+            _encyclopediaContainer.SetActive(enc);
+
+            if (enc) _encyclopediaView.Build();
         }
 
         private static void CreatePanel()
@@ -130,6 +151,30 @@ namespace ValheimGuide.UI
                 new Vector2(0.25f, 0), new Vector2(1, 0.5f),
                 new Vector2(5, 10), new Vector2(-10, -5));
             _referenceAreaContainer.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
+
+            // ── Encyclopedia container (full content area, hidden by default) ──
+            _encyclopediaContainer = CreatePanelSection(_panel.transform, "EncyclopediaPanel",
+                Vector2.zero, Vector2.one,
+                new Vector2(10, 10), new Vector2(-10, -70));
+            _encyclopediaContainer.GetComponent<Image>().color =
+                new Color(0.15f, 0.15f, 0.15f, 0.8f);
+            _encyclopediaContainer.SetActive(false);
+            _encyclopediaView = new EncyclopediaView(_encyclopediaContainer);
+            _encyclopediaMode = false;
+
+            // ── Encyclopedia toggle button in header ──────────────────────────
+            GameObject encBtn = CreateButton(_panel.transform, "EncyclopediaBtn", "ENCYCLOPEDIA");
+            RectTransform encBtnRect = encBtn.GetComponent<RectTransform>();
+            encBtnRect.anchorMin = new Vector2(0, 1);
+            encBtnRect.anchorMax = new Vector2(0, 1);
+            encBtnRect.pivot = new Vector2(0, 1);
+            encBtnRect.anchoredPosition = new Vector2(220, -18);
+            encBtnRect.sizeDelta = new Vector2(150, 36);
+            // Scale down font (the Text child)
+            Text encBtnText = encBtn.GetComponentInChildren<Text>();
+            if (encBtnText != null) encBtnText.fontSize = 14;
+            encBtn.GetComponent<Image>().color = new Color(0.22f, 0.22f, 0.28f);
+            encBtn.GetComponent<Button>().onClick.AddListener(ToggleEncyclopedia);
 
             _controller = new GuidePanelController(_stageListContainer, _smartPanelContainer, _referenceAreaContainer);
             _panel.SetActive(false);

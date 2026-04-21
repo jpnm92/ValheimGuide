@@ -19,7 +19,7 @@ namespace ValheimGuide.Data
         // Playstyles loaded separately from playstyles.json
         private static readonly List<PlaystyleDefinition> _playstyles = new List<PlaystyleDefinition>();
         public static IReadOnlyList<PlaystyleDefinition> Playstyles => _playstyles;
-
+        public static IEnumerable<Stage> GetStagesToScan() => AllStages;
         public static void Load(string dataFolderPath, ManualLogSource log)
         {
             _log = log;
@@ -200,13 +200,6 @@ namespace ValheimGuide.Data
             int index = _allStages.FindIndex(s => s.Id == currentId);
             if (index < 0 || index >= _allStages.Count - 1) return null;
             return _allStages[index + 1];
-        }
-        public static IEnumerable<Stage> GetStagesToScan()
-        {
-            Stage current = ProgressionTracker.CurrentStage;
-            return current != null
-                ? (IEnumerable<Stage>)new[] { current }
-                : AllStages;
         }
         public static PlaystyleDefinition GetPlaystyle(string id)
             => _playstyles.FirstOrDefault(p => p.Id == id);

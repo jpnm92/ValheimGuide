@@ -1,8 +1,6 @@
 # ValheimGuide
 
-An in-game progression guide for Valheim. Tracks where you are in the game, shows recommended gear, boss info, drop sources, crafting recipes, and objectives for each biome — all without leaving the game.
-
-Supports vanilla progression and optionally integrates with **Therzie's Armory** and **Therzie's Warfare** if those mods are installed.
+An in-game progression guide for Valheim. Tracks where you are in the game, shows recommended gear, boss info, drop sources, crafting recipes, and objectives for each biome — all without leaving the game. Supports vanilla progression and optionally integrates with **Therzie's Armory** and **Therzie's Warfare** if those mods are installed.
 
 ---
 
@@ -12,7 +10,7 @@ Supports vanilla progression and optionally integrates with **Therzie's Armory**
 - **Per-stage overview** — priority materials, boss location, summon requirements, recommended gear, unlock rewards, and one-line fight strategy
 - **Build checklist** — station-by-station build objectives per biome, auto-ticked when you place the piece in-game
 - **Objectives** — crafting, gathering, and boss objectives with automatic completion detection
-- **On-screen quest tracker** — WoW-style collapsible overlay showing current objectives, always visible without opening the guide
+- **On-screen quest tracker** — WoW-style collapsible overlay showing current objectives, including live material tracking for crafting and building requirements
 - **Read mode** — full long-form biome guide with boss strategies, rare discoveries, and advanced tips
 - **Gear tab** — craftable armor and weapons with full recipes, station requirements, and playstyle highlights (★)
 - **Drops tab** — mob entries with HP, spawn chances, resistances, drop tables, and taming info
@@ -33,22 +31,30 @@ Supports vanilla progression and optionally integrates with **Therzie's Armory**
 
 1. Install [r2modman](https://thunderstore.io/package/ebkr/r2modman/) or the Thunderstore Mod Manager
 2. Search for **ValheimGuide** and click Install
-3. Dependencies (BepInEx, Jotunn) are installed automatically
+3. Dependencies (BepInEx, Jötunn) are installed automatically
 4. Launch Valheim through the mod manager
 
 ### Manual
 
 1. Install [BepInEx for Valheim](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/)
-2. Install [Jotunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/)
+2. Install [Jötunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/)
 3. Download the latest ValheimGuide release
-4. Extract `ValheimGuide.dll` into:
+4. Extract `ValheimGuide.dll` and the `data/` folder into:
    ```
-   Valheim/BepInEx/plugins/ValheimGuide/
+   BepInEx/plugins/ValheimGuide/
    ```
-5. Extract the `data/` folder into the same directory:
+   The final layout should look like this:
    ```
-   Valheim/BepInEx/plugins/ValheimGuide/data/
+   BepInEx/
+   └── plugins/
+       └── ValheimGuide/
+           ├── ValheimGuide.dll
+           └── data/
+               ├── meadows.guide
+               ├── blackforest.guide
+               └── ...
    ```
+5. Launch Valheim
 
 ---
 
@@ -59,82 +65,72 @@ Supports vanilla progression and optionally integrates with **Therzie's Armory**
 | Open / close the guide | `F8` |
 | Close the guide | `Escape` or `Tab` |
 | Open from the pause menu | Click the **GUIDE** button |
-| Collapse the quest tracker | Click the ▲ arrow (top-right of screen) |
 
-The keybind can be changed in the BepInEx config file at:
-```
-Valheim/BepInEx/config/com.custom.valheimguide.cfg
-```
+When you open the guide for the first time you will be asked two questions:
 
----
+- **Show future stages?** — whether to display content for biomes you haven't reached yet
+- **Playstyle** — your preferred combat style; matching gear will be highlighted with ★ throughout the guide
 
-## First Launch
-
-On your first character load, ValheimGuide will ask two questions:
-
-1. **Spoilers** — do you want to see objectives and tips for future biomes before you reach them? Most returning players say yes.
-2. **Playstyle** — which weapon type do you prefer? ValheimGuide will mark matching gear with a ★ in each tier's gear list.
-
-Both preferences are saved per character and can be reset by deleting your progress file.
-
----
-
-## Optional Mod Support
-
-ValheimGuide automatically detects whether the following mods are installed and adds their content if so. Neither is required.
-
-| Mod | What gets added |
-|-----|-----------------|
-| [Therzie's Armory](https://thunderstore.io/c/valheim/p/Therzie/Armory/) | Armory armor sets grouped by biome tier |
-| [Therzie's Warfare](https://thunderstore.io/c/valheim/p/Therzie/Warfare/) | Warfare weapons and tools grouped by biome tier |
-
-When both are installed, a **Source** filter appears in the Gear tab so you can view Vanilla, Armory, and Warfare items separately.
-
----
-
-## Compatibility
-
-- **Valheim** — tested on current live branch
-- **BepInEx** — 5.4.x
-- **Jotunn** — 2.x
-- Should be compatible with most other mods. ValheimGuide only reads game data and patches `ZoneSystem.SetGlobalKey`, `Inventory.AddItem`, `Player.OnSpawned`, `Player.PlacePiece`, and `Menu.Show` — all via non-destructive Harmony postfixes.
+Your answers are saved per character and can be changed at any time from inside the guide.
 
 ---
 
 ## Configuration
 
-The config file is generated on first launch at:
-```
-Valheim/BepInEx/config/com.custom.valheimguide.cfg
-```
+A config file is created at `BepInEx/config/com.fafo.valheimguide.cfg` on first launch. All options can also be edited live with a config manager mod.
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `ToggleGuide` | `F8` | Keyboard shortcut to open and close the guide |
-
----
-
-## Save Data
-
-Progress (checked items, playstyle, last viewed stage) is saved per character at:
-```
-Valheim/BepInEx/config/ValheimGuide/progress/{CharacterName}_{CharacterID}.json
-```
-
-Deleting this file resets all checkboxes and preferences for that character.
+| Option | Default | Description |
+|--------|---------|-------------|
+| `ToggleGuide` | `F8` | Hotkey to open/close the guide |
+| `PauseOnGuideOpen` | `true` | Pause the game when the guide opens. Recommended to disable in multiplayer |
+| `TrackerOffsetX` | `-20` | Horizontal offset of the on-screen tracker from the top-right corner |
+| `TrackerOffsetY` | `-400` | Vertical offset of the on-screen tracker from the top-right corner |
+| `TrackerScale` | `1.0` | Master scale multiplier for the tracker |
+| `TrackerWidth` | `320` | Width of the tracker panel in pixels |
+| `TrackerMaxRows` | `6` | Maximum number of objectives visible at once |
+| `TrackerMaxPins` | `5` | Maximum number of recipes pinnable to the tracker (1–10) |
+| `TrackerRefreshRate` | `1.5` | How often (in seconds) the tracker checks your inventory. Higher = better performance |
+| `TrackerFontSize` | `15` | Font size for tracker text (10–22) |
+| `TrackerOpacity` | `0.82` | Background opacity of the tracker panel (0.1–1.0) |
 
 ---
 
-## Known Issues
+## Mod Compatibility
 
-- The GUIDE button in the pause menu requires the menu to be opened at least once per session before it appears — this is a limitation of how Valheim initialises the menu UI.
-- The on-screen quest tracker position is fixed relative to the top-right corner. If it overlaps another mod's UI, the `TrackerAnchor` offset can be adjusted in `ObjectiveTracker.cs`.
+### Therzie's Armory & Warfare
+
+ValheimGuide automatically detects whether **Therzie's Armory** and/or **Therzie's Warfare** are installed. If they are, their items are scanned at startup, automatically sorted into the correct biome tier, and merged into the relevant guide stages. No manual configuration is required.
+
+### Multiplayer
+
+The guide works in multiplayer. It is recommended to set `PauseOnGuideOpen = false` in the config when playing on a server, as the pause function has no effect in multiplayer and may cause a brief freeze for the host on some setups.
+
+### Other Mods
+
+ValheimGuide reads from Valheim's own game data at runtime, so it is generally compatible with other content mods. Items added by other mods will not appear in the guide unless a `.guide` data file is provided for them (see **Custom Data** below).
+
+---
+
+## Custom Data
+
+The guide is entirely data-driven. Each biome's content lives in a `.guide` file (JSON format) inside the `data/` folder. You can edit these files to add, remove, or modify entries without recompiling anything.
+
+Other mod authors can also ship their own `.guide` files to add entries for their items. Files are loaded and merged automatically at startup — stages with the same `Id` are merged rather than duplicated.
+
+Refer to the existing `.guide` files as a template for the JSON structure.
+
+---
+
+## Dependencies
+
+- [BepInExPack Valheim](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/) `5.4.2202+`
+- [Jötunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/) `2.21.3+`
 
 ---
 
 ## Source Code
 
-[GitHub](https://github.com/jpnm92/ValheimGuide)
+[github.com/jpnm92/ValheimGuide](https://github.com/jpnm92/ValheimGuide)
 
 ---
 
@@ -142,12 +138,3 @@ Deleting this file resets all checkboxes and preferences for that character.
 
 ### 1.0.0
 - Initial release
-- Full vanilla biome progression (Meadows through Deep North)
-- Gear, Drops, and Recipes tabs with search and filters
-- Build and progress objectives with automatic completion detection
-- On-screen quest tracker (collapsible, WoW-style)
-- Read mode with full long-form biome guides
-- Playstyle system with per-tier gear highlighting
-- Spoiler control and stage memory per character
-- Per-character progress saving
-- Armory and Warfare auto-generation support with source filtering

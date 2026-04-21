@@ -41,6 +41,7 @@
     </Reference>
     <Reference Include="assembly_guiutils">
       <HintPath>$(ValheimManagedPath)\assembly_guiutils.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>$(ValheimManagedPath)\assembly_valheim.dll</HintPath>
@@ -97,6 +98,7 @@
   <ItemGroup>
     <Compile Include="DataGenerators\GuideDataEnricher.cs" />
     <Compile Include="DataGenerators\TherzieDataGenerator.cs" />
+    <Compile Include="Data\EncyclopediaIndex.cs" />
     <Compile Include="Data\ProgressionSaver.cs" />
     <Compile Include="Data\ProgressionTracker.cs" />
     <Compile Include="Data\GuideDataLoader.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="Patches\PlayerSpawnPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\EncyclopediaView.cs" />
     <Compile Include="UI\FirstLaunchOverlay.cs" />
     <Compile Include="UI\GuidePanel.cs" />
     <Compile Include="Data\BiomeOrder.cs" />
@@ -215,12 +218,6 @@
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide" />
     <Copy SourceFiles="@(DeployGuideFiles)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
     <Copy SourceFiles="@(DeployDataFiles)" DestinationFolder="%(AllProfiles.Identity)\BepInEx\plugins\ValheimGuide\data" />
-  </Target>
-  <Target Name="CopyDataToProfile" AfterTargets="Build">
-    <ItemGroup>
-      <DataFiles Include="$(ProjectDir)resources\data\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(AppData)\r2modmanPlus-local\Valheim\profiles\Smooth\BepInEx\plugins\ValheimGuide\data\" SkipUnchangedFiles="false" />
   </Target>
   <Import Project="packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('packages\ILRepack.Lib.MSBuild.Task.2.0.44.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
 </Project>

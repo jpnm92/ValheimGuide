@@ -118,6 +118,7 @@ namespace ValheimGuide
             TherzieDataGenerator.GenerateIfPresent();
             GuideDataLoader.Load(dataFolder, Log);
             GuideDataEnricher.Run();
+            EncyclopediaIndex.Invalidate();
             ObjectiveTracker.InvalidateLabelCache();
             ProgressionTracker.RefreshCurrentStage();
 
