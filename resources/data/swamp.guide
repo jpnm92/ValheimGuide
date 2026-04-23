@@ -267,10 +267,10 @@
           "ModRequired": null
         },
         {
-          "Id": "build_cauldron",
-          "Text": "Build a Cauldron",
-          "Type": "build",
-          "Value": "piece_cauldron",
+          "Id": "upgrade_cauldron_swamp",
+          "Text": "Upgrade the Cauldron (level 2 unlocks Sausages & Turnip Stew)",
+          "Type": "manual",
+          "Value": null,
           "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null

@@ -143,6 +143,20 @@ namespace ValheimGuide
                 _wasGuideOpen = guideOpen;
                 ObjectiveTracker.SetVisible(!guideOpen);
             }
+
+            // ── Re-enforce pause every frame while guide is open ──────────────────
+            // Valheim's own update loop (ZNet, Game) resets Time.timeScale each
+            // frame, so a one-shot set in Show() loses the race. Enforcing here
+            // in Update() wins reliably.
+            if (guideOpen && PauseOnGuideOpen.Value)
+            {
+                // > 0 peers = someone is connected = multiplayer — don't pause
+                bool isMultiplayer = ZNet.instance != null &&
+                                     ZNet.instance.GetNrOfPlayers() > 0;
+                if (!isMultiplayer)
+                    Time.timeScale = 0f;
+            }
         }
+
     }
 }

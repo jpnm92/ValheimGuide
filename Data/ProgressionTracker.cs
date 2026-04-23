@@ -111,15 +111,21 @@ namespace ValheimGuide.Data
         {
             if (obj == null) return false;
 
-            // Manual-tick objectives
-            if (!obj.AutoComplete)
-                return ProgressSaver.IsChecked("obj_" + obj.Id);
+            // ── Manual / auto-set override — checked first for ALL types ──────────
+            // BuildPatch and InventoryPatch write this key automatically when they
+            // detect a matching action. The player can also set it from the UI.
+            // Once set, this short-circuits all further checks so already-built
+            // pieces (e.g. a Cauldron placed before the mod was installed) stay done.
+            if (ProgressSaver.IsChecked("obj_" + obj.Id)) return true;
 
-            // MAGIC LINK: if the player ticked the matching gear/recipe entry,
-            // count the objective as done too.
+            // Not overridden and this is a manual-only objective — done only when ticked
+            if (!obj.AutoComplete) return false;
+
+            // ── MAGIC LINK: gear/recipe checkbox in the Guide panel ───────────────
             if (!string.IsNullOrEmpty(obj.Value) && ProgressSaver.IsChecked(obj.Value))
                 return true;
 
+            // ── AutoComplete game-state checks ────────────────────────────────────
             switch (obj.Type.ToLowerInvariant())
             {
                 case "globalkey":
@@ -138,7 +144,7 @@ namespace ValheimGuide.Data
                     return pl != null && pl.GetInventory().CountItems(obj.Value) > 0;
 
                 default:
-                    return ProgressSaver.IsChecked("obj_" + obj.Id);
+                    return false;
             }
         }
     }

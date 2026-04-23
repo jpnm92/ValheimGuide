@@ -1296,9 +1296,13 @@ namespace ValheimGuide.UI
 
         private void RenderObjectiveRow(Transform parent, Objective obj)
         {
+            // IsObjectiveComplete now checks "obj_" + obj.Id as an override first,
+            // so this correctly reflects both manual ticks and auto-detection.
             bool done = ProgressionTracker.IsObjectiveComplete(obj);
-            Color textColor = done ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
 
+            string objKey = "obj_" + obj.Id;
+
+            // ── Row container ─────────────────────────────────────────────────────
             GameObject row = new GameObject("ObjRow_" + obj.Id,
                 typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
             row.transform.SetParent(parent, false);
@@ -1311,61 +1315,59 @@ namespace ValheimGuide.UI
             rowHlg.childControlWidth = false;
             rowHlg.childControlHeight = true;
 
-            if (!obj.AutoComplete)
+            // ── Checkbox (ALL objectives are now clickable) ───────────────────────
+            GameObject box = new GameObject("Check",
+                typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+            box.transform.SetParent(row.transform, false);
+            box.GetComponent<LayoutElement>().preferredWidth = 18;
+
+            Image checkImg = box.GetComponent<Image>();
+            checkImg.color = done
+                ? new Color(0.2f, 0.6f, 0.2f)
+                : new Color(0.25f, 0.25f, 0.25f);
+
+            GameObject mark = GuidePanel.CreateText(box.transform, "Mark", done ? "✔" : "");
+            var markRect = mark.GetComponent<RectTransform>();
+            markRect.anchorMin = Vector2.zero;
+            markRect.anchorMax = Vector2.one;
+            markRect.offsetMin = markRect.offsetMax = Vector2.zero;
+            Text markText = mark.GetComponent<Text>();
+            markText.alignment = TextAnchor.MiddleCenter;
+            markText.fontSize = 11;
+
+            // ── Label ─────────────────────────────────────────────────────────────
+            // Auto-detected objectives show a small (auto) hint when not yet done
+            string displayText = obj.Text;
+            if (obj.AutoComplete && !done)
+                displayText += "  <color=#606060><size=10>(auto)</size></color>";
+
+            GameObject labelGo = GuidePanel.CreateText(row.transform, "Text", displayText);
+            labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(360, 0);
+            Text labelText = labelGo.GetComponent<Text>();
+            labelText.fontSize = 13;
+            labelText.color = done ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
+
+            // ── Click handler ─────────────────────────────────────────────────────
+            box.GetComponent<Button>().onClick.AddListener(() =>
             {
-                string objKey = "obj_" + obj.Id;
-                bool isChecked = ProgressSaver.IsChecked(objKey);
+                // Toggle the manual override key
+                bool now = !ProgressSaver.IsChecked(objKey);
+                ProgressSaver.SetChecked(objKey, now);
 
-                GameObject box = new GameObject("Check",
-                    typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
-                box.transform.SetParent(row.transform, false);
-                box.GetComponent<LayoutElement>().preferredWidth = 18;
-                Image checkImg = box.GetComponent<Image>();
-                checkImg.color = isChecked ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
+                // Re-evaluate: for AutoComplete objectives that are GENUINELY done
+                // (e.g. globalKey already fired), un-ticking the override still
+                // shows as done because IsObjectiveComplete falls through to the
+                // game-state check. Visual should reflect this.
+                bool nowDone = ProgressionTracker.IsObjectiveComplete(obj);
 
-                GameObject mark = GuidePanel.CreateText(box.transform, "Mark", isChecked ? "✔" : "");
-                var markRect = mark.GetComponent<RectTransform>();
-                markRect.anchorMin = Vector2.zero;
-                markRect.anchorMax = Vector2.one;
-                markRect.offsetMin = markRect.offsetMax = Vector2.zero;
-                Text markText = mark.GetComponent<Text>();
-                markText.alignment = TextAnchor.MiddleCenter;
-                markText.fontSize = 11;
+                checkImg.color = nowDone
+                    ? new Color(0.2f, 0.6f, 0.2f)
+                    : new Color(0.25f, 0.25f, 0.25f);
+                markText.text = nowDone ? "✔" : "";
+                labelText.color = nowDone ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
 
-                GameObject labelGo = GuidePanel.CreateText(row.transform, "Text", obj.Text);
-                labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(360, 0);
-                Text labelText = labelGo.GetComponent<Text>();
-                labelText.fontSize = 13;
-                labelText.color = isChecked ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
-
-                box.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    bool now = !ProgressSaver.IsChecked(objKey);
-                    ProgressSaver.SetChecked(objKey, now);
-                    checkImg.color = now ? new Color(0.2f, 0.6f, 0.2f) : new Color(0.25f, 0.25f, 0.25f);
-                    markText.text = now ? "✔" : "";
-
-                    // Now correctly visually updates text
-                    labelText.color = now ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
-
-                    ObjectiveTracker.ForceRefresh();
-                });
-            }
-            else
-            {
-                GameObject tickGo = GuidePanel.CreateText(row.transform, "Tick", done ? "✔" : "○");
-                tickGo.GetComponent<RectTransform>().sizeDelta = new Vector2(18, 0);
-                Text tickText = tickGo.GetComponent<Text>();
-                tickText.alignment = TextAnchor.MiddleCenter;
-                tickText.fontSize = 13;
-                tickText.color = done ? new Color(0.4f, 0.9f, 0.4f) : new Color(0.6f, 0.6f, 0.6f);
-
-                GameObject labelGo = GuidePanel.CreateText(row.transform, "Text", obj.Text);
-                labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(360, 0);
-                Text labelText = labelGo.GetComponent<Text>();
-                labelText.fontSize = 13;
-                labelText.color = textColor;
-            }
+                ObjectiveTracker.ForceRefresh();
+            });
         }
     }
 }
