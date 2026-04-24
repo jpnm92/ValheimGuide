@@ -50,13 +50,21 @@ namespace ValheimGuide.UI
             string lastId = ProgressSaver.Current?.LastStageId;
             string lastMode = ProgressSaver.Current?.LastViewMode;
 
-            Stage toSelect = (!string.IsNullOrEmpty(lastId)
-                                ? GuideDataLoader.GetStageById(lastId)
-                                : null)
-                             ?? ProgressionTracker.CurrentStage
-                             ?? (GuideDataLoader.AllStages.Count > 0
-                                 ? GuideDataLoader.AllStages[0]
-                                 : null);
+            Stage resolved = !string.IsNullOrEmpty(lastId)
+                ? GuideDataLoader.GetStageById(lastId)
+                : null;
+
+            // Don't restore "Other" — it's a synthetic bucket with no guide content
+            if (resolved != null && string.Equals(resolved.Label, "Other",
+                    System.StringComparison.OrdinalIgnoreCase))
+                resolved = null;
+
+            Stage toSelect = resolved
+                ?? ProgressionTracker.CurrentStage
+                ?? (GuideDataLoader.AllStages.Count > 0
+                    ? GuideDataLoader.AllStages[0]
+                    : null);
+
 
             if (!string.IsNullOrEmpty(lastMode))
                 _isReadMode = lastMode == "read";
@@ -131,6 +139,10 @@ namespace ValheimGuide.UI
 
             foreach (Stage stage in GuideDataLoader.AllStages)
             {
+                // "Other" is a synthetic TherzieDataGenerator bucket — no guide content
+                if (string.Equals(stage.Label, "Other", System.StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 // If player chose "keep it mysterious", hide stages beyond current progression
                 if (!showAll && stage.Order > currentOrder)
                     continue;

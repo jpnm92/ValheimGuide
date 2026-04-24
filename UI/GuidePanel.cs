@@ -14,14 +14,16 @@ namespace ValheimGuide.UI
         private static bool _isVisible;
         public static bool IsVisible => _isVisible;
 
-        private static GameObject _guidePanelsRoot;        // ← NEW wrapper
+        private static GuidePanelController _controller;
+        private static GameObject _guidePanelsRoot;
         private static GameObject _stageListContainer;
         private static GameObject _smartPanelContainer;
         private static GameObject _referenceAreaContainer;
         private static GameObject _encyclopediaContainer;
         private static EncyclopediaView _encyclopediaView;
         private static bool _encyclopediaMode = false;
-
+        private static Image _guideBtnImg;
+        private static Image _encBtnImg;
 
         private static float _originalTimeScale = 1f;
 
@@ -55,30 +57,63 @@ namespace ValheimGuide.UI
                 _panel.SetActive(false);
             _isVisible = false;
 
+            // Always return to guide mode on close so re-opening lands on the guide
+            if (_encyclopediaMode)
+            {
+                _encyclopediaMode = false;
+                if (_guidePanelsRoot != null) _guidePanelsRoot.SetActive(true);
+                if (_encyclopediaContainer != null) _encyclopediaContainer.SetActive(false);
+                RefreshHeaderButtons();
+            }
+
+
+
             Time.timeScale = _originalTimeScale;
 
             GUIManager.BlockInput(false);
         }
+
 
         public static void Toggle()
         {
             if (_isVisible) Hide();
             else Show();
         }
+        // Navigate to the main guide view
+        private static void ShowGuide()
+        {
+            _encyclopediaMode = false;
+            _guidePanelsRoot.SetActive(true);
+            _encyclopediaContainer.SetActive(false);
+            RefreshHeaderButtons();
+        }
+
+        // Navigate to the encyclopedia view
+        private static void ShowEncyclopediaView()
+        {
+            _encyclopediaMode = true;
+            _guidePanelsRoot.SetActive(false);
+            _encyclopediaContainer.SetActive(true);
+            _encyclopediaView.Build();
+            RefreshHeaderButtons();
+        }
+
+        // Public entry point (used by external callers)
         public static void ShowEncyclopedia()
         {
             if (!_isVisible) Show();
-            if (!_encyclopediaMode) ToggleEncyclopedia();
+            ShowEncyclopediaView();
         }
 
-        private static void ToggleEncyclopedia()
+        // Tints the active button gold, dims the inactive one
+        private static void RefreshHeaderButtons()
         {
-            _encyclopediaMode = !_encyclopediaMode;
-
-            _guidePanelsRoot.SetActive(!_encyclopediaMode);
-            _encyclopediaContainer.SetActive(_encyclopediaMode);
-
-            if (_encyclopediaMode) _encyclopediaView.Build();
+            Color active = new Color(0.35f, 0.28f, 0.15f);
+            Color inactive = new Color(0.22f, 0.22f, 0.28f);
+            if (_guideBtnImg != null)
+                _guideBtnImg.color = _encyclopediaMode ? inactive : active;
+            if (_encBtnImg != null)
+                _encBtnImg.color = _encyclopediaMode ? active : inactive;
         }
 
         private static void CreatePanel()
@@ -125,18 +160,24 @@ namespace ValheimGuide.UI
             settingsBtn.GetComponent<Button>().onClick.AddListener(() =>
                 FirstLaunchOverlay.ShowSettings(_panel, () => _controller.RefreshContent()));
 
-            GameObject title = CreateText(_panel.transform, "Title", "VALHEIM GUIDE");
-            RectTransform titleRect = title.GetComponent<RectTransform>();
-            titleRect.anchorMin = new Vector2(0, 1);
-            titleRect.anchorMax = new Vector2(0, 1);
-            titleRect.pivot = new Vector2(0, 1);
-            titleRect.anchoredPosition = new Vector2(20, -20);
-            titleRect.sizeDelta = new Vector2(400, 40);
-            title.GetComponent<Text>().fontSize = 28;
-            title.GetComponent<Text>().fontStyle = FontStyle.Bold;
+            // ── VALHEIM GUIDE nav button (starts active / gold) ───────────────
+            GameObject guideBtn = CreateButton(_panel.transform, "GuideModeBtn", "VALHEIM GUIDE");
+            RectTransform guideBtnRect = guideBtn.GetComponent<RectTransform>();
+            guideBtnRect.anchorMin = new Vector2(0, 1);
+            guideBtnRect.anchorMax = new Vector2(0, 1);
+            guideBtnRect.pivot = new Vector2(0, 1);
+            guideBtnRect.anchoredPosition = new Vector2(10, -10);
+            guideBtnRect.sizeDelta = new Vector2(185, 40);
+            _guideBtnImg = guideBtn.GetComponent<Image>();
+            _guideBtnImg.color = new Color(0.35f, 0.28f, 0.15f);   // active gold
+            Text guideBtnText = guideBtn.GetComponentInChildren<Text>();
+            guideBtnText.fontSize = 18;
+            guideBtnText.fontStyle = FontStyle.Bold;
+            guideBtn.GetComponent<Button>().onClick.AddListener(ShowGuide);
+
 
             _guidePanelsRoot = new GameObject("GuidePanelsRoot", typeof(RectTransform));
-            _guidePanelsRoot.transform.SetParent(_guidePanelsRoot.transform, false);
+            _guidePanelsRoot.transform.SetParent(_panel.transform, false);
             RectTransform gprRect = _guidePanelsRoot.GetComponent<RectTransform>();
             gprRect.anchorMin = Vector2.zero;
             gprRect.anchorMax = Vector2.one;
@@ -167,19 +208,19 @@ namespace ValheimGuide.UI
             _encyclopediaView = new EncyclopediaView(_encyclopediaContainer);
             _encyclopediaMode = false;
 
-            // ── Encyclopedia toggle button in header ──────────────────────────
+            // ── ENCYCLOPEDIA nav button (starts inactive / dim) ───────────────
             GameObject encBtn = CreateButton(_panel.transform, "EncyclopediaBtn", "ENCYCLOPEDIA");
             RectTransform encBtnRect = encBtn.GetComponent<RectTransform>();
             encBtnRect.anchorMin = new Vector2(0, 1);
             encBtnRect.anchorMax = new Vector2(0, 1);
             encBtnRect.pivot = new Vector2(0, 1);
-            encBtnRect.anchoredPosition = new Vector2(220, -18);
-            encBtnRect.sizeDelta = new Vector2(150, 36);
-            // Scale down font (the Text child)
+            encBtnRect.anchoredPosition = new Vector2(201, -10);
+            encBtnRect.sizeDelta = new Vector2(150, 40);
+            _encBtnImg = encBtn.GetComponent<Image>();
+            _encBtnImg.color = new Color(0.22f, 0.22f, 0.28f);     // inactive dim
             Text encBtnText = encBtn.GetComponentInChildren<Text>();
-            if (encBtnText != null) encBtnText.fontSize = 14;
-            encBtn.GetComponent<Image>().color = new Color(0.22f, 0.22f, 0.28f);
-            encBtn.GetComponent<Button>().onClick.AddListener(ToggleEncyclopedia);
+            if (encBtnText != null) encBtnText.fontSize = 16;
+            encBtn.GetComponent<Button>().onClick.AddListener(ShowEncyclopediaView);
 
             _controller = new GuidePanelController(_stageListContainer, _smartPanelContainer, _referenceAreaContainer);
             _panel.SetActive(false);

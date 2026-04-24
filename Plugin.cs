@@ -152,7 +152,7 @@ namespace ValheimGuide
             {
                 // > 0 peers = someone is connected = multiplayer — don't pause
                 bool isMultiplayer = ZNet.instance != null &&
-                                     ZNet.instance.GetNrOfPlayers() > 0;
+                                     ZNet.instance.GetNrOfPlayers() > 1;
                 if (!isMultiplayer)
                     Time.timeScale = 0f;
             }
