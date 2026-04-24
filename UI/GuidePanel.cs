@@ -14,13 +14,14 @@ namespace ValheimGuide.UI
         private static bool _isVisible;
         public static bool IsVisible => _isVisible;
 
+        private static GameObject _guidePanelsRoot;        // ← NEW wrapper
         private static GameObject _stageListContainer;
         private static GameObject _smartPanelContainer;
         private static GameObject _referenceAreaContainer;
         private static GameObject _encyclopediaContainer;
-        private static GuidePanelController _controller;
         private static EncyclopediaView _encyclopediaView;
         private static bool _encyclopediaMode = false;
+
 
         private static float _originalTimeScale = 1f;
 
@@ -74,13 +75,10 @@ namespace ValheimGuide.UI
         {
             _encyclopediaMode = !_encyclopediaMode;
 
-            bool enc = _encyclopediaMode;
-            _stageListContainer.SetActive(!enc);
-            _smartPanelContainer.SetActive(!enc);
-            _referenceAreaContainer.SetActive(!enc);
-            _encyclopediaContainer.SetActive(enc);
+            _guidePanelsRoot.SetActive(!_encyclopediaMode);
+            _encyclopediaContainer.SetActive(_encyclopediaMode);
 
-            if (enc) _encyclopediaView.Build();
+            if (_encyclopediaMode) _encyclopediaView.Build();
         }
 
         private static void CreatePanel()
@@ -137,17 +135,24 @@ namespace ValheimGuide.UI
             title.GetComponent<Text>().fontSize = 28;
             title.GetComponent<Text>().fontStyle = FontStyle.Bold;
 
-            _stageListContainer = CreatePanelSection(_panel.transform, "StageList",
+            _guidePanelsRoot = new GameObject("GuidePanelsRoot", typeof(RectTransform));
+            _guidePanelsRoot.transform.SetParent(_guidePanelsRoot.transform, false);
+            RectTransform gprRect = _guidePanelsRoot.GetComponent<RectTransform>();
+            gprRect.anchorMin = Vector2.zero;
+            gprRect.anchorMax = Vector2.one;
+            gprRect.offsetMin = gprRect.offsetMax = Vector2.zero;
+
+            _stageListContainer = CreatePanelSection(_guidePanelsRoot.transform, "StageList",
                 new Vector2(0, 0), new Vector2(0.25f, 1),
                 new Vector2(10, 10), new Vector2(-5, -70));
             _stageListContainer.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
 
-            _smartPanelContainer = CreatePanelSection(_panel.transform, "SmartPanel",
+            _smartPanelContainer = CreatePanelSection(_guidePanelsRoot.transform, "SmartPanel",
                 new Vector2(0.25f, 0.5f), new Vector2(1, 1),
                 new Vector2(5, 5), new Vector2(-10, -70));
             _smartPanelContainer.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
 
-            _referenceAreaContainer = CreatePanelSection(_panel.transform, "ReferenceArea",
+            _referenceAreaContainer = CreatePanelSection(_guidePanelsRoot.transform, "ReferenceArea",
                 new Vector2(0.25f, 0), new Vector2(1, 0.5f),
                 new Vector2(5, 10), new Vector2(-10, -5));
             _referenceAreaContainer.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
