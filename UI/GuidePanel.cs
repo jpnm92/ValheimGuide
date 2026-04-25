@@ -21,9 +21,16 @@ namespace ValheimGuide.UI
         private static GameObject _referenceAreaContainer;
         private static GameObject _encyclopediaContainer;
         private static EncyclopediaView _encyclopediaView;
+        private static GameObject _settingsContainer;
+        private static SettingsView _settingsView;
         private static bool _encyclopediaMode = false;
+        private static bool _settingsMode = false;
         private static Image _guideBtnImg;
         private static Image _encBtnImg;
+        private static Image _settingsBtnImg;
+        private enum TabMode { Guide, Encyclopedia, Settings }
+        private static TabMode _activeTab = TabMode.Guide;
+
 
         private static float _originalTimeScale = 1f;
 
@@ -57,14 +64,18 @@ namespace ValheimGuide.UI
                 _panel.SetActive(false);
             _isVisible = false;
 
-            // Always return to guide mode on close so re-opening lands on the guide
-            if (_encyclopediaMode)
+            // Always return to guide mode on close
+            if (_activeTab != TabMode.Guide)
             {
+                _activeTab = TabMode.Guide;
                 _encyclopediaMode = false;
+                _settingsMode = false;
                 if (_guidePanelsRoot != null) _guidePanelsRoot.SetActive(true);
                 if (_encyclopediaContainer != null) _encyclopediaContainer.SetActive(false);
+                if (_settingsContainer != null) _settingsContainer.SetActive(false);
                 RefreshHeaderButtons();
             }
+
 
 
 
@@ -79,42 +90,41 @@ namespace ValheimGuide.UI
             if (_isVisible) Hide();
             else Show();
         }
-        // Navigate to the main guide view
-        private static void ShowGuide()
+        private static void SwitchTab(TabMode tab)
         {
-            _encyclopediaMode = false;
-            _guidePanelsRoot.SetActive(true);
-            _encyclopediaContainer.SetActive(false);
+            _activeTab = tab;
+            _encyclopediaMode = tab == TabMode.Encyclopedia;
+            _settingsMode = tab == TabMode.Settings;
+
+            _guidePanelsRoot.SetActive(tab == TabMode.Guide);
+            _encyclopediaContainer.SetActive(tab == TabMode.Encyclopedia);
+            _settingsContainer.SetActive(tab == TabMode.Settings);
+
+            if (tab == TabMode.Encyclopedia) _encyclopediaView.Build();
+            if (tab == TabMode.Settings) _settingsView.Show();
+
             RefreshHeaderButtons();
         }
 
-        // Navigate to the encyclopedia view
-        private static void ShowEncyclopediaView()
-        {
-            _encyclopediaMode = true;
-            _guidePanelsRoot.SetActive(false);
-            _encyclopediaContainer.SetActive(true);
-            _encyclopediaView.Build();
-            RefreshHeaderButtons();
-        }
+        private static void ShowGuide() => SwitchTab(TabMode.Guide);
+        private static void ShowEncyclopediaView() => SwitchTab(TabMode.Encyclopedia);
+        private static void ShowSettingsView() => SwitchTab(TabMode.Settings);
 
-        // Public entry point (used by external callers)
         public static void ShowEncyclopedia()
         {
             if (!_isVisible) Show();
             ShowEncyclopediaView();
         }
 
-        // Tints the active button gold, dims the inactive one
         private static void RefreshHeaderButtons()
         {
             Color active = new Color(0.35f, 0.28f, 0.15f);
-            Color inactive = new Color(0.22f, 0.22f, 0.28f);
-            if (_guideBtnImg != null)
-                _guideBtnImg.color = _encyclopediaMode ? inactive : active;
-            if (_encBtnImg != null)
-                _encBtnImg.color = _encyclopediaMode ? active : inactive;
+            Color inactive = new Color(0.18f, 0.18f, 0.22f);
+            if (_guideBtnImg != null) _guideBtnImg.color = _activeTab == TabMode.Guide ? active : inactive;
+            if (_encBtnImg != null) _encBtnImg.color = _activeTab == TabMode.Encyclopedia ? active : inactive;
+            if (_settingsBtnImg != null) _settingsBtnImg.color = _activeTab == TabMode.Settings ? active : inactive;
         }
+
 
         private static void CreatePanel()
         {
@@ -150,32 +160,55 @@ namespace ValheimGuide.UI
             closeRect.sizeDelta = new Vector2(40, 40);
             closeBtn.GetComponent<Button>().onClick.AddListener(Hide);
 
-            GameObject settingsBtn = CreateButton(_panel.transform, "SettingsBtn", "⚙");
-            RectTransform settingsRect = settingsBtn.GetComponent<RectTransform>();
-            settingsRect.anchorMin = new Vector2(1, 1);
-            settingsRect.anchorMax = new Vector2(1, 1);
-            settingsRect.pivot = new Vector2(1, 1);
-            settingsRect.anchoredPosition = new Vector2(-58, -10);
-            settingsRect.sizeDelta = new Vector2(40, 40);
-            settingsBtn.GetComponent<Button>().onClick.AddListener(() =>
-                FirstLaunchOverlay.ShowSettings(_panel, () => _controller.RefreshContent()));
+            // ── Full-width three-tab strip ─────────────────────────────────────
+            // Sits along the top of the panel. ✖ button is ~40px wide on the
+            // right so we inset the strip by 50px on the right to avoid overlap.
+            GameObject tabStrip = new GameObject("TabStrip",
+                typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            tabStrip.transform.SetParent(_panel.transform, false);
 
-            // ── VALHEIM GUIDE nav button (starts active / gold) ───────────────
-            GameObject guideBtn = CreateButton(_panel.transform, "GuideModeBtn", "VALHEIM GUIDE");
-            RectTransform guideBtnRect = guideBtn.GetComponent<RectTransform>();
-            guideBtnRect.anchorMin = new Vector2(0, 1);
-            guideBtnRect.anchorMax = new Vector2(0, 1);
-            guideBtnRect.pivot = new Vector2(0, 1);
-            guideBtnRect.anchoredPosition = new Vector2(10, -10);
-            guideBtnRect.sizeDelta = new Vector2(185, 40);
-            _guideBtnImg = guideBtn.GetComponent<Image>();
-            _guideBtnImg.color = new Color(0.35f, 0.28f, 0.15f);   // active gold
-            Text guideBtnText = guideBtn.GetComponentInChildren<Text>();
-            guideBtnText.fontSize = 18;
-            guideBtnText.fontStyle = FontStyle.Bold;
-            guideBtn.GetComponent<Button>().onClick.AddListener(ShowGuide);
+            RectTransform tsRect = tabStrip.GetComponent<RectTransform>();
+            tsRect.anchorMin = new Vector2(0, 1);
+            tsRect.anchorMax = new Vector2(1, 1);
+            tsRect.pivot = new Vector2(0.5f, 1f);
+            tsRect.offsetMin = new Vector2(0, -60);
+            tsRect.offsetMax = new Vector2(-50, 0);
+
+            var tsHlg = tabStrip.GetComponent<HorizontalLayoutGroup>();
+            tsHlg.spacing = 2;
+            tsHlg.childForceExpandWidth = true;
+            tsHlg.childForceExpandHeight = true;
+            tsHlg.childControlWidth = true;
+            tsHlg.childControlHeight = true;
+
+            // Helper — creates one tab button inside the strip
+            Image MakeTab(string name, string label, Color startColor)
+            {
+                GameObject btn = CreateButton(tabStrip.transform, name, label);
+                btn.AddComponent<LayoutElement>().flexibleWidth = 1f;
+                Image img = btn.GetComponent<Image>();
+                img.color = startColor;
+                Text txt = btn.GetComponentInChildren<Text>();
+                if (txt != null) { txt.fontSize = 15; txt.fontStyle = FontStyle.Bold; }
+                return img;
+            }
 
 
+            Color tabActive = new Color(0.35f, 0.28f, 0.15f);
+            Color tabInactive = new Color(0.18f, 0.18f, 0.22f);
+
+            _guideBtnImg = MakeTab("GuideModeBtn", "VALHEIM GUIDE", tabActive);
+            _encBtnImg = MakeTab("EncyclopediaBtn", "ENCYCLOPEDIA", tabInactive);
+            _settingsBtnImg = MakeTab("SettingsBtn", "SETTINGS", tabInactive);
+
+            // Wire tab buttons — Image.gameObject holds the Button component
+            _guideBtnImg.gameObject.GetComponent<Button>().onClick.AddListener(ShowGuide);
+            _encBtnImg.gameObject.GetComponent<Button>().onClick.AddListener(ShowEncyclopediaView);
+            _settingsBtnImg.gameObject.GetComponent<Button>().onClick.AddListener(ShowSettingsView);
+
+            // ── Guide panels root ─────────────────────────────────────────────
+            // Parent of the three guide containers. One SetActive(false) here
+            // hides all three regardless of what GuidePanelController does internally.
             _guidePanelsRoot = new GameObject("GuidePanelsRoot", typeof(RectTransform));
             _guidePanelsRoot.transform.SetParent(_panel.transform, false);
             RectTransform gprRect = _guidePanelsRoot.GetComponent<RectTransform>();
@@ -185,12 +218,12 @@ namespace ValheimGuide.UI
 
             _stageListContainer = CreatePanelSection(_guidePanelsRoot.transform, "StageList",
                 new Vector2(0, 0), new Vector2(0.25f, 1),
-                new Vector2(10, 10), new Vector2(-5, -70));
+                new Vector2(10, 10), new Vector2(-5, -65));
             _stageListContainer.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
 
             _smartPanelContainer = CreatePanelSection(_guidePanelsRoot.transform, "SmartPanel",
                 new Vector2(0.25f, 0.5f), new Vector2(1, 1),
-                new Vector2(5, 5), new Vector2(-10, -70));
+                new Vector2(5, 5), new Vector2(-10, -65));
             _smartPanelContainer.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
 
             _referenceAreaContainer = CreatePanelSection(_guidePanelsRoot.transform, "ReferenceArea",
@@ -198,31 +231,27 @@ namespace ValheimGuide.UI
                 new Vector2(5, 10), new Vector2(-10, -5));
             _referenceAreaContainer.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
 
-            // ── Encyclopedia container (full content area, hidden by default) ──
+            // ── Encyclopedia container ────────────────────────────────────────
             _encyclopediaContainer = CreatePanelSection(_panel.transform, "EncyclopediaPanel",
                 Vector2.zero, Vector2.one,
-                new Vector2(10, 10), new Vector2(-10, -70));
-            _encyclopediaContainer.GetComponent<Image>().color =
-                new Color(0.15f, 0.15f, 0.15f, 0.8f);
+                new Vector2(10, 10), new Vector2(-10, -65));
+            _encyclopediaContainer.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
             _encyclopediaContainer.SetActive(false);
             _encyclopediaView = new EncyclopediaView(_encyclopediaContainer);
-            _encyclopediaMode = false;
 
-            // ── ENCYCLOPEDIA nav button (starts inactive / dim) ───────────────
-            GameObject encBtn = CreateButton(_panel.transform, "EncyclopediaBtn", "ENCYCLOPEDIA");
-            RectTransform encBtnRect = encBtn.GetComponent<RectTransform>();
-            encBtnRect.anchorMin = new Vector2(0, 1);
-            encBtnRect.anchorMax = new Vector2(0, 1);
-            encBtnRect.pivot = new Vector2(0, 1);
-            encBtnRect.anchoredPosition = new Vector2(201, -10);
-            encBtnRect.sizeDelta = new Vector2(150, 40);
-            _encBtnImg = encBtn.GetComponent<Image>();
-            _encBtnImg.color = new Color(0.22f, 0.22f, 0.28f);     // inactive dim
-            Text encBtnText = encBtn.GetComponentInChildren<Text>();
-            if (encBtnText != null) encBtnText.fontSize = 16;
-            encBtn.GetComponent<Button>().onClick.AddListener(ShowEncyclopediaView);
+            // ── Settings container ────────────────────────────────────────────
+            _settingsContainer = CreatePanelSection(_panel.transform, "SettingsPanel",
+                Vector2.zero, Vector2.one,
+                new Vector2(10, 10), new Vector2(-10, -65));
+            _settingsContainer.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
+            _settingsContainer.SetActive(false);
+            _settingsView = new SettingsView(_settingsContainer);
 
-            _controller = new GuidePanelController(_stageListContainer, _smartPanelContainer, _referenceAreaContainer);
+            // ── Controller ───────────────────────────────────────────────────
+            _controller = new GuidePanelController(
+                _stageListContainer, _smartPanelContainer, _referenceAreaContainer);
+
+            _activeTab = TabMode.Guide;
             _panel.SetActive(false);
         }
 

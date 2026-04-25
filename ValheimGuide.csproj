@@ -117,6 +117,7 @@
     <Compile Include="Data\BiomeOrder.cs" />
     <Compile Include="UI\GuidePanelController.cs" />
     <Compile Include="UI\ObjectiveTracker.cs" />
+    <Compile Include="UI\SettingsView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

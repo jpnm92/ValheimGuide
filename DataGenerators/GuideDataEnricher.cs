@@ -11,12 +11,18 @@ namespace ValheimGuide.DataGenerators
             if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0)
                 return;
 
-            int enrichedCount = 0;
+            int foundCount = 0; // prefab resolved
+            int damageCount = 0; // DamageTypes enriched
+            int armorClassCount = 0; // ArmorClass enriched
+            int recipeCount = 0; // Recipe auto-populated
+            int stationCount = 0; // Station auto-populated
 
             foreach (Stage stage in GuideDataLoader.AllStages)
             {
                 foreach (GearEntry gear in stage.Gear)
                 {
+                    if (string.IsNullOrEmpty(gear.ItemId)) continue;
+
                     GameObject prefab = ObjectDB.instance.GetItemPrefab(gear.ItemId);
                     if (prefab == null) continue;
 
@@ -24,25 +30,66 @@ namespace ValheimGuide.DataGenerators
                     if (itemDrop == null) continue;
 
                     var shared = itemDrop.m_itemData.m_shared;
+                    foundCount++;
 
-                    // 1. Auto-Detect Damage Types
-                    if (gear.Type == "Weapon" || gear.Type == "Bow")
+                    string type = gear.Type ?? "";
+
+                    if ((type.Equals("Weapon", System.StringComparison.OrdinalIgnoreCase) ||
+                         type.Equals("Bow", System.StringComparison.OrdinalIgnoreCase))
+                        && (gear.DamageTypes == null || gear.DamageTypes.Count == 0))
                     {
                         gear.DamageTypes = GetDamageTypes(shared.m_damages);
+                        damageCount++;
                     }
 
-                    // 2. Auto-Detect Armor Class (Based on movement penalty)
-                    if (gear.Type == "Armor")
+                    if (type.Equals("Armor", System.StringComparison.OrdinalIgnoreCase)
+                        && string.IsNullOrEmpty(gear.ArmorClass))
                     {
-                        // Vanilla heavy armor has a negative movement modifier (-5% to -10%)
                         gear.ArmorClass = shared.m_movementModifier < 0f ? "Heavy" : "Light";
+                        armorClassCount++;
                     }
 
-                    enrichedCount++;
+                    if (gear.Recipe == null || gear.Recipe.Count == 0)
+                    {
+                        Recipe recipe = ObjectDB.instance.GetRecipe(itemDrop.m_itemData);
+                        if (recipe != null
+                            && recipe.m_resources != null
+                            && recipe.m_resources.Length > 0)
+                        {
+                            gear.Recipe = new List<ItemStack>();
+
+                            if (recipe.m_craftingStation != null
+                                && string.IsNullOrEmpty(gear.Station))
+                            {
+                                gear.Station = TryLocalise(recipe.m_craftingStation.m_name);
+                                gear.StationLevel = recipe.m_minStationLevel;
+                                stationCount++;
+                            }
+
+                            foreach (Piece.Requirement req in recipe.m_resources)
+                            {
+                                if (req.m_resItem == null) continue;
+
+                                gear.Recipe.Add(new ItemStack
+                                {
+                                    ItemId = req.m_resItem.name,
+                                    Label = TryLocalise(req.m_resItem.m_itemData.m_shared.m_name),
+                                    Amount = req.m_amount
+                                });
+                            }
+
+                            recipeCount++;
+                        }
+                    }
                 }
             }
 
-            Debug.Log($"[ValheimGuide] Auto-enriched {enrichedCount} gear entries with DamageTypes and ArmorClasses.");
+            Debug.Log($"[ValheimGuide] Enricher done — " +
+                      $"{foundCount} prefabs resolved, " +
+                      $"{damageCount} damage types, " +
+                      $"{armorClassCount} armor classes, " +
+                      $"{recipeCount} recipes, " +
+                      $"{stationCount} stations auto-populated.");
         }
 
         private static List<string> GetDamageTypes(HitData.DamageTypes damages)
@@ -57,6 +104,13 @@ namespace ValheimGuide.DataGenerators
             if (damages.m_poison > 0) list.Add("Poison");
             if (damages.m_spirit > 0) list.Add("Spirit");
             return list;
+        }
+
+        private static string TryLocalise(string key)
+        {
+            if (Localization.instance == null || string.IsNullOrEmpty(key)) return key;
+            try { return Localization.instance.Localize(key); }
+            catch { return key; }
         }
     }
 }
