@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Jotunn.Managers;
+using System.Collections.Generic;
 using UnityEngine;
 using ValheimGuide.Data;
 
@@ -84,12 +85,87 @@ namespace ValheimGuide.DataGenerators
                 }
             }
 
+            int objMatCount = 0;
+            foreach (Stage stage in GuideDataLoader.AllStages)
+            {
+                foreach (Objective obj in stage.Objectives)
+                {
+
+                    if (string.IsNullOrEmpty(obj.Value)) continue;
+                    if (obj.ObjectiveMaterials != null && obj.ObjectiveMaterials.Count > 0) continue;
+
+                    string t = obj.Type?.ToLowerInvariant() ?? "";
+                    bool isPieceType = t == "build";
+                    bool isItemType = t == "craftitem" || t == "knownrecipe";
+
+                    if (!isPieceType && !isItemType) continue;
+
+                    if (isPieceType)
+                    {
+                        // Piece recipes live on the Piece component, not ObjectDB recipes
+                        GameObject piecePrefab = PrefabManager.Instance != null
+                            ? PrefabManager.Instance.GetPrefab(obj.Value)
+                            : null;
+
+                        // Fallback: try ZNetScene which has all registered prefabs
+                        if (piecePrefab == null && ZNetScene.instance != null)
+                            piecePrefab = ZNetScene.instance.GetPrefab(obj.Value);
+
+                        if (piecePrefab == null) continue;
+
+                        Piece piece = piecePrefab.GetComponent<Piece>();
+                        if (piece == null || piece.m_resources == null
+                            || piece.m_resources.Length == 0) continue;
+
+                        obj.ObjectiveMaterials = new List<ItemStack>();
+                        foreach (var req in piece.m_resources)
+                        {
+                            if (req.m_resItem == null) continue;
+                            obj.ObjectiveMaterials.Add(new ItemStack
+                            {
+                                ItemId = req.m_resItem.name,
+                                Label = TryLocalise(req.m_resItem.m_itemData.m_shared.m_name),
+                                Amount = req.m_amount
+                            });
+                        }
+                        if (obj.ObjectiveMaterials.Count > 0) objMatCount++;
+                    }
+                    else // craftitem / knownrecipe — uses ObjectDB recipes
+                    {
+                        GameObject itemPrefab = ObjectDB.instance.GetItemPrefab(obj.Value);
+                        if (itemPrefab == null) continue;
+
+                        ItemDrop itemDrop = itemPrefab.GetComponent<ItemDrop>();
+                        if (itemDrop == null) continue;
+
+                        Recipe recipe = ObjectDB.instance.GetRecipe(itemDrop.m_itemData);
+                        if (recipe == null || recipe.m_resources == null
+                            || recipe.m_resources.Length == 0) continue;
+
+                        obj.ObjectiveMaterials = new List<ItemStack>();
+                        foreach (var req in recipe.m_resources)
+                        {
+                            if (req.m_resItem == null) continue;
+                            obj.ObjectiveMaterials.Add(new ItemStack
+                            {
+                                ItemId = req.m_resItem.name,
+                                Label = TryLocalise(req.m_resItem.m_itemData.m_shared.m_name),
+                                Amount = req.m_amount
+                            });
+                        }
+                        if (obj.ObjectiveMaterials.Count > 0) objMatCount++;
+                    }
+                }
+            }
+
             Debug.Log($"[ValheimGuide] Enricher done — " +
                       $"{foundCount} prefabs resolved, " +
                       $"{damageCount} damage types, " +
                       $"{armorClassCount} armor classes, " +
                       $"{recipeCount} recipes, " +
-                      $"{stationCount} stations auto-populated.");
+                      $"{stationCount} stations, " +
+                      $"{objMatCount} objective material lists auto-populated.");
+
         }
         public static void EnrichMobResistances()
         {

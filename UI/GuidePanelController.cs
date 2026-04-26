@@ -1394,17 +1394,46 @@ namespace ValheimGuide.UI
             markText.alignment = TextAnchor.MiddleCenter;
             markText.fontSize = 11;
 
-            // ── Label ─────────────────────────────────────────────────────────────
-            // Auto-detected objectives show a small (auto) hint when not yet done
+            // Label + optional materials — wrap both in a vertical stack so the
+            // row expands naturally when materials are present
+            GameObject labelStack = new GameObject("LabelStack",
+                typeof(RectTransform), typeof(VerticalLayoutGroup),
+                typeof(LayoutElement), typeof(ContentSizeFitter));
+            labelStack.transform.SetParent(row.transform, false);
+            labelStack.GetComponent<LayoutElement>().flexibleWidth = 1f;
+            labelStack.GetComponent<ContentSizeFitter>().verticalFit =
+                ContentSizeFitter.FitMode.PreferredSize;
+            var lsVlg = labelStack.GetComponent<VerticalLayoutGroup>();
+            lsVlg.childForceExpandWidth = true;
+            lsVlg.childForceExpandHeight = false;
+            lsVlg.childControlWidth = true;
+            lsVlg.childControlHeight = true;
+            lsVlg.spacing = 2;
+
             string displayText = obj.Text;
             if (obj.AutoComplete && !done)
                 displayText += "  <color=#606060><size=10>(auto)</size></color>";
 
-            GameObject labelGo = GuidePanel.CreateText(row.transform, "Text", displayText);
-            labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(360, 0);
+            GameObject labelGo = GuidePanel.CreateText(labelStack.transform, "Text", displayText);
+            labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
             Text labelText = labelGo.GetComponent<Text>();
             labelText.fontSize = 13;
             labelText.color = done ? new Color(0.5f, 0.8f, 0.5f) : Color.white;
+
+            // Materials line — only shown when enricher found a recipe
+            if (obj.ObjectiveMaterials != null && obj.ObjectiveMaterials.Count > 0)
+            {
+                string matLine = string.Join("  ·  ",
+                    obj.ObjectiveMaterials.ConvertAll(m => $"{m.Amount}× {m.Label}"));
+
+                GameObject matGo = GuidePanel.CreateText(
+                    labelStack.transform, "Materials", matLine);
+                Text matText = matGo.GetComponent<Text>();
+                matText.fontSize = 11;
+                matText.color = new Color(0.5f, 0.5f, 0.5f);
+                matGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
+            }
+
 
             // ── Click handler ─────────────────────────────────────────────────────
             box.GetComponent<Button>().onClick.AddListener(() =>

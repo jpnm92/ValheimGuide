@@ -73,6 +73,7 @@ namespace ValheimGuide.Data
         public bool AutoComplete { get; set; }  // true = mod checks it, false = player ticks manually
         public string PlaystyleFilter { get; set; } // null = always shown, or "hunter","warrior" etc
         public string ModRequired { get; set; } // null = always shown
+        public List<ItemStack> ObjectiveMaterials { get; set; }
     }
 
     // Objective.Type values:
