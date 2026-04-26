@@ -68,7 +68,78 @@
             }
           ],
           "PlaystyleTag": null
+        },
+        {
+          "ItemId": "ArmorFlametalLegs",
+          "Label": "Flametal Greaves",
+          "Type": "Armor",
+          "Station": "BlackForge",
+          "StationLevel": 3,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "ArmorFlametalHelm",
+          "Label": "Flametal Helmet",
+          "Type": "Armor",
+          "Station": "BlackForge",
+          "StationLevel": 3,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "CapeAsh",
+          "Label": "Ashen Cape",
+          "Type": "Armor",
+          "Station": "BlackForge",
+          "StationLevel": 3,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "SwordNiedhogg",
+          "Label": "Nidhogg",
+          "Type": "Weapon",
+          "Station": "BlackForge",
+          "StationLevel": 3,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "SwordSlayer",
+          "Label": "Slayer",
+          "Type": "Weapon",
+          "Station": "BlackForge",
+          "StationLevel": 3,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "StaffSummonIceShards",
+          "Label": "Staff of Frost",
+          "Type": "Weapon",
+          "Station": "GaldrTable",
+          "StationLevel": 2,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "StaffGreenRoots",
+          "Label": "Staff of the Wild",
+          "Type": "Weapon",
+          "Station": "GaldrTable",
+          "StationLevel": 2,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
         }
+
       ],
       "Recipes": [
         {
@@ -167,6 +238,117 @@
             "Note": "Trap in a Grausten pen first — they are aggressive until tamed"
           },
           "Note": "Tameable dinosaur-like mount. Craft an Asksvin Saddle to ride — faster than Lox and can swim through boiling water."
+        },
+        {
+          "PrefabId": "Charred_Archer",
+          "Label": "Charred Archer",
+          "Biome": "Ashlands",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 120,
+          "SpawnChanceDay": 0.25,
+          "SpawnChanceNight": 0.35,
+          "Resistances": {
+            "Fire": "Immune",
+            "Frost": "Weak",
+            "Poison": "Weak"
+          },
+          "Drops": [
+            {
+              "ItemId": "CharredBone",
+              "Label": "Charred Bone",
+              "Chance": 0.7,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Prioritise these over melee Charred — they sit on fortress walls and will shred the Battering Ram"
+        },
+        {
+          "PrefabId": "Morgen",
+          "Label": "Morgen",
+          "Biome": "Ashlands",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 800,
+          "SpawnChanceDay": 0.1,
+          "SpawnChanceNight": 0.15,
+          "Resistances": {
+            "Fire": "Immune",
+            "Frost": "Weak",
+            "Blunt": "Resistant"
+          },
+          "Drops": [
+            {
+              "ItemId": "CharredBone",
+              "Label": "Charred Bone",
+              "Chance": 1.0,
+              "Min": 3,
+              "Max": 6
+            },
+            {
+              "ItemId": "Flametal",
+              "Label": "Flametal",
+              "Chance": 0.3,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Elite heavy variant. Resistant to blunt — use frost or slash weapons. High Flametal drop chance makes them worth farming"
+        },
+        {
+          "PrefabId": "Valkyrie",
+          "Label": "Valkyrie",
+          "Biome": "Ashlands",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 400,
+          "SpawnChanceDay": 0.0,
+          "SpawnChanceNight": 0.3,
+          "Resistances": {
+            "Fire": "Resistant",
+            "Frost": "Weak",
+            "Poison": "Resistant"
+          },
+          "Drops": [
+            {
+              "ItemId": "Feathers",
+              "Label": "Feathers",
+              "Chance": 1.0,
+              "Min": 5,
+              "Max": 10
+            }
+          ],
+          "Taming": null,
+          "Note": "Night-only. Fast and airborne — crossbow or bow before they close the distance"
+        },
+        {
+          "PrefabId": "Bonemaw",
+          "Label": "Bonemaw Serpent",
+          "Biome": "Ashlands",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 1200,
+          "SpawnChanceDay": 0.2,
+          "SpawnChanceNight": 0.2,
+          "Resistances": {
+            "Fire": "Resistant",
+            "Frost": "Weak",
+            "Poison": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "BonemawMeat",
+              "Label": "Bonemaw Meat",
+              "Chance": 1.0,
+              "Min": 2,
+              "Max": 4
+            }
+          ],
+          "Taming": null,
+          "Note": "Ocean patrol. Don't stop moving in the boiling sea — they surface fast and hit hard"
         }
       ],
       "Article": "The Ashlands doesn't ease you in. The moment you touch shore, fire rains from the sky and skeletons charge. There's no settling-in period, no quiet early phase. You arrive prepared or you die on the beach.\n\n<size=18><b>Getting There</b></size>\n\nYou can't sail to the Ashlands in a Longship — the boiling water destroys it and Bonemaw Serpents will intercept you. Build the <b>Drakkar</b>, crafted from Yggdrasil Wood and Ceramic Plates. It's the only ship that survives the crossing.\n\nThe moment you make landfall, build a <b>Shield Generator</b>. It projects a dome over your base that blocks the constant meteor shower. Without it, nothing you build lasts.\n\nFor building material, use <b>Grausten</b> — the grey stone native to the biome. Wood and regular stone won't hold up here.\n\n<size=18><b>Flametal</b></size>\n\nThe best loot and the boss summoning items are inside <b>Charred Fortresses</b> — heavily guarded stone structures with skeletal ballistas on the walls. You can't mine through the walls with a pickaxe. Build a <b>Battering Ram</b>, wheel it to the gate, and hold the perimeter while it works.\n\nInside, clear the spawners, raid the tower. You're looking for <b>Flametal Ore</b> and <b>Bell Fragments</b>.\n\nFlametal also spawns on pillars rising out of lava lakes — but hitting one with a pickaxe starts sinking it. Craft <b>Basalt Bombs</b> to create temporary stone platforms across the lava. Start mining from the top and work down as it sinks, jumping to unmined sections as they lower. When it's nearly submerged, sprint back across your platforms.\n\n<size=18><b>Worth Knowing</b></size>\n\n<size=15><b>The Ashen Cape</b></size>\nReplace your Feather Cape as soon as possible. The Ashen Cape keeps the Feather Fall effect but reduces stamina cost for attacking and jumping — and unlike the Feather Cape, it doesn't give you a fire weakness. In a biome that constantly deals fire damage, that matters.\n\n<size=15><b>Dyrnwyn</b></size>\nThree fragments — Blade, Hilt, and Tip — are hidden in specific chests inside Charred Fortresses and ruined graveyards. Bring all three to a Black Forge with Flametal and Bloodstones to reforge <b>Dyrnwyn</b>, a legendary fire sword that also functions as a massive light source. Finding all three takes time but the weapon is among the best in the game.\n\n<size=15><b>Taming Asksvin</b></size>\nAsksvin are large aggressive bipedal creatures — fast, dangerous, and worth taming. Trap one in a deep pit or Grausten enclosure and feed it <b>Smoke Puffs</b> or <b>Fiddleheads</b>. Once tamed, craft a saddle. They're faster than Lox, can cross boiling water, and their headbutt shatters enemy formations.\n\n<size=18><b>Your Arsenal</b></size>\n\n<b>First entry, from Mistlands tier:</b>\n<b>Staff of Frost</b> — almost everything in the Ashlands is vulnerable to Frost. This is your primary weapon against the Charred hordes.\n<b>Mistwalker</b> — the Frost damage stays relevant, and the built-in Wisplight clears smoke.\n<b>Staff of Protection</b> — the blood-magic shield absorbs incoming damage. Near-mandatory given the volume of hits you take here.\n\n<b>Once you have Flametal:</b>\nThe gem-socketing system opens up. Imbue weapons with Blood for lifesteal, Storm for lightning stagger on hit, or Nature for poison and speed.\n\n<b>Nidhogg</b> — fast dual swords. Blood-imbued gives you lifesteal to sustain through swarms.\n<b>Slayer</b> — greatsword. Storm-imbued creates lightning explosions on every hit.\n<b>Staff of the Wild</b> — summons permanent vine tentacles that fight independently. Plant them before a fortress raid and they handle the adds while you focus on objectives.\n\n<size=18><b>Fader</b></size>\n\nSummon him with <b>3 Bell Fragments</b> at his altar — marked by a Vegvisir inside a Charred Fortress.\n\n<b>Fire Resistance Wine is mandatory.</b> Before you arrive, clear the surrounding area of spawners and roaming Valkyries. Place two or three Shield Generators around the arena perimeter — they block his meteor summons and give you safe zones to recover stamina.\n\n<b>His attacks:</b>\n• <b>Green Fire Breath</b> — sweeps the area with emerald flames. Run toward him and roll under his neck rather than retreating. Getting away from the breath is harder than getting under it.\n• <b>Meteor Strike</b> — he howls, rocks fall. Fall back into a Shield Generator dome immediately. Heal and shoot him from inside it.\n• <b>Bone Spikes</b> — stomps, massive spikes erupt under your feet. Never stand still. Sprint laterally the moment his front legs lift.\n• <b>Charred Summons</b> — periodically summons warriors. Staff of the Wild vines placed before the fight handle these automatically. If you're melee, high-stagger weapons clear groups in one hit — deal with them fast and get back to the boss.\n\n\n<color=#FFC04A><size=18><b>— WITH THERZIE MODS —</b></size></color>\n\nThe siege pipeline is unchanged — Drakkar, beachhead, Shield Generator, Battering Ram into Charred Fortresses, smelt Flametal. What changes is that the Ashlands is considerably more dangerous while you do all of that, and the Therzie arsenal scales to meet it.\n\n<size=18><b>New Threats</b></size>\n\n<b>Ashen Demons, Minotaurs, and Ashen Golems</b> join the Charred skeleton waves. They hit with fire and physical damage simultaneously. Standard-tier weapons won't stagger them reliably — you need imbued Warfare weapons to break their guard.\n\n<b>Scorpids, Crabs, and Dimetrodons</b> patrol the lava fields. Their meat unlocks top-tier Ashlands recipes — Dimetrodon Meat Pie and Drakkar Chili give the highest physical health and stamina pools available at this stage. Hunt them when you can.\n\n<b>Ashen Warg</b> — Monstrum adds this as a tameable mount alongside the vanilla Asksvin. Larger, faster, with a biting attack. Trapping one takes effort but a saddled Warg changes how you move through the biome entirely.\n\n<size=18><b>New Tools</b></size>\n\nAt the Black Forge with Flametal: the <b>Flametal Greatsword</b>, <b>Warpike</b>, and <b>Heavy Flail</b>. Imbue them with Storm for stagger explosions on every hit, or Blood for lifesteal to sustain through prolonged swarms. Either imbue is the right answer depending on whether you're prioritising clearing mobs or surviving a boss fight.\n\nAt the Fletcher Table, the <b>Flametal Crossbow</b> loaded with Flametal or Bone bolts will remove Charred Warlocks from fortress walls before they can reinforce. Your single most useful ranged tool for siege work.\n\nOn armor: <b>Heavy Flametal</b> from the Armory if you want to wade into Charred packs and swing without being interrupted. <b>Rogue Flametal</b> if you need stamina for the terrain and to outpace the new wildlife.\n\n<size=18><b>Fader (Modded)</b></size>\n\nSame fight, same Shield Generator cover, same mandatory Fire Resistance Wine. Storm-imbued Warfare weapons chunk his health noticeably faster than vanilla equivalents — the lightning stagger interrupts his attack animations more reliably.\n\nFor Charred summons mid-fight: the Heavy Flail sweep clears a group in one hit. Don't let them stack.\n\n<size=18><b>Sythrak the Destroyer</b></size>\n\nMonstrum adds a second Forsaken-tier boss to the Ashlands: <b>Sythrak</b>, a lava-breathing dragon. Find his Vegvisir somewhere in the biome to mark the altar.\n\nWhere Fader uses necrotic magic, Sythrak is a brawler. He hits with fire and raw physical force, closes distance fast, and has a large bite radius. Bring your best heavy Armory set, the Flametal Crossbow for his airborne phase when he drops lava, and a Warpike for ground phase — the reach keeps you outside the bite arc while still hitting him.\n\nParry his physical lunges with a Flametal Tower Shield or Buckler, punish with your heaviest weapon, back off and reload the Crossbow when he goes airborne. His drops represent the peak of Therzie's physical combat progression and are worth getting before you consider the Deep North.",
@@ -214,6 +396,42 @@
           "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
+        },
+        {
+          "Id": "build_battering_ram",
+          "Text": "Build a Battering Ram and breach a Charred Fortress",
+          "Type": "build",
+          "Value": "piece_battering_ram",
+          "AutoComplete": false,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+        {
+          "Id": "build_ymir_forge",
+          "Text": "Build a Ymir Forge",
+          "Type": "build",
+          "Value": "forge_ymir",
+          "AutoComplete": false,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+        {
+          "Id": "craft_ashen_cape",
+          "Text": "Craft the Ashen Cape (replaces Feather Cape — no fire weakness)",
+          "Type": "craftItem",
+          "Value": "CapeAsh",
+          "AutoComplete": true,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+        {
+          "Id": "defeat_sythrak",
+          "Text": "Defeat Sythrak the Destroyer (bonus boss)",
+          "Type": "globalKey",
+          "Value": "defeated_sythrak",
+          "AutoComplete": true,
+          "PlaystyleFilter": null,
+          "ModRequired": "Therzie.Monstrum"
         },
         {
           "Id": "smelt_flametal",
@@ -301,6 +519,46 @@
         {
           "Text": "Place Shield Generators around Fader's arena — use them as safe zones during his meteor summons",
           "Category": "building",
+          "ModRequired": null
+        },
+        {
+          "Text": "Ceramic Plates for the Drakkar are crafted at an Artisan Table from Black Marble — prepare them before you reach the coast",
+          "Category": "general",
+          "ModRequired": null
+        },
+        {
+          "Text": "Grausten is fire-resistant — wood burns, stone crumbles, Grausten holds. Build everything from it",
+          "Category": "building",
+          "ModRequired": null
+        },
+        {
+          "Text": "Shoot the Charred Archers off the fortress walls before wheeling the Battering Ram in — they will shred it while it's stationary",
+          "Category": "combat",
+          "ModRequired": null
+        },
+        {
+          "Text": "Clear the spawners inside a Charred Fortress before looting — leave one active and the Charred will never stop coming",
+          "Category": "combat",
+          "ModRequired": null
+        },
+        {
+          "Text": "Valkyries only spawn at night — if you hear wing beats in the dark, raise your shield",
+          "Category": "combat",
+          "ModRequired": null
+        },
+        {
+          "Text": "The Ashen Cape removes the fire weakness the Feather Cape has — switch to it as soon as you can craft one",
+          "Category": "general",
+          "ModRequired": null
+        },
+        {
+          "Text": "Bonemaw Serpents patrol the boiling ocean — keep your Drakkar moving and don't anchor near the coast unattended",
+          "Category": "general",
+          "ModRequired": null
+        },
+        {
+          "Text": "Dyrnwyn acts as a light source — in the thick ash-smoke of fortress interiors it's practically a torch",
+          "Category": "secret",
           "ModRequired": null
         }
       ]

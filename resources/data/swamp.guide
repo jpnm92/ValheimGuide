@@ -53,6 +53,26 @@
       },
       "Gear": [
         {
+          "ItemId": "ArmorRootChest",
+          "Label": "Root Harnesk",
+          "Type": "Armor",
+          "Station": "Workbench",
+          "StationLevel": 3,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "SledgeIron",
+          "Label": "Iron Sledge",
+          "Type": "Weapon",
+          "Station": "Forge",
+          "StationLevel": 2,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
           "ItemId": "ArmorIronChest",
           "Label": "Iron Scale Mail",
           "Type": "Armor",
@@ -128,6 +148,88 @@
         }
       ],
       "Mobs": [
+        {
+          "PrefabId": "Wraith",
+          "Label": "Wraith",
+          "Biome": "Swamp",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 150,
+          "SpawnChanceDay": 0.0,
+          "SpawnChanceNight": 0.3,
+          "Resistances": {
+            "Blunt": "Resistant",
+            "Slash": "Resistant",
+            "Pierce": "Resistant",
+            "Fire": "Weak",
+            "Spirit": "Weak"
+          },
+          "Drops": [
+            {
+              "ItemId": "Chain",
+              "Label": "Chain",
+              "Chance": 0.5,
+              "Min": 1,
+              "Max": 1
+            }
+          ],
+          "Taming": null,
+          "Note": "Night-only and airborne. Only reliable source of Chains — needed for Forge upgrades and Wolf Armor later. Weak to fire"
+        },
+        {
+          "PrefabId": "Abomination",
+          "Label": "Abomination",
+          "Biome": "Swamp",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 800,
+          "SpawnChanceDay": 0.05,
+          "SpawnChanceNight": 0.05,
+          "Resistances": {
+            "Blunt": "Normal",
+            "Slash": "Resistant",
+            "Pierce": "Resistant",
+            "Fire": "Weak",
+            "Spirit": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "Root",
+              "Label": "Root",
+              "Chance": 1.0,
+              "Min": 3,
+              "Max": 6
+            }
+          ],
+          "Taming": null,
+          "Note": "Rare tree-spider creature. Drops Roots for Root Armor — crafting the Root Mask alone gives permanent poison resistance"
+        },
+        {
+          "PrefabId": "Skeleton",
+          "Label": "Skeleton (Swamp)",
+          "Biome": "Swamp",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 60,
+          "SpawnChanceDay": 0.15,
+          "SpawnChanceNight": 0.3,
+          "Resistances": {
+            "Slash": "Resistant",
+            "Poison": "Immune",
+            "Spirit": "Weak"
+          },
+          "Drops": [
+            {
+              "ItemId": "BoneFragments",
+              "Label": "Bone Fragments",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3
+            }
+          ],
+          "Taming": null,
+          "Note": "Found in Sunken Crypts alongside Draugr. Resist slash — use blunt"
+        },
         {
           "PrefabId": "Leech",
           "Label": "Leech",
@@ -285,6 +387,25 @@
           "ModRequired": null
         },
         {
+          "Id": "craft_root_mask",
+          "Text": "Craft the Root Mask (permanent poison resistance)",
+          "Type": "craftItem",
+          "Value": "HelmetRoot",
+          "AutoComplete": true,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+        {
+          "Id": "craft_poison_mead",
+          "Text": "Brew Poison Resistance Mead",
+          "Type": "craftItem",
+          "Value": "MeadPoisonResist",
+          "AutoComplete": true,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+
+        {
           "Id": "craft_iron_mace",
           "Text": "Craft an Iron Mace",
           "Type": "craftItem",
@@ -360,13 +481,43 @@
           "Category": "combat",
           "ModRequired": null
         },
+                {
+          "Text": "Dragon Eggs weigh 200kg each and cannot be teleported — haul all 3 to Moder's altar before you start the fight",
+          "Category": "general",
+          "ModRequired": null
+        },
+        {
+          "Text": "The Wolf Fur Cape or Lox Cape negates the freezing debuff permanently — craft one before exploring the peaks",
+          "Category": "general",
+          "ModRequired": null
+        },
+        {
+          "Text": "Dig a trench near Moder's altar before summoning — her ice projectiles cannot angle downward into it",
+          "Category": "combat",
+          "ModRequired": null
+        },
+        {
+          "Text": "Wolves can be tamed with raw meat — bred wolves produce wolf cubs and eventually Wolf Pelt without hunting",
+          "Category": "secret",
+          "ModRequired": null
+        },
+        {
+          "Text": "Stone Golems are immune to all damage types except blunt and pickaxe — a Bronze Pickaxe works fine",
+          "Category": "combat",
+          "ModRequired": null
+        },
+        {
+          "Text": "The Silver physics pop: dig completely under a Silver vein until it floats, hit the centre — it collapses into loose ore instantly",
+          "Category": "secret",
+          "ModRequired": null
+        },
         {
           "Text": "Turnip seeds look like wispy yellow flowers in the Swamp — you only need one plant to start your farm",
           "Category": "gathering",
           "ModRequired": null
         },
         {
-          "Text": "Equip the Stagbreaker and smash the ground in the Swamp — a 0 damage hit means buried iron underneath",
+          "Text": "Equip any Warhammer/Stagbreaker and smash the ground in the Swamp — a 0 damage hit means buried iron underneath",
           "Category": "secret",
           "ModRequired": null
         },

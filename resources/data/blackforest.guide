@@ -96,6 +96,43 @@
           "PlaystyleTag": null
         },
         {
+          "ItemId": "BowFineWood",
+          "Label": "Finewood Bow",
+          "Type": "Bow",
+          "Station": "Workbench",
+          "StationLevel": 2,
+          "ModRequired": null,
+          "Recipe": [
+            {
+              "ItemId": "FineWood",
+              "Label": "Fine Wood",
+              "Amount": 10
+            },
+            {
+              "ItemId": "CoreWood",
+              "Label": "Core Wood",
+              "Amount": 10
+            },
+            {
+              "ItemId": "DeerHide",
+              "Label": "Deer Hide",
+              "Amount": 2
+            }
+          ],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "ShieldBronzeBuckler",
+          "Label": "Bronze Buckler",
+          "Type": "Shield",
+          "Station": "Forge",
+          "StationLevel": 1,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+
+        {
           "ItemId": "PickaxeBronze",
           "Label": "Bronze Pickaxe",
           "Type": "Tool",
@@ -196,6 +233,121 @@
           ],
           "Taming": null,
           "Note": "Immune to fire — use frost or physical damage"
+        },
+        {
+          "PrefabId": "Greydwarf",
+          "Label": "Greydwarf",
+          "Biome": "Black Forest",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 45,
+          "SpawnChanceDay": 0.25,
+          "SpawnChanceNight": 0.5,
+          "Resistances": {
+            "Fire": "Weak",
+            "Spirit": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "Stone",
+              "Label": "Stone",
+              "Chance": 0.7,
+              "Min": 1,
+              "Max": 3
+            },
+            {
+              "ItemId": "Resin",
+              "Label": "Resin",
+              "Chance": 0.5,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Weak to fire. Most common Black Forest enemy — manageable alone, dangerous in groups at night"
+        },
+        {
+          "PrefabId": "Greydwarf_Brute",
+          "Label": "Greydwarf Brute",
+          "Biome": "Black Forest",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 150,
+          "SpawnChanceDay": 0.1,
+          "SpawnChanceNight": 0.2,
+          "Resistances": {
+            "Fire": "Weak",
+            "Spirit": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "AncientSeed",
+              "Label": "Ancient Seed",
+              "Chance": 0.3,
+              "Min": 1,
+              "Max": 1
+            },
+            {
+              "ItemId": "GreydwarfEye",
+              "Label": "Greydwarf Eye",
+              "Chance": 0.8,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Primary source of Ancient Seeds — needed to summon The Elder. Hits hard but slow"
+        },
+        {
+          "PrefabId": "Greydwarf_Shaman",
+          "Label": "Greydwarf Shaman",
+          "Biome": "Black Forest",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 100,
+          "SpawnChanceDay": 0.1,
+          "SpawnChanceNight": 0.2,
+          "Resistances": {
+            "Fire": "Weak",
+            "Spirit": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "GreydwarfEye",
+              "Label": "Greydwarf Eye",
+              "Chance": 0.8,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Heals nearby Greydwarfs and can shield itself — kill it first before dealing with the group"
+        },
+        {
+          "PrefabId": "Skeleton",
+          "Label": "Skeleton",
+          "Biome": "Black Forest",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 60,
+          "SpawnChanceDay": 0.15,
+          "SpawnChanceNight": 0.25,
+          "Resistances": {
+            "Slash": "Resistant",
+            "Poison": "Immune",
+            "Spirit": "Weak"
+          },
+          "Drops": [
+            {
+              "ItemId": "BoneFragments",
+              "Label": "Bone Fragments",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3
+            }
+          ],
+          "Taming": null,
+          "Note": "Resistant to slash — use blunt or pierce. Found inside Burial Chambers"
         },
         {
           "PrefabId": "Troll",
@@ -317,6 +469,15 @@
           "ModRequired": null
         },
         {
+          "Id": "craft_finewood_bow",
+          "Text": "Craft the Finewood Bow (recommended for The Elder)",
+          "Type": "craftItem",
+          "Value": "BowFineWood",
+          "AutoComplete": true,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+        {
           "Id": "craft_bronze_armor",
           "Text": "Craft Bronze Armor",
           "Type": "craftItem",
@@ -412,6 +573,21 @@
         {
           "Text": "Locate the Elder Vegvisir inside a Burial Chamber — it marks his altar on your map",
           "Category": "general",
+          "ModRequired": null
+        },
+        {
+          "Text": "Haldor the merchant hides in a Black Forest biome — sail the coastlines and watch for a bag icon appearing on your map",
+          "Category": "secret",
+          "ModRequired": null
+        },
+        {
+          "Text": "Troll Leather Armor has no movement penalty unlike Bronze armor — wear it for the Elder fight to stay mobile",
+          "Category": "combat",
+          "ModRequired": null
+        },
+        {
+          "Text": "Ancient Seeds drop from Greydwarf Brutes — farm them while exploring Burial Chambers, not just before the fight",
+          "Category": "gathering",
           "ModRequired": null
         }
       ]

@@ -73,6 +73,46 @@
           "PlaystyleTag": null
         },
         {
+          "ItemId": "MaceNeedle",
+          "Label": "Porcupine",
+          "Type": "Weapon",
+          "Station": "Forge",
+          "StationLevel": 4,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "AtgeirBlackmetal",
+          "Label": "Blackmetal Atgeir",
+          "Type": "Weapon",
+          "Station": "Forge",
+          "StationLevel": 4,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "ArmorPaddedGreaves",
+          "Label": "Padded Greaves",
+          "Type": "Armor",
+          "Station": "Forge",
+          "StationLevel": 4,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
+          "ItemId": "ArmorPaddedHelmet",
+          "Label": "Padded Helmet",
+          "Type": "Armor",
+          "Station": "Forge",
+          "StationLevel": 4,
+          "ModRequired": null,
+          "Recipe": [],
+          "PlaystyleTag": null
+        },
+        {
           "ItemId": "SwordBlackmetal",
           "Label": "Blackmetal Sword",
           "Type": "Weapon",
@@ -188,6 +228,99 @@
           ],
           "Taming": null,
           "Note": "One-shots weak characters — always wear Plains-tier armor"
+        },
+        {
+          "PrefabId": "Lox",
+          "Label": "Lox",
+          "Biome": "Plains",
+          "ModRequired": null,
+          "IsTameable": true,
+          "Health": 1000,
+          "SpawnChanceDay": 0.1,
+          "SpawnChanceNight": 0.1,
+          "Resistances": {
+            "Frost": "Weak",
+            "Poison": "Resistant",
+            "Spirit": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "LoxPelt",
+              "Label": "Lox Pelt",
+              "Chance": 1.0,
+              "Min": 2,
+              "Max": 3
+            },
+            {
+              "ItemId": "LoxMeat",
+              "Label": "Lox Meat",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 3
+            }
+          ],
+          "Taming": {
+            "FoodItems": [
+              "Cloudberry"
+            ],
+            "Note": "Don't draw a weapon near it — sneak in and drop Cloudberries. Once tamed, craft a Lox Saddle to ride"
+          },
+          "Note": "Tameable mount. Ridden Lox tramples Fulings and knocks down Birch trees by walking through them"
+        },
+        {
+          "PrefabId": "BlobElite",
+          "Label": "Fuling Berserker",
+          "Biome": "Plains",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 300,
+          "SpawnChanceDay": 0.15,
+          "SpawnChanceNight": 0.25,
+          "Resistances": {
+            "Spirit": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "BlackMetalScrap",
+              "Label": "Black Metal Scrap",
+              "Chance": 1.0,
+              "Min": 2,
+              "Max": 4
+            },
+            {
+              "ItemId": "FulingTotem",
+              "Label": "Fuling Totem",
+              "Chance": 0.2,
+              "Min": 1,
+              "Max": 1
+            }
+          ],
+          "Taming": null,
+          "Note": "Primary source of Fuling Totems needed to summon Yagluth. Hits very hard — don't let it close distance"
+        },
+        {
+          "PrefabId": "GoblinShaman",
+          "Label": "Fuling Shaman",
+          "Biome": "Plains",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 150,
+          "SpawnChanceDay": 0.1,
+          "SpawnChanceNight": 0.2,
+          "Resistances": {
+            "Spirit": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "BlackMetalScrap",
+              "Label": "Black Metal Scrap",
+              "Chance": 0.5,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Raises a projectile-blocking shield. Close the gap or wait for the shield to drop before shooting"
         }
       ],
       "Article": "The Plains looks inviting. Open sky, golden grass, peaceful music. Then a Deathsquito finds you and takes off 90 health in one hit.\n\nEverything here hits harder than what came before. The difference is that you now have better tools than you've had at any previous point in the game — if you build the right infrastructure and raid the right targets first.\n\n<size=18><b>Setting Up</b></size>\n\nUse the Dragon Tears from Moder to build the <b>Artisan Table</b>. This unlocks three structures you need:\n\n<b>Blast Furnace</b> — regular Smelters can't process Plains ore. Fulings drop <b>Black Metal Scrap</b> when they die; this is what you smelt into Black Metal.\n\n<b>Windmill</b> — processes Barley into Barley Flour, used for Blood Pudding and Lox Meat Pie, the best food in the game at this stage.\n\n<b>Spinning Wheel</b> — processes Flax into Linen Thread, which combines with Iron to make <b>Padded Armor</b>. Strongest armor of the tier, and notably it doesn't slow your movement.\n\n<size=18><b>Raiding Fuling Villages</b></size>\n\nFlax and Barley only grow in the Plains and only spawn inside Fuling villages. You have to go in and take them.\n\nFuling villages are guarded by Brutes and Shamans. Don't fight them head on without Silver or Black Metal gear — they hit hard. Circle around, identify the farm patches, grab the crops, and get out if you need to. You can always come back once you're better equipped.\n\nOnce you have seeds, build a fortified base in the Plains — a trench around the perimeter is the standard approach. The crops won't grow anywhere else.\n\n<size=18><b>Worth Knowing</b></size>\n\n<size=15><b>Deathsquitos</b></size>\nThey cause more deaths than they should because players panic and run. Don't. They're glass cannons — almost no health. Equip a shield, face the sound, and stand still. The moment one darts forward to sting you, parry. It staggers, you one-shot it. Their <b>Needle</b> drops craft some of the best arrows in the game.\n\n<size=15><b>Taming Lox</b></size>\nThe large shaggy beasts wandering the Plains are Loxen. They'll trample you if you approach carelessly, but they can be tamed with <b>Cloudberries</b> — the orange berries growing everywhere in the biome. Once tamed, craft a <b>Lox Saddle</b> from Black Metal and Linen Thread. A ridden Lox will trample Fulings and knock down birch trees by walking through them.\n\n<size=15><b>Tar Pits</b></size>\nBlack pools guarded by Growths — creatures that inflict a nasty poison and slow debuff. If you need Tar for the darkwood building pieces, dig a trench leading away from the pit at a lower elevation. The liquid drains into it, exposing the solid Tar nodes at the bottom. Growths are also hostile to Fulings — lure a patrol in and let them deal with each other first.\n\n<size=18><b>Yagluth</b></size>\n\nSummon him with 5 <b>Fuling Totems</b> at the altar — the giant stone hand rising from the ground. Totems drop from Fuling Berserkers or can be found in village chests.\n\nHe deals Fire and Lightning damage almost exclusively. <b>Fire Resistance Barley Wine is mandatory.</b> Brew it before you go. Eat Blood Pudding, Lox Meat Pie, and Serpent Stew.\n\n<b>His attacks:</b>\n• <b>Blue Nova</b> — fist glows blue, slams the ground, AoE dome erupts. Sprint away the moment you see the glow. The dome has a hard edge — get outside it.\n• <b>Fire Breath</b> — sweeping fire beam. Strafe laterally around him. Keep moving sideways and it won't connect.\n• <b>Meteor Strike</b> — fist glows red, meteors rain down. Sprint behind one of the large stone fingers of the altar. They're indestructible and block the meteors completely.\n\nBetween attacks, close the distance and hit him. <b>Frostner</b> is the recommended weapon — its frost damage slows him and the spirit damage bypasses some of his resistances. Between attack windows, get hits in and retreat before the next one starts.\n\n\n<color=#FFC04A><size=18><b>— WITH THERZIE MODS —</b></size></color>\n\nThe Black Metal pipeline is unchanged — Artisan Table, Blast Furnace, raid villages for Flax and Barley. What's different is that the Plains now has an apex predator that wasn't there before, your weapon options are significantly broader, and Yagluth goes down considerably faster if you're using the right gear.\n\n<size=18><b>New Threats</b></size>\n\n<b>Prowlers</b> are large aggressive feline predators that stalk the grass. Fast, hit hard, and will run you down if you're out of stamina. Don't sprint away from them — you won't win that race. Instead, initiate from range with the Crossbow, then switch to a high-stagger weapon when they close in. The Blackmetal Greatsword's sweep interrupt their lunge animation reliably.\n\nThey can also be tamed. The process takes time, but a tamed Prowler with a saddle is faster and more lethal than a Lox. Riding one into a Fuling village changes the fight entirely.\n\n<size=18><b>New Tools</b></size>\n\nAt the Forge with Black Metal: the <b>Blackmetal Greatsword</b> for sweeping through Fuling groups, the <b>Blackmetal Heavy Flail</b> for shield-crushing damage against Brutes, and <b>Blackmetal Throwing Axes</b> for quick ranged staggers. At the Fletcher Table, the <b>Blackmetal Crossbow</b> will one-shot Deathsquitos and chunk a Shaman's health before it can raise its barrier.\n\nOn armor, you're not locked into standard Padded. <b>Lox Set</b> from Armory gives heavy defensive stats and fits the aesthetic if you're riding one. <b>Rogue Padded</b> keeps your mobility and dodge frames if you prefer a faster, lighter playstyle.\n\n<size=18><b>Yagluth (Modded)</b></size>\n\nSame attacks, same stone finger cover, same mandatory Fire Resistance Barley Wine. The main change is damage output.\n\nYagluth resists Pierce and Slash, so the Blackmetal Greatsword is less ideal here than it is against Fulings. The <b>Blackmetal Heavy Flail</b> or a carried-over <b>Silver Greatsword</b> both work well — the Flail for raw blunt damage, the Silver weapon for its Spirit damage component which still applies to his undead form.\n\nBetween his attack windows, use the Warfare weapon's heavy secondary for maximum damage per opening. The stagger values won't stun him outright, but the DPS advantage over vanilla weapons is significant enough that the fight ends noticeably faster.\n\nClear the surrounding area before summoning. Fuling patrols and wandering Prowlers can join the fight mid-boss. The stone fingers give you cover from meteors but not from a Prowler ambush.",
@@ -304,6 +437,21 @@
         },
         {
           "Text": "Growths in Tar Pits are hostile to Fulings — lure a patrol in to let them fight it out",
+          "Category": "secret",
+          "ModRequired": null
+        },
+        {
+          "Text": "Never approach a Fuling camp alone — they alert each other and Berserkers will sprint at you from range",
+          "Category": "combat",
+          "ModRequired": null
+        },
+        {
+          "Text": "Fuling Shamans raise a green shield that blocks projectiles — close the distance or wait it out before shooting",
+          "Category": "combat",
+          "ModRequired": null
+        },
+        {
+          "Text": "Lox are passive unless provoked — sneak in with Cloudberries and drop them. Don't draw your weapon near one",
           "Category": "secret",
           "ModRequired": null
         },

@@ -182,8 +182,59 @@
           ],
           "Taming": null,
           "Note": "Spooked easily — sneak or use a bow"
+        },
+        {
+          "PrefabId": "Greyling",
+          "Label": "Greyling",
+          "Biome": "Meadows",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 20,
+          "SpawnChanceDay": 0.2,
+          "SpawnChanceNight": 0.4,
+          "Resistances": {
+            "Fire": "Weak",
+            "Spirit": "Immune"
+          },
+          "Drops": [
+            {
+              "ItemId": "Resin",
+              "Label": "Resin",
+              "Chance": 0.5,
+              "Min": 1,
+              "Max": 2
+            }
+          ],
+          "Taming": null,
+          "Note": "Weak to fire — resin drops are useful for torches and fire arrows"
+        },
+        {
+          "PrefabId": "Neck",
+          "Label": "Neck",
+          "Biome": "Meadows",
+          "ModRequired": null,
+          "IsTameable": false,
+          "Health": 15,
+          "SpawnChanceDay": 0.2,
+          "SpawnChanceNight": 0.2,
+          "Resistances": {
+            "Spirit": "Immune",
+            "Frost": "Weak"
+          },
+          "Drops": [
+            {
+              "ItemId": "NeckTail",
+              "Label": "Neck Tail",
+              "Chance": 1.0,
+              "Min": 1,
+              "Max": 1
+            }
+          ],
+          "Taming": null,
+          "Note": "Always near water. Neck Tail is one of the best early foods — cook it at a fire"
         }
       ],
+
       "Article": "The Meadows looks peaceful. It mostly is — until it isn't. A few things here are easy to miss and will make the rest of the game noticeably harder if you skip them.\n\n<size=18><b>Getting Started</b></size>\n\nPunch trees until you have enough wood to craft a <b>Stone Axe</b>, then use it on everything. Grab stones off the ground. Your first real goal is a <b>Workbench</b> under a roof — even two walls and a lean-to counts. Once you have that, you can craft properly.\n\nHead to the nearest coastline or river and look for smooth greyish-white stones in the shallows — that's <b>Flint</b>. It's easy to miss if you're not looking for it, and you need it for every meaningful early weapon upgrade.\n\nFor food, forage raspberries and mushrooms while you hunt. You want <b>Cooked Meat</b> from boars, <b>Cooked Neck Tail</b> from the little lizards near water, and something foraged as your third slot. Eating all three before any serious fight is not optional — your health and stamina caps are tied directly to what's in your stomach.\n\n<size=18><b>Hunting</b></size>\n\n<b>Boars</b> are straightforward. Crouch and sneak up, or just corner one. They drop Leather Scraps, which you need for armor and the Crude Bow.\n\n<b>Deer</b> are skittish — they'll bolt the moment you get close. Either crouch and close the distance very slowly, or shoot them from range with a bow. You need <b>2 Deer Trophies</b> to summon Eikthyr and <b>Deer Hide</b> for armor, so hunt them consistently.\n\n<size=18><b>Things Most Players Miss</b></size>\n\n<size=15><b>The Rested Buff</b></size>\nSit by a fire inside an enclosed shelter. You'll get the <b>Rested</b> buff, which dramatically increases health and stamina regeneration for several minutes. Never fight a boss without it. Never fight anything serious without it if you can help it.\n\n<size=15><b>The Maypole</b></size>\nWhile exploring ruined Meadows villages, look for a tall wooden pole with a green ring near the top. That's a <b>Maypole</b> — it cannot be crafted, only found. Building your base near one gives a permanent +1 Comfort, which extends your Rested buff duration. It's rare, but worth going out of your way for.\n\n<size=15><b>Getting Fine Wood Early</b></size>\nYou can't chop Birch trees until you have a Bronze Axe — but falling trees deal physics damage to whatever they hit. Chop a normal Beech tree so it falls into a Birch tree. Roll the log into the Birch by pushing it with your body. Keep at it and the Birch will eventually shatter, dropping <b>Fine Wood</b>.\n\nWith 10 Fine Wood, 10 Core Wood (from Pine trees on the Black Forest border), and 2 Deer Hide, you can craft the <b>Finewood Bow</b> before ever setting foot in the Black Forest. It will make Eikthyr significantly easier.\n\n<size=18><b>Eikthyr</b></size>\n\nSummon him at the altar marked on your map from the Vegvisir runestone near spawn. You need <b>2 Deer Trophies</b>.\n\n<b>Gear:</b> Finewood Bow with Flinthead Arrows is ideal. If you're going melee, use a Flint Spear — Eikthyr is weak to Pierce. Bring a Wooden Shield regardless. Eat all three food items and make sure you have the Rested buff before you offer the trophies.\n\n<b>His attacks:</b>\n• <b>Antler Swipe</b> — rears up then slams. Block it or dodge roll through it.\n• <b>Lightning Bolt</b> — shoots a straight beam. Strafe sideways.\n• <b>Lightning AoE</b> — rears up and glows heavily, then discharges in a circle. Sprint away the moment you see the glow.\n\nOptional but effective: place a few campfires around the altar before summoning him. He'll occasionally step on them.\n\nStay mobile, keep your distance if you're using a bow, and don't panic. He's manageable.\n\n\n<color=#FFC04A><size=18><b>— WITH THERZIE MODS —</b></size></color>\n\nThe Meadows is no longer a tutorial. Therzie's <b>Warfare</b>, <b>Armory</b>, and <b>Monstrum</b> mods make the starting biome genuinely dangerous — and give you the tools to be dangerous right back from the start.\n\n<size=18><b>What Changes</b></size>\n\n<b>Combat (Warfare):</b> Forget settling for a basic Flint Spear. At your Workbench you now have access to a <b>Flint Greatsword</b> (massive stagger), a <b>Flint Warpike</b> (long reach, great for keeping enemies at distance), and <b>Flint Throwing Axes</b> for ranged options. The <b>Fletcher Table</b> is a new crafting station for archery — build it early and craft the <b>Crude Crossbow</b> for burst damage that vanilla Meadows has no answer to.\n\n<b>Armor (Armory):</b> You're not just crafting generic Leather Armor anymore. Using Deer Hide and Bone Fragments, you can craft class-specific sets from day one. <b>Rogue Leather</b> if you want mobility and stamina for dodge-heavy play. <b>Heavy Leather</b> if you want to stand your ground and trade hits.\n\n<b>The Ecosystem (Monstrum):</b>\n• <b>Foxes</b> — passive, hunt them with a bow. Good early food and crafting material.\n• <b>Razorbacks</b> — aggressive scarred boar variants. Hit harder than normal boars, drop better materials. Don't underestimate them.\n• <b>Black Bears</b> — if you hear a deep roar, take it seriously. A Black Bear will kill a fresh Viking in seconds. They are the apex threat of the Meadows and the game's first real skill check.\n\n<size=18><b>The Bear Hunt</b></size>\n\nOnce you have the Finewood Bow (or a Crude Crossbow from the Fletcher Table), hunting a Black Bear becomes viable — from safety. Build a small elevated platform out of wood, or find a large rock, and pull the bear with an arrow. Reload. Fire. Don't get greedy.\n\nBear Pelts unlock heavy armor options through the Armory mod that normally require Black Forest metals. Killing one early gives you a genuine head start into the next biome.\n\n<size=18><b>Eikthyr (Modded)</b></size>\n\nSame summoning requirements — <b>2 Deer Trophies</b> at the altar. His attacks don't change. What changes is how you deal with them.\n\n• <b>Melee:</b> Use the <b>Flint Greatsword</b> with a <b>Flint Buckler</b> (Armory). Parry his Antler Swipe with the buckler, then immediately follow up with the Greatsword's heavy attack. The stagger will keep him locked down.\n• <b>Ranged:</b> The <b>Crude Crossbow</b> at distance. Sprint away during the Lightning AoE charge, reload while moving, turn and fire. The pierce damage chunks him fast.\n\nFood: <b>Black Bear Meat</b>, <b>Fox Meat</b>, and Cooked Neck Tail. This health pool simply doesn't exist in vanilla Meadows.\n\n<size=18><b>Asmodeus — Optional Meadows Boss</b></size>\n\nMonstrum adds a hidden mini-boss to the Meadows: <b>Asmodeus, The Hungering One</b>. Find his Vegvisir runestone while exploring to mark his altar on your map.\n\nDon't fight him underprepared. You want the Bear Set or fully upgraded Heavy Leather, a Flint Buckler, and a high-stagger weapon. He is significantly more aggressive than Eikthyr and hits much harder than anything else in the biome.\n\nThe pattern is the same as Eikthyr — parry his lunges, follow up with a heavy attack, back off to regenerate stamina. The difference is he punishes mistakes much less forgivingly.\n\nThe reward is unique loot that bridges the gap between Meadows and Black Forest. If you can kill him, do it before moving on.",
       "BonusBosses": [
         {
@@ -230,6 +281,24 @@
           "Text": "Build a shelter with a roof and a bed",
           "Type": "build",
           "Value": null,
+          "AutoComplete": false,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+        {
+          "Id": "build_chopping_block",
+          "Text": "Build a Chopping Block (upgrades Workbench to level 2)",
+          "Type": "build",
+          "Value": "piece_choppingblock",
+          "AutoComplete": false,
+          "PlaystyleFilter": null,
+          "ModRequired": null
+        },
+        {
+          "Id": "build_cauldron",
+          "Text": "Build a Cauldron",
+          "Type": "build",
+          "Value": "piece_cauldron",
           "AutoComplete": false,
           "PlaystyleFilter": null,
           "ModRequired": null
@@ -328,6 +397,16 @@
         },
         {
           "Text": "Clear bushes around the boss altar before summoning — they block dodging",
+          "Category": "building",
+          "ModRequired": null
+        },
+        {
+          "Text": "Necks are small lizard-like creatures near water — their tails are excellent early food, easy to overlook",
+          "Category": "gathering",
+          "ModRequired": null
+        },
+        {
+          "Text": "Build a Chopping Block (10 Wood, 10 Flint) near your Workbench — it upgrades the bench to level 2 and unlocks better tools",
           "Category": "building",
           "ModRequired": null
         },

@@ -366,63 +366,65 @@ namespace ValheimGuide.DataGenerators
         // FALLBACK: original logic, now only reached when no recipe exists
         private static string GetTierFromName(string name)
         {
-            if (name.Contains("tyranium") || name.Contains("thoradus") || name.Contains("lokvyr") ||
-                name.Contains("njord") || name.Contains("skadi") || name.Contains("jotunn") ||
-                name.Contains("glacier") || name.Contains("storm") || name.Contains("polar") ||
-                name.Contains("frost") || name.Contains("ice") || name.Contains("north"))
-                return "DeepNorth";
+            // This method is a LAST RESORT — it only runs when the ingredient and
+            // station checks both failed. Generic weapon-type words (sword, axe, bow)
+            // are intentionally NOT included here because they will match items from
+            // every tier and produce silent miscategorisations. Only use unambiguous
+            // material or character names that belong exclusively to one biome tier.
 
-            if (name.Contains("ragnorite") || name.Contains("surtr") || name.Contains("volcanic") ||
-                name.Contains("demon") || name.Contains("muspelheim") || name.Contains("charred") ||
-                name.Contains("fader") || name.Contains("ash") || name.Contains("flametal"))
+            // Ashlands-exclusive materials and characters
+            if (name.Contains("flametal") || name.Contains("ragnorite") || name.Contains("surtr")
+                || name.Contains("asksvin") || name.Contains("thoradus") || name.Contains("tyranium")
+                || name.Contains("charred") || name.Contains("fader"))
                 return "Ashlands";
 
-            if (name.Contains("carapace") || name.Contains("dvergr") || name.Contains("queen") ||
-                name.Contains("seeker") || name.Contains("demolisher") || name.Contains("legion"))
+            // Mistlands-exclusive materials and characters
+            if (name.Contains("carapace") || name.Contains("dvergr") || name.Contains("eitr")
+                || name.Contains("yggdrasil") || name.Contains("seeker") || name.Contains("queen"))
                 return "Mistlands";
 
-            if (name.Contains("blackmetal") || name.Contains("bm") || name.Contains("lox") ||
-                name.Contains("scimitar") || name.Contains("yagluth") || name.Contains("blood") ||
-                name.Contains("padded") || name.Contains("bold"))
+            // Plains-exclusive materials and characters
+            if (name.Contains("blackmetal") || name.Contains("linen") || name.Contains("fuling")
+                || name.Contains("yagluth") || name.Contains("deathsquito") || name.Contains("needle"))
                 return "Plains";
 
-            if (name.Contains("silver") || name.Contains("wolf") || name.Contains("crystal") ||
-                name.Contains("obsidian") || name.Contains("drake") || name.Contains("spirit") ||
-                name.Contains("vidar") || name.Contains("fenrir"))
+            // Mountain-exclusive materials and characters
+            if (name.Contains("silver") || name.Contains("fenris") || name.Contains("moder")
+                || name.Contains("obsidian") || name.Contains("frostner"))
                 return "Mountain";
 
-            if (name.Contains("iron") || name.Contains("rotten") || name.Contains("swamp") ||
-                name.Contains("bonemass") || name.Contains("vampiric") || name.Contains("leech") ||
-                name.Contains("warrior"))
+            // Swamp-exclusive materials and characters
+            if (name.Contains("iron") || name.Contains("bonemass") || name.Contains("abomination"))
                 return "Swamp";
 
-            if (name.Contains("bronze") || name.Contains("chitin") || name.Contains("troll") ||
-                name.Contains("elder") || name.Contains("copper") || name.Contains("tin") ||
-                name.Contains("viper") || name.Contains("hunter") || name.Contains("rogue") ||
-                name.Contains("vigorous"))
+            // Black Forest-exclusive materials and characters
+            if (name.Contains("bronze") || name.Contains("chitin") || name.Contains("troll")
+                || name.Contains("copper") || name.Contains("tin"))
                 return "Black Forest";
 
-            if (name.Contains("leather") || name.Contains("razorback") || name.Contains("flint") ||
-                name.Contains("bone") || name.Contains("eikthyr") || name.Contains("stag") ||
-                name.Contains("wood") || name.Contains("scythe") || name.Contains("wrench") ||
-                name.Contains("knife") || name.Contains("club") || name.Contains("spear") ||
-                name.Contains("axe") || name.Contains("bow") || name.Contains("shield") ||
-                name.Contains("mace") || name.Contains("sword") || name.Contains("atgeir") ||
-                name.Contains("sledge") || name.Contains("buckler") || name.Contains("tower"))
+            // Meadows-exclusive materials and characters
+            if (name.Contains("leather") || name.Contains("razorback") || name.Contains("flint")
+                || name.Contains("eikthyr"))
                 return "Meadows";
 
-            UnityEngine.Debug.LogWarning($"[TherzieDataGenerator] Could not determine tier from name '{name}', assigning Other.");
+            // Genuinely unidentifiable — log it clearly so the JSON data can be fixed
+            UnityEngine.Debug.LogWarning(
+                $"[TherzieDataGenerator] Name-based tier detection failed for '{name}'. " +
+                $"Assigning 'Other'. Consider adding a recipe or fixing the prefab name prefix.");
             return "Other";
         }
 
+
         private static void SaveToFile(List<Stage> stages, string fileName)
         {
-            string dataFolder = Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
+            string dataFolder = Path.Combine(Paths.PluginPath, Plugin.PluginName, "data");
             Directory.CreateDirectory(dataFolder);
             string filePath = Path.Combine(dataFolder, fileName);
             File.WriteAllText(filePath,
                 JsonConvert.SerializeObject(new GuideData { Stages = stages }, Formatting.Indented));
-            UnityEngine.Debug.Log($"[TherzieDataGenerator] Saved {stages.Sum(s => s.Gear.Count)} items to {filePath}");
+            UnityEngine.Debug.Log(
+                $"[TherzieDataGenerator] Saved {stages.Sum(s => s.Gear.Count)} items to {filePath}");
         }
+
     }
 }

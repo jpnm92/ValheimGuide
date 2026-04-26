@@ -2,24 +2,32 @@ namespace ValheimGuide.Data
 {
     public static class BiomeOrder
     {
+        /// <summary>
+        /// Returns sort order from a stage ID string (e.g. "blackforest").
+        /// Normalises to the display-tier format and delegates to FromTier.
+        /// </summary>
         public static int FromStageId(string stageId)
         {
             if (string.IsNullOrEmpty(stageId)) return 80;
 
             switch (stageId.ToLowerInvariant())
             {
-                case "meadows": return 0;
-                case "blackforest": return 10;
-                case "swamp": return 20;
-                case "mountain": return 30;
-                case "plains": return 40;
-                case "mistlands": return 50;
-                case "ashlands": return 60;
-                case "deepnorth": return 70;
+                case "meadows": return FromTier("Meadows");
+                case "blackforest": return FromTier("Black Forest");
+                case "swamp": return FromTier("Swamp");
+                case "mountain": return FromTier("Mountain");
+                case "plains": return FromTier("Plains");
+                case "mistlands": return FromTier("Mistlands");
+                case "ashlands": return FromTier("Ashlands");
+                case "deepnorth": return FromTier("DeepNorth");
                 default: return 80;
             }
         }
 
+        /// <summary>
+        /// Returns sort order from a display tier string (e.g. "Black Forest").
+        /// Used by EncyclopediaIndex and TherzieDataGenerator sorting.
+        /// </summary>
         public static int FromTier(string tier)
         {
             switch (tier)

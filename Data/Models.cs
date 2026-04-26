@@ -65,16 +65,19 @@ namespace ValheimGuide.Data
 
     public class Objective
     {
-        public string Id { get; set; }          // unique within stage e.g. "craft_forge"
-        public string Text { get; set; }        // display string e.g. "Build a Forge"
-        public string Type { get; set; }        // see below
-        public string Value { get; set; }       // item id, global key, etc — depends on Type
-        public int Count { get; set; }          // for hasItem: required quantity (0 = just needs > 0)
-        public bool AutoComplete { get; set; }  // true = mod checks it, false = player ticks manually
-        public string PlaystyleFilter { get; set; } // null = always shown, or "hunter","warrior" etc
-        public string ModRequired { get; set; } // null = always shown
+        public string Id { get; set; }
+        public string Text { get; set; }
+        public string Type { get; set; }
+        public string Value { get; set; }
+        public int Count { get; set; }          // for hasItem objectives: required quantity
+        public bool AutoComplete { get; set; }
+        public string PlaystyleFilter { get; set; }
+        public string ModRequired { get; set; }
+
+        // Populated at runtime by GuideDataEnricher — never set in JSON
         public List<ItemStack> ObjectiveMaterials { get; set; }
     }
+
 
     // Objective.Type values:
     //   "globalKey"    — AutoComplete: checks ZoneSystem for Value

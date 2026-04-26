@@ -323,11 +323,6 @@
           "Text": "The Arbalest crossbow fires in a perfectly straight line with almost no drop — ideal for shooting through the fog",
           "Category": "combat",
           "ModRequired": null
-        },
-        {
-          "Text": "The Mistwalker sword acts as a built-in Wisplight, clearing fog around you while you fight",
-          "Category": "combat",
-          "ModRequired": null
         }
       ]
     }
