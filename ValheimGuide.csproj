@@ -99,7 +99,7 @@
     <Compile Include="DataGenerators\GuideDataEnricher.cs" />
     <Compile Include="DataGenerators\TherzieDataGenerator.cs" />
     <Compile Include="Data\EncyclopediaIndex.cs" />
-    <Compile Include="Data\IModDataProvider.cs" />
+    <Compile Include="DataGenerators\IModDataProvider.cs" />
     <Compile Include="Data\ProgressionSaver.cs" />
     <Compile Include="Data\ProgressionTracker.cs" />
     <Compile Include="Data\GuideDataLoader.cs" />

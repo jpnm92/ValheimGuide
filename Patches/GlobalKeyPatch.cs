@@ -11,6 +11,7 @@ namespace ValheimGuide.Patches
         {
             if (name.StartsWith("defeated_"))
             {
+                ProgressionTracker.MarkStageDirty();
                 ProgressionTracker.RefreshCurrentStage();
             }
         }

@@ -218,6 +218,7 @@ namespace ValheimGuide.Data
         public string Label { get; set; }       // "Bow / Crossbow"
         public string Description { get; set; } // "Stay at range, pierce damage focus"
         public string ArmorSet { get; set; }    // "Hunter"|"Warrior" etc — for gear filtering
+        public string ArmorClass { get; set; }  // "Light"|"Heavy" — matches GearEntry.ArmorClass
         public List<string> WeaponTypes { get; set; } = new List<string>(); // for gear filtering
     }
 

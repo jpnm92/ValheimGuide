@@ -55,8 +55,9 @@ namespace ValheimGuide.UI
 
         // ── State ─────────────────────────────────────────────────────────────
         private bool   _isBuilt      = false;
-        private bool   _collapsed    = false;
-        private bool   _forcedHidden = false;  // true while inventory / guide is open
+        private bool _forcedHidden;
+        private bool _collapsed;
+        private System.Collections.Generic.Dictionary<string, int> _invSnapshot;
         private float  _timer        = 0f;
 
         // ── UI refs ───────────────────────────────────────────────────────────
@@ -238,6 +239,9 @@ namespace ValheimGuide.UI
                 _panel.SetActive(false);
                 return;
             }
+
+            // Snapshot inventory once for this refresh — shared by all row helpers
+            _invSnapshot = BuildInventorySnapshot();
 
             _stageLabel.text = stage.Label.ToUpper();
 
@@ -459,21 +463,27 @@ namespace ValheimGuide.UI
 
         // ── Helpers ───────────────────────────────────────────────────────────
 
+        private static System.Collections.Generic.Dictionary<string, int> BuildInventorySnapshot()
+        {
+            var snap = new System.Collections.Generic.Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            if (Player.m_localPlayer == null) return snap;
+            foreach (var item in Player.m_localPlayer.GetInventory().GetAllItems())
+            {
+                string key = item.m_dropPrefab != null
+                    ? item.m_dropPrefab.name
+                    : item.m_shared?.m_name?.Replace("$item_", "") ?? "";
+                if (string.IsNullOrEmpty(key)) continue;
+                if (snap.ContainsKey(key)) snap[key] += item.m_stack;
+                else snap[key] = item.m_stack;
+            }
+            return snap;
+        }
         private static bool IsInGame() =>
             Player.m_localPlayer != null && ZNet.instance != null;
 
         private string GetItemCountProgress(Objective obj)
         {
-            if (Player.m_localPlayer == null) return "";
-            int have = 0;
-            foreach (var item in Player.m_localPlayer.GetInventory().GetAllItems())
-            {
-                string n = item.m_dropPrefab != null
-                    ? item.m_dropPrefab.name
-                    : item.m_shared?.m_name?.Replace("$item_", "");
-                if (string.Equals(n, obj.Value, StringComparison.OrdinalIgnoreCase))
-                    have += item.m_stack;
-            }
+            int have = _invSnapshot != null && _invSnapshot.TryGetValue(obj.Value, out int v) ? v : 0;
             int need = obj.Count;
             string color = have >= need ? "#80FF80" : "#FF8080";
             int smallFont = Plugin.TrackerFontSize.Value - 3;
@@ -635,7 +645,11 @@ namespace ValheimGuide.UI
         {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 _canvasRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
-            _panelRect.anchoredPosition = localPoint + _dragOffset;
+            Vector2 pos = localPoint + _dragOffset;
+            Vector2 half = new Vector2(_canvasRect.rect.width / 2f, _canvasRect.rect.height / 2f);
+            pos.x = Mathf.Clamp(pos.x, -half.x, half.x);
+            pos.y = Mathf.Clamp(pos.y, -half.y, half.y);
+            _panelRect.anchoredPosition = pos;
         }
 
         public void OnEndDrag(PointerEventData eventData)

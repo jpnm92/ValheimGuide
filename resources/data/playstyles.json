@@ -55,6 +55,22 @@
       "Description": "Defensive spear fighter. Throw or thrust, shield compatible.",
       "ArmorSet": "Legion",
       "WeaponTypes": [ "Spear", "Trident" ]
+    },
+    {
+      "Id": "lightarmor",
+      "Label": "Light Armor",
+      "Description": "Speed and stamina over protection. Pairs well with bows, knives, and fists.",
+      "ArmorSet": null,
+      "ArmorClass": "Light",
+      "WeaponTypes": []
+    },
+    {
+      "Id": "heavyarmor",
+      "Label": "Heavy Armor",
+      "Description": "Maximum protection. Movement penalty in exchange for survivability.",
+      "ArmorSet": null,
+      "ArmorClass": "Heavy",
+      "WeaponTypes": []
     }
   ]
 }

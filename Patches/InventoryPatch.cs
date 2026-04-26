@@ -1,23 +1,22 @@
 ﻿using HarmonyLib;
-using UnityEngine;
+using System;
 using ValheimGuide.Data;
 using ValheimGuide.UI;
 
 namespace ValheimGuide.Patches
 {
-    [HarmonyPatch(typeof(Inventory), nameof(Inventory.AddItem),
-        new[] { typeof(ItemDrop.ItemData), typeof(int), typeof(int), typeof(int) })]
+    [HarmonyPatch(typeof(Inventory), "Changed")]
     public static class InventoryPatch
     {
-        private static void Postfix(ItemDrop.ItemData item, int amount, int x, int y)
+        private static void Postfix(Inventory __instance)
         {
-            if (item == null || item.m_shared == null) return;
             if (Player.m_localPlayer == null || ZNet.instance == null) return;
+
+            // Only care about the local player's inventory
+            if (Player.m_localPlayer.GetInventory() != __instance) return;
 
             bool updated = false;
             var stagesToCheck = GuideDataLoader.GetStagesToScan();
-
-            string prefabName = item.m_dropPrefab ? item.m_dropPrefab.name : "";
 
             foreach (var stage in stagesToCheck)
             {
@@ -25,34 +24,32 @@ namespace ValheimGuide.Patches
 
                 foreach (var obj in stage.Objectives)
                 {
-                    // REMOVED AutoComplete check!
-                    if (obj.Type.ToLowerInvariant() == "hasitem" && !string.IsNullOrEmpty(obj.Value))
+                    if (obj.Type.ToLowerInvariant() != "hasitem" || string.IsNullOrEmpty(obj.Value))
+                        continue;
+
+                    string objKey = "obj_" + obj.Id;
+                    if (ProgressSaver.IsChecked(objKey)) continue;
+
+                    int required = obj.Count > 0 ? obj.Count : 1;
+                    int have = ProgressionTracker.CountItemsByPrefab(__instance, obj.Value);
+
+                    if (have >= required)
                     {
-                        string objKey = "obj_" + obj.Id;
-                        if (ProgressSaver.IsChecked(objKey)) continue;
+                        ProgressSaver.SetChecked(objKey, true);
+                        updated = true;
+                        Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed gathering objective: {obj.Text}");
 
-                        string strippedName = item.m_shared?.m_name?.Replace("$item_", "") ?? "";
-                        bool isMatch = string.Equals(prefabName, obj.Value, System.StringComparison.OrdinalIgnoreCase) ||
-                                       string.Equals(strippedName, obj.Value, System.StringComparison.OrdinalIgnoreCase) ||
-                                       item.m_shared.m_name.IndexOf(obj.Value, System.StringComparison.OrdinalIgnoreCase) >= 0;
-
-                        if (isMatch)
-                        {
-                            ProgressSaver.SetChecked(objKey, true);
-                            updated = true;
-                            Plugin.Log.LogInfo($"[ValheimGuide] Auto-completed gathering objective: {obj.Text}");
-
-                            Player.m_localPlayer?.Message(
-                                MessageHud.MessageType.TopLeft,
-                                $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
-                            );
-                        }
+                        Player.m_localPlayer?.Message(
+                            MessageHud.MessageType.TopLeft,
+                            $"<color=#80FF80>Objective Complete</color>\n{obj.Text}"
+                        );
                     }
                 }
             }
 
             if (updated)
             {
+                ProgressionTracker.MarkStageDirty();
                 ObjectiveTracker.ForceRefresh();
                 ProgressionTracker.RefreshCurrentStage();
             }

@@ -28,8 +28,7 @@ namespace ValheimGuide.Patches
                         string objKey = "obj_" + obj.Id;
                         if (ProgressSaver.IsChecked(objKey)) continue;
 
-                        bool isMatch = string.Equals(pieceName, obj.Value, System.StringComparison.OrdinalIgnoreCase) ||
-                                       (piece.m_name != null && piece.m_name.IndexOf(obj.Value, System.StringComparison.OrdinalIgnoreCase) >= 0);
+                        bool isMatch = string.Equals(pieceName, obj.Value, System.StringComparison.OrdinalIgnoreCase);
 
                         if (isMatch)
                         {
@@ -48,6 +47,7 @@ namespace ValheimGuide.Patches
 
             if (updated)
             {
+                ProgressionTracker.MarkStageDirty();
                 ObjectiveTracker.ForceRefresh();
                 ProgressionTracker.RefreshCurrentStage();
             }

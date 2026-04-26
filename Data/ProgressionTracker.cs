@@ -21,6 +21,17 @@ namespace ValheimGuide.Data
         public static Stage ManualOverrideStage { get; private set; }
         public static event Action<Stage> OnStageChanged;
 
+        // ── Stage result cache ────────────────────────────────────────────────
+        private static Stage _cachedHighestStage;
+        private static bool _stageCacheDirty = true;
+
+        /// <summary>
+        /// Call this from any patch that could change which stages are unlocked
+        /// (boss kill, item pickup, recipe learned). Causes the next refresh to
+        /// recompute the highest completed stage instead of using the cached value.
+        /// </summary>
+        public static void MarkStageDirty() => _stageCacheDirty = true;
+
         public static void Initialise(ManualLogSource logger)
         {
             _log = logger;
@@ -52,9 +63,8 @@ namespace ValheimGuide.Data
         {
             ManualOverrideStage = GuideDataLoader.GetStageById(stageId);
             if (ProgressSaver.Current != null)
-            {
                 ProgressSaver.Current.ManualStageOverride = stageId;
-            }
+            _stageCacheDirty = true;
             ForceRefresh();
         }
 
@@ -63,21 +73,27 @@ namespace ValheimGuide.Data
             ManualOverrideStage = null;
             if (ProgressSaver.Current != null)
                 ProgressSaver.Current.ManualStageOverride = null;
+            _stageCacheDirty = true;
             ForceRefresh();
         }
 
         private static Stage GetHighestCompletedStage()
         {
+            if (!_stageCacheDirty) return _cachedHighestStage;
+
             Stage highest = null;
             foreach (Stage stage in GuideDataLoader.AllStages)
             {
                 if (IsTriggerSatisfied(stage.UnlockTrigger))
                     highest = stage;
             }
+
+            _cachedHighestStage = highest;
+            _stageCacheDirty = false;
             return highest;
         }
 
-        private static int CountItemsByPrefab(Inventory inv, string prefabName)
+        public static int CountItemsByPrefab(Inventory inv, string prefabName)
         {
             if (inv == null || string.IsNullOrEmpty(prefabName)) return 0;
             int count = 0;

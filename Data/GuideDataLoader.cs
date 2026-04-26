@@ -190,9 +190,21 @@ namespace ValheimGuide.Data
         }
         private static bool ValidateStage(Stage stage, string fileName)
         {
-            if (string.IsNullOrEmpty(stage.Id)) return false;
-            if (string.IsNullOrEmpty(stage.Label)) return false;
-            if (stage.UnlockTrigger == null) return false;
+            if (string.IsNullOrEmpty(stage.Id))
+            {
+                _log.LogWarning($"[GuideDataLoader] Stage in '{fileName}' has no Id — skipping.");
+                return false;
+            }
+            if (string.IsNullOrEmpty(stage.Label))
+            {
+                _log.LogWarning($"[GuideDataLoader] Stage '{stage.Id}' in '{fileName}' has no Label — skipping.");
+                return false;
+            }
+            if (stage.UnlockTrigger == null)
+            {
+                _log.LogWarning($"[GuideDataLoader] Stage '{stage.Id}' in '{fileName}' has no UnlockTrigger — skipping.");
+                return false;
+            }
             return true;
         }
 

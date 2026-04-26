@@ -947,9 +947,16 @@ namespace ValheimGuide.UI
                 bool isOptimal = false;
                 if (currentPlaystyle != null && !isChecked)
                 {
-                    if (gear.PlaystyleTag == currentPlaystyle.Id) isOptimal = true;
-                    else if (gear.Type == "Armor" && !string.IsNullOrEmpty(currentPlaystyle.ArmorSet) && gear.Label.IndexOf(currentPlaystyle.ArmorSet, StringComparison.OrdinalIgnoreCase) >= 0) isOptimal = true;
-                    else if (currentPlaystyle.WeaponTypes.Any(wt => gear.Label.IndexOf(wt, StringComparison.OrdinalIgnoreCase) >= 0)) isOptimal = true;
+                    if (gear.PlaystyleTag == currentPlaystyle.Id)
+                        isOptimal = true;
+                    else if (gear.Type == "Armor" && !string.IsNullOrEmpty(currentPlaystyle.ArmorClass)
+                        && string.Equals(gear.ArmorClass, currentPlaystyle.ArmorClass, StringComparison.OrdinalIgnoreCase))
+                        isOptimal = true;
+                    else if (gear.Type == "Armor" && !string.IsNullOrEmpty(currentPlaystyle.ArmorSet)
+                        && gear.Label.IndexOf(currentPlaystyle.ArmorSet, StringComparison.OrdinalIgnoreCase) >= 0)
+                        isOptimal = true;
+                    else if (currentPlaystyle.WeaponTypes.Any(wt => gear.Label.IndexOf(wt, StringComparison.OrdinalIgnoreCase) >= 0))
+                        isOptimal = true;
                 }
 
                 string displayName = gear.Label.ToUpper();
