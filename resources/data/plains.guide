@@ -268,7 +268,7 @@
           "Note": "Tameable mount. Ridden Lox tramples Fulings and knocks down Birch trees by walking through them"
         },
         {
-          "PrefabId": "BlobElite",
+          "PrefabId": "GoblinBrute",
           "Label": "Fuling Berserker",
           "Biome": "Plains",
           "ModRequired": null,
