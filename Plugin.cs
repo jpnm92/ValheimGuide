@@ -104,11 +104,14 @@ namespace ValheimGuide
                 GuidePanel.Hide();
         }
 
+        // Phase 1: load JSON data — runs on OnVanillaPrefabsAvailable.
+        // Enricher is intentionally NOT called here because mod items
+        // (Therzie etc.) are not yet registered into ObjectDB at this point.
         public static void LoadGuideData()
         {
             if (GuideDataLoader.AllStages.Count > 0)
             {
-                Log.LogWarning($"[{PluginName}] LoadGuideData called again — skipping to prevent reload.");
+                Log.LogWarning($"[{PluginName}] LoadGuideData called again — skipping.");
                 return;
             }
 
@@ -117,15 +120,30 @@ namespace ValheimGuide
 
             TherzieDataGenerator.GenerateIfPresent();
             GuideDataLoader.Load(dataFolder, Log);
-            GuideDataEnricher.Run();
-            EncyclopediaIndex.Invalidate();
             ObjectiveTracker.InvalidateLabelCache();
             ProgressionTracker.RefreshCurrentStage();
 
-            Log.LogInfo($"{PluginName} ready. " +
+            Log.LogInfo($"{PluginName} guide data loaded. " +
                         $"Stages: {GuideDataLoader.AllStages.Count}, " +
                         $"Playstyles: {GuideDataLoader.Playstyles.Count}");
         }
+
+        // Phase 2: enrich with ObjectDB data — called from ObjectDBAwakePatch
+        // after ALL mods (including Therzie) have registered their items.
+        public static void EnrichGuideData()
+        {
+            if (GuideDataLoader.AllStages.Count == 0)
+            {
+                Log.LogWarning($"[{PluginName}] EnrichGuideData called before LoadGuideData — skipping.");
+                return;
+            }
+
+            GuideDataEnricher.Run();
+            EncyclopediaIndex.Invalidate();
+
+            Log.LogInfo($"{PluginName} enrichment complete.");
+        }
+
 
         private void Update()
         {

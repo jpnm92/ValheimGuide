@@ -25,12 +25,14 @@ namespace ValheimGuide.UI
 
         public void Show()
         {
-            foreach (Transform child in _container.transform)
-                UnityEngine.Object.Destroy(child.gameObject);
+            for (int i = _container.transform.childCount - 1; i >= 0; i--)
+                UnityEngine.Object.DestroyImmediate(
+                    _container.transform.GetChild(i).gameObject);
 
             BuildScrollArea();
             Populate();
         }
+
 
         // ── Layout ────────────────────────────────────────────────────────────
 
@@ -84,7 +86,7 @@ namespace ValheimGuide.UI
             sr.viewport = vpRect;
             sr.content = cRect;
 
-            Scrollbar sb = MakeScrollbar(scrollRoot.transform);
+            Scrollbar sb = GuidePanel.CreateScrollbar(scrollRoot.transform);
             sr.verticalScrollbar = sb;
             sr.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
         }
@@ -149,52 +151,66 @@ namespace ValheimGuide.UI
         // ── Widgets ───────────────────────────────────────────────────────────
 
         private void AddSettingButton(string label, string description,
-            bool isActive, Action onClick)
+    bool isActive, Action onClick)
         {
+            // ContentSizeFitter on the row lets it grow when text wraps
             GameObject row = new GameObject("SettingBtn",
-                typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+                typeof(RectTransform), typeof(Image), typeof(Button),
+                typeof(LayoutElement), typeof(ContentSizeFitter));
             row.transform.SetParent(_scrollContent.transform, false);
-            row.GetComponent<LayoutElement>().minHeight = 52;
+            row.GetComponent<LayoutElement>().minHeight = 48;
+            row.GetComponent<ContentSizeFitter>().verticalFit =
+                ContentSizeFitter.FitMode.PreferredSize;
             row.GetComponent<Image>().color = isActive
                 ? new Color(0.35f, 0.28f, 0.15f)
                 : new Color(0.20f, 0.20f, 0.20f);
 
             // Horizontal: tick | stack(label + desc)
+            // Must also size-fit vertically so the row inherits the stack's height
             GameObject inner = new GameObject("Inner",
-                typeof(RectTransform), typeof(HorizontalLayoutGroup));
+                typeof(RectTransform), typeof(HorizontalLayoutGroup),
+                typeof(ContentSizeFitter));
             inner.transform.SetParent(row.transform, false);
             RectTransform ir = inner.GetComponent<RectTransform>();
             ir.anchorMin = Vector2.zero;
             ir.anchorMax = Vector2.one;
             ir.offsetMin = new Vector2(14, 0);
             ir.offsetMax = new Vector2(-14, 0);
+            inner.GetComponent<ContentSizeFitter>().verticalFit =
+                ContentSizeFitter.FitMode.PreferredSize;
 
             var hlg = inner.GetComponent<HorizontalLayoutGroup>();
             hlg.spacing = 10;
             hlg.childForceExpandWidth = false;
-            hlg.childForceExpandHeight = true;
+            hlg.childForceExpandHeight = false;  // let children dictate their own height
             hlg.childControlWidth = false;
             hlg.childControlHeight = true;
 
-            // Active tick
+            // Active tick — vertically centred via alignment on the Text
             GameObject tick = MakeText(inner.transform, "Tick",
                 isActive ? "►" : " ", 14,
                 new Color(1f, 0.85f, 0.4f));
             tick.GetComponent<RectTransform>().sizeDelta = new Vector2(16, 0);
-            tick.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
+            Text tickText = tick.GetComponent<Text>();
+            tickText.alignment = TextAnchor.UpperLeft;
+            tickText.verticalOverflow = VerticalWrapMode.Overflow;
 
-            // Label + description
+            // Label + description stack
             GameObject stack = new GameObject("Stack",
-                typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(LayoutElement));
+                typeof(RectTransform), typeof(VerticalLayoutGroup),
+                typeof(LayoutElement), typeof(ContentSizeFitter));
             stack.transform.SetParent(inner.transform, false);
             stack.GetComponent<LayoutElement>().flexibleWidth = 1f;
+            stack.GetComponent<ContentSizeFitter>().verticalFit =
+                ContentSizeFitter.FitMode.PreferredSize;
+
             var svlg = stack.GetComponent<VerticalLayoutGroup>();
             svlg.childForceExpandWidth = true;
             svlg.childForceExpandHeight = false;
             svlg.childControlWidth = true;
             svlg.childControlHeight = true;
             svlg.spacing = 3;
-            svlg.padding = new RectOffset(0, 0, 8, 8);
+            svlg.padding = new RectOffset(0, 0, 10, 10);
 
             var lbl = MakeText(stack.transform, "Label", label, 14, Color.white);
             lbl.GetComponent<Text>().fontStyle = FontStyle.Bold;
@@ -205,6 +221,7 @@ namespace ValheimGuide.UI
 
             row.GetComponent<Button>().onClick.AddListener(() => onClick?.Invoke());
         }
+
 
         private void AddLabel(string text, int size, FontStyle style, Color color)
         {
@@ -250,33 +267,6 @@ namespace ValheimGuide.UI
             t.horizontalOverflow = HorizontalWrapMode.Wrap;
             t.verticalOverflow = VerticalWrapMode.Overflow;
             return go;
-        }
-
-        private static Scrollbar MakeScrollbar(Transform parent)
-        {
-            GameObject sb = new GameObject("Scrollbar",
-                typeof(RectTransform), typeof(Scrollbar), typeof(Image));
-            sb.transform.SetParent(parent, false);
-            sb.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.1f, 0.5f);
-
-            RectTransform sbRect = sb.GetComponent<RectTransform>();
-            sbRect.anchorMin = new Vector2(1, 0);
-            sbRect.anchorMax = new Vector2(1, 1);
-            sbRect.pivot = new Vector2(1, 0.5f);
-            sbRect.offsetMin = new Vector2(-10, 0);
-            sbRect.offsetMax = Vector2.zero;
-            sbRect.sizeDelta = new Vector2(6, 0);
-
-            GameObject handle = new GameObject("Handle",
-                typeof(RectTransform), typeof(Image));
-            handle.transform.SetParent(sb.transform, false);
-            handle.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.7f);
-
-            Scrollbar scrollbar = sb.GetComponent<Scrollbar>();
-            scrollbar.handleRect = handle.GetComponent<RectTransform>();
-            scrollbar.direction = Scrollbar.Direction.BottomToTop;
-            scrollbar.targetGraphic = handle.GetComponent<Image>();
-            return scrollbar;
         }
     }
 }
