@@ -909,6 +909,21 @@ namespace ValheimGuide.UI
                 markText.fontSize = 14;
                 markText.color = Color.white;
 
+                // Icon
+                Sprite gearIcon = GetItemIcon(gear.ItemId);
+                if (gearIcon != null)
+                {
+                    GameObject iconObj = new GameObject("Icon",
+                        typeof(RectTransform), typeof(Image), typeof(LayoutElement));
+                    iconObj.transform.SetParent(row.transform, false);
+                    var iconLe = iconObj.GetComponent<LayoutElement>();
+                    iconLe.preferredWidth = 32;
+                    iconLe.preferredHeight = 32;
+                    var iconImg = iconObj.GetComponent<Image>();
+                    iconImg.sprite = gearIcon;
+                    iconImg.preserveAspect = true;
+                }
+
                 // 2. Text Content Column (Takes up remaining width)
                 GameObject textContainer = new GameObject("TextContainer", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(LayoutElement));
                 textContainer.transform.SetParent(row.transform, false);
@@ -1170,6 +1185,19 @@ namespace ValheimGuide.UI
                 markText.alignment = TextAnchor.MiddleCenter;
                 markText.fontSize = 12; markText.color = Color.white;
 
+                // Icon
+                Sprite recipeIcon = GetItemIcon(recipe.ItemId);
+                if (recipeIcon != null)
+                {
+                    GameObject iconObj = new GameObject("Icon",
+                        typeof(RectTransform), typeof(Image));
+                    iconObj.transform.SetParent(row.transform, false);
+                    iconObj.GetComponent<RectTransform>().sizeDelta = new Vector2(24, 24);
+                    var iconImg = iconObj.GetComponent<Image>();
+                    iconImg.sprite = recipeIcon;
+                    iconImg.preserveAspect = true;
+                }
+
                 GameObject nameObj = GuidePanel.CreateText(row.transform, "Name", recipe.Label.ToUpper());
                 nameObj.GetComponent<RectTransform>().sizeDelta = new Vector2(200, 0);
                 nameObj.GetComponent<Text>().fontSize = 15;
@@ -1304,6 +1332,18 @@ namespace ValheimGuide.UI
                     TMPro.FontStyles.Normal, Color.white);
                 GuidePanel.AddSpacer(parent);
             }
+        }
+
+        private static Sprite GetItemIcon(string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId) || ObjectDB.instance == null) return null;
+            GameObject prefab = ObjectDB.instance.GetItemPrefab(itemId);
+            if (prefab == null) return null;
+            var itemDrop = prefab.GetComponent<ItemDrop>();
+            if (itemDrop == null) return null;
+            var icons = itemDrop.m_itemData?.m_shared?.m_icons;
+            if (icons == null || icons.Length == 0) return null;
+            return icons[0];
         }
 
         private void RenderObjectiveRow(Transform parent, Objective obj)

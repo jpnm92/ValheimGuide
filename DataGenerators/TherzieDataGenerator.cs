@@ -1,46 +1,57 @@
-﻿using System;
+﻿using BepInEx;
+using BepInEx.Logging;
+using Jotunn.Managers;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BepInEx;
-using Jotunn.Managers;
-using Newtonsoft.Json;
 using UnityEngine;
 using ValheimGuide.Data;
 
 namespace ValheimGuide.DataGenerators
 {
+    public class TherzieDataProvider : IModDataProvider
+    {
+        public string ProviderId => "Therzie";
+
+        public bool CanProvide(HashSet<string> installedMods)
+            => installedMods.Contains("Therzie.Armory") || installedMods.Contains("Therzie.Warfare");
+
+        public void Generate(string dataFolder, ManualLogSource log)
+            => TherzieDataGenerator.GenerateIfPresent(dataFolder, log);
+    }
+
     public static class TherzieDataGenerator
     {
-        public static void GenerateIfPresent()
+        public static void GenerateIfPresent(string dataFolder, ManualLogSource log)
         {
 
             // Always regenerate — ensures tier fixes and new items are picked up
-            string dataFolder = Path.Combine(Paths.PluginPath, "ValheimGuide", "data");
             string armoryPath = Path.Combine(dataFolder, "armory_generated.guide");
             string warfarePath = Path.Combine(dataFolder, "warfare_generated.guide");
             if (File.Exists(armoryPath)) File.Delete(armoryPath);
             if (File.Exists(warfarePath)) File.Delete(warfarePath);
-            Plugin.Log.LogInfo("[TherzieDataGenerator] Generation starting.");
+            log.LogInfo("[TherzieDataGenerator] Generation starting.");
 
             try
             {
-                GenerateArmoryData();
-                GenerateWarfareData();
-                Plugin.Log.LogInfo("[TherzieDataGenerator] Generation complete.");
+                GenerateArmoryData(log);
+                GenerateWarfareData(log);
+                log.LogInfo("[TherzieDataGenerator] Generation complete.");
             }
             catch (Exception ex)
             {
-                Plugin.Log.LogError($"[TherzieDataGenerator] CRASH: {ex}");
+                log.LogError($"[TherzieDataGenerator] CRASH: {ex}");
             }
         }
 
-        private static void GenerateArmoryData()
+        private static void GenerateArmoryData(ManualLogSource log)
         {
             const string modGuid = "Therzie.Armory";
             if (!BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid))
             {
-                Plugin.Log.LogWarning("[TherzieDataGenerator] Armory not detected, skipping.");
+                log.LogWarning("[TherzieDataGenerator] Armory not detected, skipping.");
                 return;
             }
 
@@ -51,16 +62,16 @@ namespace ValheimGuide.DataGenerators
                             IsArmorPiece(i))
                 .ToList();
 
-            Plugin.Log.LogInfo($"[TherzieDataGenerator] Found {items.Count} Armory items.");
+            log.LogInfo($"[TherzieDataGenerator] Found {items.Count} Armory items.");
             SaveToFile(GroupByTier(items, "Armory", modGuid, GetTierFromRecipe), "armory_generated.guide");
         }
 
-        private static void GenerateWarfareData()
+        private static void GenerateWarfareData(ManualLogSource log)
         {
             const string modGuid = "Therzie.Warfare";
             if (!BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid))
             {
-                Plugin.Log.LogWarning("[TherzieDataGenerator] Warfare not detected, skipping.");
+                log.LogWarning("[TherzieDataGenerator] Warfare not detected, skipping.");
                 return;
             }
 
@@ -71,7 +82,7 @@ namespace ValheimGuide.DataGenerators
                             IsWeaponOrTool(i))
                 .ToList();
 
-            Plugin.Log.LogInfo($"[TherzieDataGenerator] Found {items.Count} Warfare items.");
+            log.LogInfo($"[TherzieDataGenerator] Found {items.Count} Warfare items.");
             SaveToFile(GroupByTier(items, "Warfare", modGuid, GetTierFromRecipe), "warfare_generated.guide");
         }
 
@@ -400,7 +411,7 @@ namespace ValheimGuide.DataGenerators
                 name.Contains("sledge") || name.Contains("buckler") || name.Contains("tower"))
                 return "Meadows";
 
-            Plugin.Log.LogWarning($"[TherzieDataGenerator] Could not determine tier from name '{name}', assigning Other.");
+            UnityEngine.Debug.LogWarning($"[TherzieDataGenerator] Could not determine tier from name '{name}', assigning Other.");
             return "Other";
         }
 
@@ -411,7 +422,7 @@ namespace ValheimGuide.DataGenerators
             string filePath = Path.Combine(dataFolder, fileName);
             File.WriteAllText(filePath,
                 JsonConvert.SerializeObject(new GuideData { Stages = stages }, Formatting.Indented));
-            Plugin.Log.LogInfo($"[TherzieDataGenerator] Saved {stages.Sum(s => s.Gear.Count)} items to {filePath}");
+            UnityEngine.Debug.Log($"[TherzieDataGenerator] Saved {stages.Sum(s => s.Gear.Count)} items to {filePath}");
         }
     }
 }

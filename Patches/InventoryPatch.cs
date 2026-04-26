@@ -31,7 +31,9 @@ namespace ValheimGuide.Patches
                         string objKey = "obj_" + obj.Id;
                         if (ProgressSaver.IsChecked(objKey)) continue;
 
+                        string strippedName = item.m_shared?.m_name?.Replace("$item_", "") ?? "";
                         bool isMatch = string.Equals(prefabName, obj.Value, System.StringComparison.OrdinalIgnoreCase) ||
+                                       string.Equals(strippedName, obj.Value, System.StringComparison.OrdinalIgnoreCase) ||
                                        item.m_shared.m_name.IndexOf(obj.Value, System.StringComparison.OrdinalIgnoreCase) >= 0;
 
                         if (isMatch)

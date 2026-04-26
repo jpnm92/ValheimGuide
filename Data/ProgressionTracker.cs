@@ -77,6 +77,21 @@ namespace ValheimGuide.Data
             return highest;
         }
 
+        private static int CountItemsByPrefab(Inventory inv, string prefabName)
+        {
+            if (inv == null || string.IsNullOrEmpty(prefabName)) return 0;
+            int count = 0;
+            foreach (ItemDrop.ItemData item in inv.GetAllItems())
+            {
+                string name = item.m_dropPrefab != null
+                    ? item.m_dropPrefab.name
+                    : item.m_shared?.m_name?.Replace("$item_", "");
+                if (string.Equals(name, prefabName, StringComparison.OrdinalIgnoreCase))
+                    count += item.m_stack;
+            }
+            return count;
+        }
+
         public static bool IsTriggerSatisfied(Trigger trigger)
         {
             if (trigger == null) return false;
@@ -90,7 +105,7 @@ namespace ValheimGuide.Data
                 case "hasitem":
                     Player player = Player.m_localPlayer;
                     if (player == null) return false;
-                    return player.GetInventory().CountItems(trigger.Value) > 0;
+                    return CountItemsByPrefab(player.GetInventory(), trigger.Value) > 0;
                 case "knownrecipe":
                     Player p = Player.m_localPlayer;
                     if (p == null) return false;
@@ -141,7 +156,9 @@ namespace ValheimGuide.Data
 
                 case "hasitem":
                     Player pl = Player.m_localPlayer;
-                    return pl != null && pl.GetInventory().CountItems(obj.Value) > 0;
+                    if (pl == null) return false;
+                    int required = obj.Count > 0 ? obj.Count : 1;
+                    return CountItemsByPrefab(pl.GetInventory(), obj.Value) >= required;
 
                 default:
                     return false;

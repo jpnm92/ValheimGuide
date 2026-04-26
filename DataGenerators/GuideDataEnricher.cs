@@ -91,6 +91,61 @@ namespace ValheimGuide.DataGenerators
                       $"{recipeCount} recipes, " +
                       $"{stationCount} stations auto-populated.");
         }
+        public static void EnrichMobResistances()
+        {
+            if (ZNetScene.instance == null) return;
+
+            int enriched = 0;
+            foreach (Stage stage in GuideDataLoader.AllStages)
+            {
+                foreach (MobEntry mob in stage.Mobs)
+                {
+                    if (mob.Resistances != null && mob.Resistances.Count > 0) continue;
+                    if (string.IsNullOrEmpty(mob.PrefabId)) continue;
+
+                    GameObject prefab = ZNetScene.instance.GetPrefab(mob.PrefabId);
+                    if (prefab == null) continue;
+
+                    Character character = prefab.GetComponent<Character>();
+                    if (character == null) continue;
+
+                    mob.Resistances = ExtractResistances(character.m_damageModifiers);
+                    enriched++;
+                }
+            }
+
+            Debug.Log($"[ValheimGuide] Mob resistance enrichment done — {enriched} mobs enriched.");
+        }
+
+        private static Dictionary<string, string> ExtractResistances(HitData.DamageModifiers mods)
+        {
+            var dict = new Dictionary<string, string>();
+            AddResistance(dict, "Blunt", mods.m_blunt);
+            AddResistance(dict, "Slash", mods.m_slash);
+            AddResistance(dict, "Pierce", mods.m_pierce);
+            AddResistance(dict, "Fire", mods.m_fire);
+            AddResistance(dict, "Frost", mods.m_frost);
+            AddResistance(dict, "Lightning", mods.m_lightning);
+            AddResistance(dict, "Poison", mods.m_poison);
+            AddResistance(dict, "Spirit", mods.m_spirit);
+            return dict;
+        }
+
+        private static void AddResistance(Dictionary<string, string> dict, string type, HitData.DamageModifier mod)
+        {
+            switch (mod)
+            {
+                case HitData.DamageModifier.Weak:
+                case HitData.DamageModifier.VeryWeak:
+                    dict[type] = "Weak"; break;
+                case HitData.DamageModifier.Resistant:
+                case HitData.DamageModifier.VeryResistant:
+                    dict[type] = "Resistant"; break;
+                case HitData.DamageModifier.Immune:
+                case HitData.DamageModifier.Ignore:
+                    dict[type] = "Immune"; break;
+            }
+        }
 
         private static List<string> GetDamageTypes(HitData.DamageTypes damages)
         {

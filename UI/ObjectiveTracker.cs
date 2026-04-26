@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Jotunn.Managers;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using ValheimGuide.Data;
-using Jotunn.Managers;
 
 namespace ValheimGuide.UI
 {
@@ -147,7 +149,8 @@ namespace ValheimGuide.UI
 
             // ── Header ────────────────────────────────────────────────────────
             var header = MakeObject("Header", _panel.transform,
-                typeof(RectTransform), typeof(HorizontalLayoutGroup));
+                typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(Image));
+            header.GetComponent<Image>().color = Color.clear;
             var hr = header.GetComponent<RectTransform>();
             hr.anchorMin = new Vector2(0, 1);
             hr.anchorMax = new Vector2(1, 1);
@@ -179,6 +182,9 @@ namespace ValheimGuide.UI
             ar.offsetMin = ar.offsetMax = Vector2.zero;
             _collapseArrow.alignment = TextAnchor.MiddleCenter;
             colBtn.GetComponent<Button>().onClick.AddListener(ToggleCollapse);
+
+            var drag = header.AddComponent<DraggableTracker>();
+            drag.Init(pr, _canvas.GetComponent<RectTransform>());
 
             // ── Content area ──────────────────────────────────────────────────
             _contentRoot = MakeObject("Content", _panel.transform,
@@ -422,7 +428,12 @@ namespace ValheimGuide.UI
 
             string fullText = obj.Text;
             if (!done && !string.IsNullOrEmpty(obj.Value))
-                fullText += GetMaterialProgress(obj);
+            {
+                if (obj.Type?.ToLowerInvariant() == "hasitem" && obj.Count > 0)
+                    fullText += GetItemCountProgress(obj);
+                else
+                    fullText += GetMaterialProgress(obj);
+            }
 
             MakeWrappingLabel(row.transform, "Label", fullText,
                 baseFont, FontStyle.Normal,
@@ -451,9 +462,27 @@ namespace ValheimGuide.UI
         private static bool IsInGame() =>
             Player.m_localPlayer != null && ZNet.instance != null;
 
+        private string GetItemCountProgress(Objective obj)
+        {
+            if (Player.m_localPlayer == null) return "";
+            int have = 0;
+            foreach (var item in Player.m_localPlayer.GetInventory().GetAllItems())
+            {
+                string n = item.m_dropPrefab != null
+                    ? item.m_dropPrefab.name
+                    : item.m_shared?.m_name?.Replace("$item_", "");
+                if (string.Equals(n, obj.Value, StringComparison.OrdinalIgnoreCase))
+                    have += item.m_stack;
+            }
+            int need = obj.Count;
+            string color = have >= need ? "#80FF80" : "#FF8080";
+            int smallFont = Plugin.TrackerFontSize.Value - 3;
+            return $"\n<color=#B0B0B0><size={smallFont}><color={color}>{have}/{need}</color></size></color>";
+        }
+
         // Thin wrapper: keeps all existing callers (AddRow) compiling unchanged.
         private string GetMaterialProgress(Objective obj) => GetMaterialProgress(obj.Value);
-
+        
         private string GetMaterialProgress(string itemId)
         {
             if (string.IsNullOrEmpty(itemId)) return "";
@@ -568,18 +597,51 @@ namespace ValheimGuide.UI
                 typeof(RectTransform), typeof(Text), typeof(LayoutElement));
 
             var t = go.GetComponent<Text>();
-            t.text      = content;
-            t.font      = GUIManager.Instance.AveriaSerifBold;
-            t.fontSize  = size;
+            t.text = content;
+            t.font = GUIManager.Instance.AveriaSerifBold;
+            t.fontSize = size;
             t.fontStyle = style;
-            t.color     = color;
+            t.color = color;
             t.raycastTarget = false;
 
             var le = go.GetComponent<LayoutElement>();
-            if (flexWidth)       le.flexibleWidth  = 1f;
+            if (flexWidth) le.flexibleWidth = 1f;
             if (preferWidth > 0) le.preferredWidth = preferWidth;
 
             return t;
+        }
+    }
+
+    public class DraggableTracker : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    {
+        private RectTransform _panelRect;
+        private RectTransform _canvasRect;
+        private Vector2 _dragOffset;
+
+        public void Init(RectTransform panelRect, RectTransform canvasRect)
+        {
+            _panelRect = panelRect;
+            _canvasRect = canvasRect;
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                _canvasRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
+            _dragOffset = _panelRect.anchoredPosition - localPoint;
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                _canvasRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint);
+            _panelRect.anchoredPosition = localPoint + _dragOffset;
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            Plugin.TrackerOffsetX.Value = _panelRect.anchoredPosition.x;
+            Plugin.TrackerOffsetY.Value = _panelRect.anchoredPosition.y;
         }
     }
 }

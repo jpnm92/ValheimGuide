@@ -124,6 +124,7 @@ namespace ValheimGuide.Data
                     Stage existing = _allStages.FirstOrDefault(s => s.Id == stage.Id);
                     if (existing != null)
                     {
+                        _log.LogInfo($"[GuideDataLoader] Stage '{stage.Id}' from '{fileName}' merging into existing stage.");
                         // Safely merge text and boss data if the existing stage is a generated shell
                         if (string.IsNullOrEmpty(existing.Article) && !string.IsNullOrEmpty(stage.Article)) existing.Article = stage.Article;
                         if (string.IsNullOrEmpty(existing.BiomeDescription) && !string.IsNullOrEmpty(stage.BiomeDescription)) existing.BiomeDescription = stage.BiomeDescription;
@@ -136,12 +137,12 @@ namespace ValheimGuide.Data
                         if (existing.UnlockTrigger == null || existing.UnlockTrigger.Type == "none") existing.UnlockTrigger = stage.UnlockTrigger;
 
                         // Merge lists safely
-                        if (stage.Objectives != null) { if (existing.Objectives == null) existing.Objectives = new List<Objective>(); existing.Objectives.AddRange(stage.Objectives); }
-                        if (stage.Tips != null) { if (existing.Tips == null) existing.Tips = new List<Tip>(); existing.Tips.AddRange(stage.Tips); }
-                        if (stage.PriorityMaterials != null) { if (existing.PriorityMaterials == null) existing.PriorityMaterials = new List<string>(); existing.PriorityMaterials.AddRange(stage.PriorityMaterials); }
-                        if (stage.Gear != null) { if (existing.Gear == null) existing.Gear = new List<GearEntry>(); existing.Gear.AddRange(stage.Gear); }
-                        if (stage.Mobs != null) { if (existing.Mobs == null) existing.Mobs = new List<MobEntry>(); existing.Mobs.AddRange(stage.Mobs); }
-                        if (stage.Recipes != null) { if (existing.Recipes == null) existing.Recipes = new List<RecipeEntry>(); existing.Recipes.AddRange(stage.Recipes); }
+                        existing.Objectives = MergeLists(existing.Objectives, stage.Objectives);
+                        existing.Tips = MergeLists(existing.Tips, stage.Tips);
+                        existing.PriorityMaterials = MergeLists(existing.PriorityMaterials, stage.PriorityMaterials);
+                        existing.Gear = MergeLists(existing.Gear, stage.Gear);
+                        existing.Mobs = MergeLists(existing.Mobs, stage.Mobs);
+                        existing.Recipes = MergeLists(existing.Recipes, stage.Recipes);
                     }
                     else
                     {
@@ -153,6 +154,8 @@ namespace ValheimGuide.Data
                 }
 
                 _log.LogInfo($"[GuideDataLoader] {fileName} → {accepted} stage(s) accepted/merged.");
+                _allStages.Sort((a, b) => a.Order.CompareTo(b.Order));
+                _log.LogInfo($"[GuideDataLoader] Load complete. Total stages: {_allStages.Count}");
             }
             catch (JsonException ex) { _log.LogError($"[GuideDataLoader] Parse error in {fileName}: {ex.Message}"); }
             catch (IOException ex) { _log.LogError($"[GuideDataLoader] File read error for {fileName}: {ex.Message}"); }
@@ -178,7 +181,13 @@ namespace ValheimGuide.Data
                 return string.IsNullOrEmpty(mod) || InstalledMods.Contains(mod);
             }).ToList();
         }
-
+        private static List<T> MergeLists<T>(List<T> target, List<T> source)
+        {
+            if (source == null) return target;
+            if (target == null) return new List<T>(source);
+            target.AddRange(source);
+            return target;
+        }
         private static bool ValidateStage(Stage stage, string fileName)
         {
             if (string.IsNullOrEmpty(stage.Id)) return false;
@@ -197,9 +206,9 @@ namespace ValheimGuide.Data
 
         public static Stage GetNextStage(string currentId)
         {
-            int index = _allStages.FindIndex(s => s.Id == currentId);
-            if (index < 0 || index >= _allStages.Count - 1) return null;
-            return _allStages[index + 1];
+            Stage current = _allStages.FirstOrDefault(s => s.Id == currentId);
+            if (current == null) return null;
+            return _allStages.FirstOrDefault(s => s.Order > current.Order);
         }
         public static PlaystyleDefinition GetPlaystyle(string id)
             => _playstyles.FirstOrDefault(p => p.Id == id);

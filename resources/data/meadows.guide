@@ -257,6 +257,7 @@
           "Text": "Collect 2 Deer Trophies",
           "Type": "hasItem",
           "Value": "DeerTrophy",
+          "Count": 2,
           "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
