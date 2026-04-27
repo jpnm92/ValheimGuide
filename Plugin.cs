@@ -147,11 +147,16 @@ namespace ValheimGuide
                 return;
             }
 
+            // Inject auto-detected mob entries BEFORE the enricher runs
+            // so EnrichMobResistances can fill in resistances on generated entries too
+            MobDataGenerator.Run();
+
             GuideDataEnricher.Run();
             EncyclopediaIndex.Invalidate();
 
             Log.LogInfo($"{PluginName} enrichment complete.");
         }
+
 
 
         private void Update()

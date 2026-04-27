@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataGenerators\GuideDataEnricher.cs" />
+    <Compile Include="DataGenerators\MobDataGenerator.cs" />
     <Compile Include="DataGenerators\TherzieDataGenerator.cs" />
     <Compile Include="Data\EncyclopediaIndex.cs" />
     <Compile Include="DataGenerators\IModDataProvider.cs" />
