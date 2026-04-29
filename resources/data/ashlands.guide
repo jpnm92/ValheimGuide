@@ -166,7 +166,7 @@
       "Mobs": [
         {
           "PrefabId": "Charred_Melee",
-          "Label": "Charred_Melee",
+          "Label": "Charred Warrior",
           "Biome": "Ashlands",
           "ModRequired": null,
           "IsTameable": false,

@@ -113,6 +113,7 @@
     <Compile Include="Patches\MenuPatch.cs" />
     <Compile Include="Patches\ObjectDBPatch.cs" />
     <Compile Include="Patches\PlayerSpawnPatch.cs" />
+    <Compile Include="Patches\RecipePatch.cs" />
     <Compile Include="Patches\ZNetScenePatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

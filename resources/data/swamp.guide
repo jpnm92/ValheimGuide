@@ -399,7 +399,7 @@
           "Id": "craft_poison_mead",
           "Text": "Brew Poison Resistance Mead",
           "Type": "craftItem",
-          "Value": "MeadPoisonResist",
+          "Value": "MeadBasePoisonResist",
           "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null

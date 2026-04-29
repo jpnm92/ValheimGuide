@@ -14,8 +14,10 @@ namespace ValheimGuide.Data
         private static float _lastRefreshTime;
 
         // Reflection cache for Player.m_knownRecipes (HashSet<string>)
-        private static readonly FieldInfo _knownRecipesField =
-            typeof(Player).GetField("m_knownRecipes", BindingFlags.NonPublic | BindingFlags.Instance);
+        public static readonly FieldInfo _knownRecipesField =
+            typeof(Player).GetField("m_knownRecipes",
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
 
         public static Stage CurrentStage { get; private set; }
         public static Stage ManualOverrideStage { get; private set; }
@@ -126,7 +128,14 @@ namespace ValheimGuide.Data
                     Player p = Player.m_localPlayer;
                     if (p == null) return false;
                     var recipes = _knownRecipesField?.GetValue(p) as HashSet<string>;
-                    return recipes?.Contains(trigger.Value) ?? false;
+                    if (recipes == null)
+                    {
+                        Plugin.Log.LogWarning(
+                            "[ProgressionTracker] m_knownRecipes reflection returned null — " +
+                            "knownRecipe triggers will not function.");
+                        return false;
+                    }
+                    return recipes.Contains(trigger.Value);
                 default:
                     _log?.LogWarning($"[ProgressionTracker] Unknown trigger type: {trigger.Type}");
                     return false;

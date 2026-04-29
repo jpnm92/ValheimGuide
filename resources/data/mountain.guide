@@ -33,8 +33,7 @@
           "DragonTear"
         ],
         "WeakAgainst": [
-          "Fire",
-          "Spirit"
+          "Fire"
         ],
         "ResistantTo": [
           "Frost"
@@ -386,7 +385,7 @@
           "Id": "brew_frost_resist",
           "Text": "Brew Frost Resistance Mead",
           "Type": "craftItem",
-          "Value": "MeadFrostResist",
+          "Value": "MeadBaseFrostResist",
           "AutoComplete": true,
           "PlaystyleFilter": null,
           "ModRequired": null
